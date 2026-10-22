@@ -708,9 +708,9 @@ function FilterRow<T extends string>({
   );
 }
 
-/** The muscle-map tile: one figure, centred in a tinted rounded square. */
+/** The muscle-map tile: one figure, zoomed onto the worked muscles, in a rounded square. */
 const AVATAR = 52;
-const MAP_HEIGHT = 46;
+const MAP_HEIGHT = 46; // square: the map is zoomed onto the worked muscles
 
 const ExerciseRow = React.memo(function ExerciseRow({
   exercise,
@@ -736,8 +736,10 @@ const ExerciseRow = React.memo(function ExerciseRow({
       style={[styles.row, state.disabled && styles.rowDisabled]}
       onPress={onPress}
     >
-      <View style={[styles.avatar, { backgroundColor: theme.tints[tone] }]}>
-        <MuscleMap exercise={exercise} height={MAP_HEIGHT} accent={tone} />
+      {/* A neutral tile, not the focus tint: the worked muscles carry the accent, and a softened
+          secondary fill needs a plain ground to read against. */}
+      <View style={[styles.avatar, { backgroundColor: theme.colors.surface2 }]}>
+        <MuscleMap exercise={exercise} height={MAP_HEIGHT} accent={tone} zoom />
       </View>
       <View style={styles.rowMain}>
         <Txt variant="h3" numberOfLines={2}>

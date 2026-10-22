@@ -8,14 +8,14 @@ secondary fill vanishes on the tinted tile. User asked for: zoom to the worked r
 contrast, tile stays 52pt (NOT bigger yet), full labelled map on the detail screen.
 
 ### Done
-- (none yet)
+- [x] 47a — svgPathBounds, focusBox, MuscleMap zoom/side, neutral row tile, secondary 0.55
+- [x] 47b — 'Muscles worked' card on ExerciseDetailScreen (front + back, Main/Helping legend)
 
 ### In progress
-- 47a: svgPathBounds + `focusBox` in lib/muscleMap.ts, `zoom` on MuscleMap, row tile neutral surface2.
+- none. Device pass owed: row legibility at 52pt, detail card at small phone width.
 
 ### Next
-- 47b: "Muscles worked" card on ExerciseDetailScreen (front + back figures, primary/secondary legend).
-- Remove the matching Field Guide items from docs/BACKLOG.md if they land (detail-header map).
+- If the device pass says 52pt is still too small, grow AVATAR/MAP_HEIGHT in ExercisesScreen.tsx.
 
 ### Decisions / gotchas
 - Crop is a square viewBox around the primary muscles' bounds (secondary if no primary, whole

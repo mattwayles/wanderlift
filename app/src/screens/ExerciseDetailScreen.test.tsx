@@ -142,6 +142,16 @@ describe('the exercise detail page in Daybreak', () => {
 });
 
 describe('the exercise detail page', () => {
+  it('shows the full muscle map with the worked muscles named', async () => {
+    const exercise = await openDetail(PUSH_UP.name);
+    const map = screen.getByTestId('detail-muscle-map');
+    expect(map.props.accessibilityLabel).toMatch(/^Works /);
+    expect(screen.getByText('Front')).toBeTruthy();
+    expect(screen.getByText('Back')).toBeTruthy();
+    expect(screen.getByText('Muscles worked')).toBeTruthy();
+    expect(exercise.primary.length).toBeGreaterThan(0);
+  });
+
   it('shows the how-to cue and every field on the record', async () => {
     const exercise = await openDetail(PUSH_UP.name);
 

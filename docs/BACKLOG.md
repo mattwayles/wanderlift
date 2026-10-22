@@ -80,12 +80,13 @@ _List exercises that you'd like to incldue in the library here. Any exercise you
 
 ## Future Features
 
-- **Field Guide rows — the rest of the icon clean-up.** Rows now show a front/back muscle map
-  (`components/MuscleMap.tsx`, `lib/muscleMap.ts`). Not built yet, in suggested order: (1) the
-  movement pattern in words in the row subtitle ("Horizontal push · Chest, triceps") - the map shows
-  what is worked, not the movement; (2) explain the tile tint (the exercise's first focus) by
-  tinting the quick focus chips the same way; (3) a small band / no-gear corner marker on the tile (`AnchorBadge` exists).
-  The Exercise detail header could also show the map large, labelled.
+- **Field Guide rows — the rest of the icon clean-up.** Rows show a zoomed front/back muscle map on a
+  neutral tile (`components/MuscleMap.tsx` `zoom`, `lib/muscleMap.ts` `focusBox`); the detail screen
+  has the full front + back map. Not built yet, in suggested order: (1) the movement pattern in words
+  in the row subtitle ("Horizontal push · Chest, triceps") - the map shows what is worked, not the
+  movement; (2) a small band / no-gear corner marker on the tile (`AnchorBadge` exists); (3) device
+  pass: if the 52pt tile is still too small for forearms/calves after the zoom, grow it (deliberately
+  not done yet) or fall back to colour-coded muscle-group pills.
 - **Settings toggle to hide badges.** Badges have no off switch in v1 (Passport badges follow the
   Passport opt-in). If someone wants a quieter app, a Settings toggle that hides the Journey card,
   Today's Next badge row and the completion-screen cards would do it; awarding can keep running

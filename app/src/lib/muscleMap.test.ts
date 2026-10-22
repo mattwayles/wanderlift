@@ -4,6 +4,7 @@ import {
   MUSCLE_SIDE,
   exerciseChartSide,
   exerciseMuscleChart,
+  focusBox,
   muscleChart,
   pickerRegions,
   pickerShapes,
@@ -89,5 +90,31 @@ describe('picker regions', () => {
     expect(shapes.regions.get('chest')).toBeTruthy();
     expect(shapes.body).not.toBe('');
     expect(pickerShapes('front', ['chest'])).toBe(shapes);
+  });
+
+  it('crops every exercise to a square inside the figure, around its worked muscles', () => {
+    for (const e of exerciseLibrary.exercises) {
+      const side = exerciseChartSide(e);
+      const box = focusBox(e, side);
+      expect(Number.isFinite(box.x + box.y + box.size)).toBe(true);
+      expect(box.size).toBeGreaterThanOrEqual(340);
+      expect(box.size).toBeLessThanOrEqual(1448);
+      expect(box.y).toBeGreaterThanOrEqual(0);
+      expect(box.y + box.size).toBeLessThanOrEqual(1448);
+    }
+  });
+
+  it('zooms tighter for a small muscle than for a whole-body move', () => {
+    const sizeOf = (primary: string[]) =>
+      focusBox({ ...exerciseLibrary.exercises[0]!, primary, secondary: [] }, 'front').size;
+    expect(sizeOf(['biceps'])).toBeLessThan(sizeOf(['chest', 'quads', 'abs', 'biceps']));
+  });
+
+  it('falls back to secondary muscles, then the whole figure', () => {
+    const base = exerciseLibrary.exercises[0]!;
+    const whole = focusBox({ ...base, primary: [], secondary: [] }, 'front');
+    const viaSecondary = focusBox({ ...base, primary: [], secondary: ['biceps'] }, 'front');
+    expect(whole.size).toBe(1448);
+    expect(viaSecondary.size).toBeLessThan(whole.size);
   });
 });

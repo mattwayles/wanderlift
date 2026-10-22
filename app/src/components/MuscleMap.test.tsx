@@ -21,4 +21,21 @@ describe('MuscleMap', () => {
     );
     expect(screen.getByLabelText('Works chest')).toBeTruthy();
   });
+
+  it('zoomed, is a square cropped to the worked muscles', async () => {
+    await render(<MuscleMap exercise={exercise} height={46} accent="teal" zoom testID="z" />);
+    const svg = screen.getByTestId('z', { hidden: true });
+    expect(svg.props.width).toBe(46);
+    expect(svg.props.height).toBe(46);
+    expect(svg.props.vbWidth).toBe(svg.props.vbHeight);
+    expect(svg.props.vbWidth).toBeLessThanOrEqual(1448);
+  });
+
+  it('can force the other side', async () => {
+    await render(
+      <MuscleMap exercise={exercise} height={52} accent="teal" side="back" testID="b" />,
+    );
+    const x = screen.getByTestId('b', { hidden: true }).props.minX;
+    expect(x).toBeGreaterThanOrEqual(724);
+  });
 });

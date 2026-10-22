@@ -9,6 +9,7 @@ import type { Exercise } from '@roamfit/data';
 import { bodyFront } from 'react-native-body-highlighter/dist/assets/bodyFront';
 import { bodyBack } from 'react-native-body-highlighter/dist/assets/bodyBack';
 import type { BodyPart as Part, Slug } from 'react-native-body-highlighter';
+import { pathBounds, unionBounds, type Bounds } from './svgPathBounds';
 
 /**
  * Library muscle token -> chart regions. The chart has no separate lats, side/rear delts,
@@ -132,6 +133,57 @@ export function muscleChart(primary: readonly string[], secondary: readonly stri
 
 export function exerciseMuscleChart(exercise: Exercise): MuscleChart {
   return muscleChart(exercise.primary, exercise.secondary);
+}
+
+/** A square window onto a figure, in the asset's own coordinates. */
+export interface CropBox {
+  x: number;
+  y: number;
+  size: number;
+}
+
+/** The asset draws each figure 1448 tall. */
+const FIGURE_H = 1448;
+/** Padding around the worked muscles, as a share of their larger extent. */
+const CROP_PAD = 0.18;
+/** Never zoom tighter than this (a lone forearm would otherwise fill the tile with one blob). */
+const CROP_MIN = 340;
+
+const boundsCache = new Map<string, Bounds | null>();
+
+function regionBounds(side: ChartSide, slugs: ReadonlySet<Slug>): Bounds | null {
+  const key = `${side}|${[...slugs].sort().join(',')}`;
+  if (boundsCache.has(key)) return boundsCache.get(key) ?? null;
+  const asset = side === 'front' ? bodyFront : bodyBack;
+  const out = unionBounds(
+    asset
+      .filter((part) => !!part.slug && (slugs.size === 0 || slugs.has(part.slug)))
+      .flatMap((part) => partPaths(part).map(pathBounds)),
+  );
+  boundsCache.set(key, out);
+  return out;
+}
+
+/**
+ * The square crop that zooms a figure onto the muscles an exercise works: the primary muscles on
+ * this side, else the secondary ones, else the whole figure. Padded, never tighter than
+ * `CROP_MIN`, and kept inside the figure's height. Each side's paths contain only that side, so a
+ * wide crop never shows the other figure.
+ */
+export function focusBox(exercise: Exercise, side: ChartSide): CropBox {
+  const primary = regionsOf(exercise.primary);
+  const secondary = regionsOf(exercise.secondary);
+  const worked =
+    (primary.size > 0 ? regionBounds(side, primary) : null) ??
+    (secondary.size > 0 ? regionBounds(side, secondary) : null) ??
+    regionBounds(side, new Set());
+  if (!worked) return { x: 0, y: 0, size: FIGURE_H };
+  const extent = Math.max(worked.maxX - worked.minX, worked.maxY - worked.minY);
+  const size = Math.min(FIGURE_H, Math.max(CROP_MIN, extent * (1 + 2 * CROP_PAD)));
+  const cx = (worked.minX + worked.maxX) / 2;
+  const cy = (worked.minY + worked.maxY) / 2;
+  const y = Math.min(FIGURE_H - size, Math.max(0, cy - size / 2));
+  return { x: cx - size / 2, y, size };
 }
 
 /**

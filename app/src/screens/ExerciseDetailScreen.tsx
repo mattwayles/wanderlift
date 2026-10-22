@@ -29,6 +29,7 @@ import { ProgressChart } from '../components/ProgressChart';
 import HowToVideoButton from '../components/HowToVideoButton';
 import { repBasis } from '../lib/repBasis';
 import PinnedNote from '../components/PinnedNote';
+import { MuscleMap } from '../components/MuscleMap';
 import { EmptyState } from '../components/EmptyState';
 import { IconBadge } from '../components/IconBadge';
 import { formatToken, primaryMuscleLabel } from '../lib/exerciseCatalog';
@@ -46,6 +47,7 @@ import {
   unitLabel,
 } from '../lib/exerciseProgress';
 import { FOCUS_TONE } from '../lib/focusLabels';
+import { MUSCLE_LABELS } from '../lib/filterLabels';
 import {
   gutter,
   makeStyles,
@@ -72,6 +74,9 @@ import {
   type IconName,
 } from '../ui';
 import { useInsets } from '../ui/useInsets';
+
+/** Height of each figure on the full map. */
+const MAP_FULL_HEIGHT = 240;
 
 type Props = NativeStackScreenProps<RootStackParamList, 'ExerciseDetail'>;
 
@@ -239,6 +244,10 @@ export default function ExerciseDetailScreen({ route, navigation }: Props): Reac
             </Txt>
             <HowToVideoButton exerciseName={exercise.name} />
           </Card>
+        </Enter>
+
+        <Enter index={3}>
+          <MuscleMapCard exercise={exercise} tone={tone} />
         </Enter>
 
         <Enter index={4}>
@@ -463,6 +472,75 @@ function CardHeader({
   );
 }
 
+/** The full muscle map: front and back figures, large, with the worked muscles named under them.
+ *  The Field Guide row only shows a zoomed crop; this is the whole body. */
+function MuscleMapCard({
+  exercise,
+  tone,
+}: {
+  exercise: Exercise;
+  tone: AccentName;
+}): React.JSX.Element {
+  const styles = useStyles();
+  const theme = useTheme();
+  const names = (tokens: readonly string[]): string =>
+    tokens.map((t) => MUSCLE_LABELS[t] ?? formatToken(t)).join(', ');
+  const primary = names(exercise.primary);
+  const secondary = names(exercise.secondary.filter((t) => !exercise.primary.includes(t)));
+  const summary = `Works ${primary || 'the whole body'}${secondary ? `; also ${secondary}` : ''}`;
+  return (
+    <Card padding="md" style={styles.card}>
+      <CardHeader icon="body" tone={tone} title="Muscles worked" />
+      <View
+        testID="detail-muscle-map"
+        accessible
+        accessibilityLabel={summary}
+        style={styles.mapRow}
+      >
+        {(['front', 'back'] as const).map((side) => (
+          <View key={side} style={styles.mapFigure}>
+            <MuscleMap exercise={exercise} height={MAP_FULL_HEIGHT} accent={tone} side={side} />
+            <Txt variant="caption" color="text3">
+              {side === 'front' ? 'Front' : 'Back'}
+            </Txt>
+          </View>
+        ))}
+      </View>
+      <View style={styles.legend}>
+        <LegendRow color={theme.colors[tone]} label="Main" names={primary || '—'} />
+        {secondary ? (
+          <LegendRow color={theme.colors[tone]} faded label="Helping" names={secondary} />
+        ) : null}
+      </View>
+    </Card>
+  );
+}
+
+function LegendRow({
+  color,
+  faded,
+  label,
+  names,
+}: {
+  color: string;
+  faded?: boolean;
+  label: string;
+  names: string;
+}): React.JSX.Element {
+  const styles = useStyles();
+  return (
+    <View style={styles.legendRow}>
+      <View style={[styles.legendDot, { backgroundColor: color, opacity: faded ? 0.55 : 1 }]} />
+      <Txt variant="small" color="text2" style={styles.legendText}>
+        <Txt variant="small" color="text">
+          {label}:{' '}
+        </Txt>
+        {names}
+      </Txt>
+    </View>
+  );
+}
+
 /** One tile of the Details grid: eyebrow label over a `bodyStrong` value. `wide` spans both columns
  *  (long values: muscle lists, the ladder rung, contraindications). */
 function Spec({
@@ -504,6 +582,12 @@ const useStyles = makeStyles((t) =>
     card: { gap: space.md },
     cardHeader: { flexDirection: 'row', alignItems: 'center' },
     cardHeaderIcon: { marginRight: space.sm - 2 },
+    mapRow: { flexDirection: 'row', justifyContent: 'space-evenly', alignItems: 'flex-end' },
+    mapFigure: { alignItems: 'center', gap: space.xs },
+    legend: { gap: space.xs },
+    legendRow: { flexDirection: 'row', alignItems: 'center', gap: space.sm },
+    legendDot: { width: 10, height: 10, borderRadius: 5 },
+    legendText: { flex: 1 },
     chart: { gap: space.sm },
     gains: { flexDirection: 'row', flexWrap: 'wrap', gap: space.sm },
     grid: { flexDirection: 'row', flexWrap: 'wrap', gap: space.sm },

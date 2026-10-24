@@ -25,7 +25,7 @@
  * that was sized for an idle CPU.
  */
 import React from 'react';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react-native';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react-native';
 import { createRng, seedFromString } from '@roamfit/engine';
 import { exerciseLibrary, familyLibrary } from '@roamfit/data';
 import { generate, schema, sessionsRepo, usersRepo } from '@roamfit/store';
@@ -145,10 +145,16 @@ describe('Rest timer + feedback controls, driven through WorkoutScreen', () => {
     );
 
     await waitFor(() => expect(screen.getByTestId('complete-set')).toBeTruthy(), WAIT_OPTS);
+    // The exercise page's How to promises a video demo (clips are still being filmed).
+    expect(screen.getByTestId('how-to-demo-soon')).toBeTruthy();
     await fireEvent.press(screen.getByTestId('complete-set'));
 
     // Rest auto-started.
     await waitFor(() => expect(screen.getByTestId('rest-circle')).toBeTruthy(), WAIT_OPTS);
+    // ...and so does the rest page's How to, for the upcoming exercise.
+    expect(
+      within(screen.getByTestId('rest-how-to-block')).getByTestId('how-to-demo-soon'),
+    ).toBeTruthy();
     expect(screen.getByText(/^How did (that set|those \d+ sets) of .* feel\?$/)).toBeTruthy();
     const restDisplay = () => Number(screen.getByTestId('rest-remaining').props.children);
     const initialRemaining = restDisplay();

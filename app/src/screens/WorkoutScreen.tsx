@@ -96,7 +96,7 @@ import FeedbackControls from '../components/FeedbackControls';
 import type { Difficulty } from '../components/FeedbackControls';
 import BandPicker, { BandOptionsProvider } from '../components/BandPicker';
 import BandChip from '../components/BandChip';
-import HowToVideoButton from '../components/HowToVideoButton';
+import HowToDemo from '../components/HowToDemo';
 import { repBasis } from '../lib/repBasis';
 import AbandonSessionButton from '../components/AbandonSessionButton';
 import {
@@ -2582,7 +2582,7 @@ function Disclosure({
   title: string;
   body: string;
   defaultOpen: boolean;
-  /** When set, a button under the text opens a YouTube search for this exercise. */
+  /** When set, the demo slot (coming-soon tile, YouTube search online) shows under the text. */
   videoExerciseName: string | null;
 }): React.JSX.Element {
   const styles = useStyles();
@@ -2612,7 +2612,7 @@ function Disclosure({
       )}
       {open && videoExerciseName && (
         <View style={styles.disclosureVideo}>
-          <HowToVideoButton exerciseName={videoExerciseName} />
+          <HowToDemo exerciseName={videoExerciseName} />
         </View>
       )}
     </Card>

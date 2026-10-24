@@ -26,7 +26,7 @@ import type { RootStackParamList } from '../navigation/types';
 import { useStore } from '../state/StoreContext';
 import { localDateFromDate, nowUtcInstant } from '../lib/localClock';
 import { ProgressChart } from '../components/ProgressChart';
-import HowToVideoButton from '../components/HowToVideoButton';
+import HowToDemo from '../components/HowToDemo';
 import { repBasis } from '../lib/repBasis';
 import PinnedNote from '../components/PinnedNote';
 import { MuscleMap } from '../components/MuscleMap';
@@ -242,7 +242,7 @@ export default function ExerciseDetailScreen({ route, navigation }: Props): Reac
             <Txt testID="detail-setup" variant="body" color="text2">
               {exercise.setup}
             </Txt>
-            <HowToVideoButton exerciseName={exercise.name} />
+            <HowToDemo exerciseName={exercise.name} />
           </Card>
         </Enter>
 

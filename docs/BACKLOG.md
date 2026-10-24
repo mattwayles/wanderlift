@@ -80,6 +80,11 @@ _List exercises that you'd like to incldue in the library here. Any exercise you
 
 ## Future Features
 
+- **Per-exercise demo clips.** Every How to shows a "Video demo coming soon" tile
+  (`components/HowToDemo.tsx`) until the clips exist; online, the YouTube search sits under it as
+  "In the meantime". Plan: self-recorded 3-6s silent loops (one clip can serve anchor/stance
+  variants of the same move), bundled with the app so they play offline, core tier first. The tile
+  is where the player goes; drop the "coming soon" copy for exercises that have a clip.
 - **Field Guide rows — the rest of the icon clean-up.** Rows show a zoomed front/back muscle map on a
   neutral tile (`components/MuscleMap.tsx` `zoom`, `lib/muscleMap.ts` `focusBox`); the detail screen
   has the full front + back map. Not built yet, in suggested order: (1) the movement pattern in words

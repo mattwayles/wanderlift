@@ -7,10 +7,10 @@ Why: shipping before the per-exercise clips exist. Every How to section shows a 
 tile; online, the YouTube search button stays under an "In the meantime" label.
 
 ### Done
-- (none yet)
+- [x] HowToDemo: coming-soon tile always, 'In the meantime' + YouTube search online; on detail, exercise and rest pages
 
 ### In progress
-- Rename HowToVideoButton -> HowToDemo; render the coming-soon tile always, the button online only.
+- none. Simulator/device look owed.
 
 ### Next
 - When real clips land, the tile is where the bundled player goes (offline, no network).

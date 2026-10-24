@@ -43,10 +43,10 @@
           "project": "wanderlift"
         }
       ],
-      "./plugins/withoutHealthShare",
       [
         "@kingstinct/react-native-healthkit",
         {
+          "NSHealthShareUsageDescription": "Wanderlift does not read any Health data — this permission is unused.",
           "NSHealthUpdateUsageDescription": "Wanderlift writes each completed workout to Health. It never reads your health data.",
           "background": false
         }

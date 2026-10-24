@@ -733,6 +733,13 @@ ALTER TABLE users ADD COLUMN review_prompt_last_asked_date TEXT;
 ALTER TABLE users ADD COLUMN review_prompt_last_asked_version TEXT;
 `;
 
+const MIGRATION_0042_STARTING_POINT = `-- 0042_starting_point.sql — Track 51a: the "Where are you starting?" answer from onboarding
+-- ('restarting' | 'occasional' | 'active' | 'regular'). NULL means never answered; existing
+-- users keep NULL and their ladders are untouched.
+
+ALTER TABLE users ADD COLUMN starting_point TEXT;
+`;
+
 /** Ordered oldest-first — `migrate.ts` applies whichever suffix of this list isn't yet recorded
  *  in `_migrations`. Append new migrations here (and as a new `.sql` file for review) in order;
  *  never edit or reorder an existing entry once shipped. */
@@ -781,4 +788,5 @@ export const MIGRATIONS: MigrationFile[] = [
   { id: '0039_icloud_backup.sql', sql: MIGRATION_0039_ICLOUD_BACKUP },
   { id: '0040_icloud_backup_linked.sql', sql: MIGRATION_0040_ICLOUD_BACKUP_LINKED },
   { id: '0041_review_prompt.sql', sql: MIGRATION_0041_REVIEW_PROMPT },
+  { id: '0042_starting_point.sql', sql: MIGRATION_0042_STARTING_POINT },
 ];

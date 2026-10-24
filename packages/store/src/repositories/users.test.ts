@@ -324,6 +324,33 @@ describe('iCloud backup linked (migration 0040)', () => {
   });
 });
 
+describe('starting point (migration 0042)', () => {
+  it('starts null and round-trips through updateUser without disturbing other fields', () => {
+    const { db, close } = createTestDb();
+    try {
+      expect(ensureUser(db, utcInstantFor('2026-10-24')).startingPoint).toBeNull();
+      updateUser(db, { startingPoint: 'active' }, utcInstantFor('2026-10-24'));
+      updateUser(db, { cueSoundsEnabled: false }, utcInstantFor('2026-10-24'));
+      expect(getUser(db)).toMatchObject({ startingPoint: 'active', cueSoundsEnabled: false });
+      updateUser(db, { startingPoint: 'regular' }, utcInstantFor('2026-10-24'));
+      expect(getUser(db)?.startingPoint).toBe('regular');
+    } finally {
+      close();
+    }
+  });
+
+  it('reads an unrecognised stored value as unanswered', () => {
+    const { db, close } = createTestDb();
+    try {
+      ensureUser(db, utcInstantFor('2026-10-24'));
+      db.update(schema.users).set({ startingPoint: 'elite' }).run();
+      expect(getUser(db)?.startingPoint).toBeNull();
+    } finally {
+      close();
+    }
+  });
+});
+
 describe('review prompt bookkeeping (migration 0041)', () => {
   it('starts null and round-trips through updateUser without disturbing other fields', () => {
     const { db, close } = createTestDb();

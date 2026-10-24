@@ -8,10 +8,12 @@ import {
   DEFAULT_ANCHORS_AVAILABLE,
   DEFAULT_BAND_SETTINGS,
   SINGLE_BANDS,
+  isStartingPoint,
   resolveTrainingPreferences,
 } from '@roamfit/engine';
 import type {
   BandSettings,
+  StartingPoint,
   Limitation as EngineLimitation,
   SingleBandId,
   TrainingPreferences,
@@ -95,6 +97,8 @@ export interface UserRecord {
   /** Track 50b — local_date / app version of the last App Store rating request; null = never. */
   reviewPromptLastAskedDate: string | null;
   reviewPromptLastAskedVersion: string | null;
+  /** Track 51a — onboarding's "Where are you starting?" answer; null = never answered. */
+  startingPoint: StartingPoint | null;
   passportEnabled: boolean;
   healthWriteEnabled: boolean;
   cueSoundsEnabled: boolean;
@@ -215,6 +219,8 @@ function rowToUser(row: typeof schema.users.$inferSelect): UserRecord {
     icloudBackupLinked: row.icloudBackupLinked,
     reviewPromptLastAskedDate: row.reviewPromptLastAskedDate,
     reviewPromptLastAskedVersion: row.reviewPromptLastAskedVersion,
+    // Unknown stored text (damage, a future build's value) reads as unanswered.
+    startingPoint: isStartingPoint(row.startingPoint) ? row.startingPoint : null,
     passportEnabled: row.passportEnabled,
     healthWriteEnabled: row.healthWriteEnabled,
     cueSoundsEnabled: row.cueSoundsEnabled,
@@ -279,6 +285,7 @@ export interface UserPatch {
   icloudBackupLinked?: boolean;
   reviewPromptLastAskedDate?: string;
   reviewPromptLastAskedVersion?: string;
+  startingPoint?: StartingPoint;
 }
 
 export function updateUser(db: Db, patch: UserPatch, now: string): void {
@@ -317,6 +324,7 @@ export function updateUser(db: Db, patch: UserPatch, now: string): void {
   if (patch.reviewPromptLastAskedVersion !== undefined) {
     values.reviewPromptLastAskedVersion = patch.reviewPromptLastAskedVersion;
   }
+  if (patch.startingPoint !== undefined) values.startingPoint = patch.startingPoint;
   if (patch.trainingPreferences !== undefined) {
     values.trainingPrefs = JSON.stringify({
       ...current.trainingPreferences,

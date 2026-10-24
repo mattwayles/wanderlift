@@ -85,6 +85,9 @@ export const users = sqliteTable('users', {
    *  null until the first ask. */
   reviewPromptLastAskedDate: text('review_prompt_last_asked_date'),
   reviewPromptLastAskedVersion: text('review_prompt_last_asked_version'),
+  /** Track 51a — onboarding's "Where are you starting?" answer; null until answered
+   *  (migration 0042). */
+  startingPoint: text('starting_point'),
   /** JSON: { enabled, quiet_hours, observed_training_window }. */
   notificationPrefs: text('notification_prefs').notNull().default('{}'),
   /** §12 — the tz_id last observed for this device; compared against a new session's tz_id to

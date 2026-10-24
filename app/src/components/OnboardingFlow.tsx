@@ -276,20 +276,22 @@ export function OnboardingFlow({
                     {message}
                   </Txt>
                 ) : null}
-                <Button
-                  testID="restore-offer-restore"
-                  label={restoring ? 'Restoring…' : 'Restore my data'}
-                  disabled={restoring}
-                  onPress={() => void restore()}
-                />
-                <Button
-                  testID="restore-offer-fresh"
-                  label="Start fresh"
-                  variant="secondary"
-                  size="md"
-                  disabled={restoring}
-                  onPress={() => setConfirmFresh(true)}
-                />
+                <View style={styles.restoreActions}>
+                  <Button
+                    testID="restore-offer-restore"
+                    label={restoring ? 'Restoring…' : 'Restore my data'}
+                    disabled={restoring}
+                    onPress={() => void restore()}
+                  />
+                  <Button
+                    testID="restore-offer-fresh"
+                    label="Start fresh"
+                    variant="secondary"
+                    size="md"
+                    disabled={restoring}
+                    onPress={() => setConfirmFresh(true)}
+                  />
+                </View>
               </Card>
             ) : null}
           </View>
@@ -541,6 +543,7 @@ const useStyles = makeStyles((tk) =>
     gateScreen: { backgroundColor: 'transparent' },
     gateContent: { gap: space.xl, paddingVertical: space.xxl },
     welcome: { gap: space.md },
+    restoreActions: { gap: space.md, marginTop: space.lg },
     welcomeTop: { gap: space.sm, paddingTop: space.md },
     // Decorative: the wordmark below is the header. Negative margin pulls the glow padding in.
     logo: { width: 96, height: 96 / LOGO_ASPECT, marginBottom: -space.sm },

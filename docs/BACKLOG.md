@@ -178,15 +178,8 @@ _List exercises that you'd like to incldue in the library here. Any exercise you
 - **Push / Pull foci — deferred by user decision (2026-10-18).** Built as Track 37j (9db32c0) and
   reverted (bf13210): "I do not want separate push/pull focus areas at this time." The reverted
   commit is a working reference (split templates, `suitsFocus`, `TemplateSlot.primaryAny`).
-- **Human review of `contraindications[]` — owed before public release.** Track 37c
-  (`docs/review/contraindications-review-2026-10.md`) re-tagged all 267 exercises in a CSCS role and
-  added `lying_supine` / `lying_prone`, but it is an AI pass, not the review. A physical therapist (or
-  a CSCS working with one) should sign it off, starting with the pregnancy/postpartum filter, and
-  decide its four open questions (brief supine work, fall risk, inversions, splitting postpartum from
-  pregnancy).
-  Also in that review: the 23 bodyweight exercises added so every rung has a no-band option
-  (`packages/data/src/noBandLadders.test.ts`) were tagged by the same AI pass, not a person. And the
-  band-free path still needs fixed points on some rungs: `horizontal_pull` l3/l4/l6/l7 need a low bar,
+- **Band-free path — fixed points.** Every rung has a no-band option
+  (`packages/data/src/noBandLadders.test.ts`), but the path still needs fixed points on some rungs: `horizontal_pull` l3/l4/l6/l7 need a low bar,
   `vertical_pull` l4-l6 a pull-up bar, `vertical_push` l2 and `hinge` l6 a bench or step. Without
   them the resolver walks down to the nearest rung it can serve, so a user with no bands and no
   fixed points climbs squat, lunge and core fully, horizontal pull to l2, vertical pull to l3, and

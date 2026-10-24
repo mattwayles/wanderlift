@@ -1,11 +1,11 @@
 # Contraindication review — full library, 2026-10
 
-> **This is not the human review.** It is an AI pass written in the role of a strength and
+> **Status: the human review (physical therapist / CSCS) is complete, per the owner, 2026-10-24.**
+> This document is the AI pass that preceded it, written in the role of a strength and
 > conditioning coach holding the NSCA's CSCS certification, requested 2026-10-18 (Track 37c). It
 > reasons from movement mechanics and from widely published coaching and prenatal-exercise
-> guidance. It is not clinical advice, and it does not replace a review by a qualified human
-> (a physical therapist, or a CSCS working with one) before public release. The pregnancy and
-> postpartum filter is the highest-stakes part and should be reviewed first.
+> guidance, and is not clinical advice. The reviewer's name, date and any changes or decisions on the
+> open questions were not recorded here.
 
 **Why this matters.** `contraindications[]` is a hard filter run in code before anything else
 (invariant 3). A user who ticks a limitation (Settings → Your body → Limitations, or onboarding)
@@ -237,5 +237,5 @@ Generated from the scripted pass. `+` = added, `-` = removed.
 
 ## Sign-off
 
-- [ ] Human reviewer (physical therapist or CSCS): ____________ date: ________
-- [ ] Open questions 1–4 above decided
+- [x] Human reviewer (physical therapist or CSCS): completed per owner, 2026-10-24 (reviewer/date not recorded)
+- [x] Open questions 1–4 above decided (per owner; outcomes not recorded here)

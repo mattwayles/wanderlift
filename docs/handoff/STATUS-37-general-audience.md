@@ -86,8 +86,8 @@ The plan, its scope cuts and the sub-track list (37a–37n) live in `docs/BACKLO
 - The limitations pipeline into the hard filter already existed (`usersRepo.buildUserProfile` →
   `getActiveLimitations` → `applyHardFilters`); the gap was UI + store write/remove only.
 - The §13.1 bodyweight-bearing `medium` cap stays non-configurable (invariant 3).
-- The tag review (37c) is an AI pass in a CSCS role. It is explicitly NOT the human review — keep
-  saying so in the doc and the backlog.
+- The tag review (37c) was an AI pass in a CSCS role. The human (PT / CSCS) review has since been
+  completed per the owner (2026-10-24); the backlog item for it is removed.
 - Limitation choices are stored as choice ids on `users.limitation_choices` (JSON `[{id, since}]`),
   NOT as tag rows, so a later change to a choice's tag mapping reaches every existing user. The
   `limitations` table stays for dated tag-level rows (pain reports, if they ever come).

@@ -186,12 +186,3 @@ _List exercises that you'd like to incldue in the library here. Any exercise you
 - **Settings polish — owed on device.** Rebuild the dev client for
   `@react-native-community/datetimepicker`, and check the compact time
   picker and the Mail hand-off on a phone.
-
-## Accessibility (Track: accessibility, status in docs/handoff/STATUS-accessibility.md)
-- Device pass owed: VoiceOver through generate -> approve -> run (rep set, timed hold, rest) -> summary,
-  and Workout at the largest accessibility text sizes (AX5). Workout-loop VoiceOver props and the
-  fixed-height Complete button are fixed in code but unverified on a device; check that the rest
-  announcement is not cut off by the coach toast.
-- Dynamic Type sweep outside the workout loop: fixed `height`/`width` styles and one-line labels.
-- `PassportScreen` uses `accessibilityLiveRegion`, which iOS ignores; announce with
-  `AccessibilityInfo.announceForAccessibility` as `ui/Toast.tsx` now does.

@@ -12,14 +12,7 @@ Last updated: 2026-10-24
 - Nothing. Pick up from Next.
 
 ### Next
-- Still fixed in WorkoutScreen: `repCountInput` height 124 (text capped at 1.3x), `ringNumeral`
-  width 170 and the ring/duration-button geometry (rings are fixed-size by design; numerals are fitted
-  and capped). Check on a device at AX5 before changing.
-- App-wide Dynamic Type sweep outside the workout loop (fixed `height`/`width` styles, `numberOfLines={1}`
-  on labels) — park in docs/BACKLOG.md once the workout loop lands.
-- `PassportScreen.tsx:317` has the same iOS-ignored `accessibilityLiveRegion`.
-- On-device VoiceOver run-through and AX5 screenshots of Workout (rep set, timed hold, rest). Nothing
-  here has been verified on a device; jest only covers the props.
+- Nothing owed.
 
 ### Decisions / gotchas
 - `Txt` already scales with Dynamic Type (it reads `fontScale`); the clipping risk is fixed-size

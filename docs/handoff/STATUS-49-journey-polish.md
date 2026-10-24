@@ -2,19 +2,21 @@
 Last updated: 2026-10-23
 
 ### Done
-- (none yet)
+- [x] 49a Passport blank page — reload on focus (15ec05a)
+- [x] 49b step caption once, above the Trails (e0fa9e6)
+- [x] 49c Best set tile per exercise (848a594)
+- [x] 49d Badges card "Open your badges ›" (09ed77f)
 
 ### In progress
-- 49a: Passport blank page. Cause: PassportScreen never calls useDashboardData's `reload()`
-  (the hook does not load on its own); data stays undefined and the screen renders an empty
-  <Screen>. Tests mocked the hook with data, so they never saw it. Fix: useFocusEffect(reload),
-  as BadgesScreen does.
+- none. Simulator look owed for 49b-49d.
 
 ### Next
-- 49b: the "Each step is one small upgrade..." caption (components/TrailProgressChart.tsx) shows
-  under every Trail chart. Show it once, in the Trails section (JourneyScreen), not per chart.
-- 49c: Best set view in TrailProgressChart: one stat tile per exercise instead of name/value rows.
-- 49d: Badges card on Journey gets an "Open your badges ›" line like the Passport card's.
+- none.
 
 ### Decisions / gotchas
-- ExerciseDetailScreen has its own (different) ladder caption; it is out of scope here.
+- ExerciseDetailScreen has its own (different) ladder caption; out of scope here.
+- The step note shows only when some Trail has a Progress chart (hidden on a fresh install).
+- Best set tiles take the user's band colours via a new optional `tensions` prop; without it a
+  band shows by its id.
+- Full-suite runs hit intermittent jest timeouts (logged in BACKLOG). e0fa9e6 was committed after
+  such a run (the check exit code was not gated); later runs of that tree are green.

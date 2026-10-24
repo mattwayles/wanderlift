@@ -14,6 +14,11 @@ the record of what was completed and why.
 
 ## Desired Fixes
 
+- **Full-suite test timeouts are back (intermittent).** After c09be6a, `npm run check` still
+  sometimes fails one screen test on the 20s jest timeout, a different one each run
+  (JourneyScreen.dashboard, WorkoutScreen.swap, HomeScreen.dashboard seen on 2026-10-23). Each
+  passes alone and a re-run is green, so it is load, not a regression. Fix: find which suites
+  run slowest under contention (`--verbose` timings) and cut their work, or cap `maxWorkers`.
 - **Restored user with no completed session** keeps the old phone's motivation notifications until
   Today next schedules (rare; untested).
 - **Demo-video leftovers are now dead weight.** The Demo card, the paste-a-link flow and the

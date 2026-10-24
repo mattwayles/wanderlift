@@ -155,6 +155,9 @@ describe('Journey after a completed session', () => {
     expect(screen.queryAllByTestId(/^board-chart-plot-/).length).toBeGreaterThan(0);
     expect(screen.queryAllByTestId(/^board-chart-mode-progress-/).length).toBeGreaterThan(0);
     expect(screen.queryAllByText('Progress per session').length).toBeGreaterThan(0);
+    // What a step is, is said once above the Trails, never under each chart.
+    expect(screen.getAllByText(/each step is one small upgrade/)).toHaveLength(1);
+    expect(screen.getByTestId('trails-step-explanation')).toBeTruthy();
 
     // Section order: Journey Markers, then the Logbook, then Trails.
     const tree = JSON.stringify(screen.toJSON());

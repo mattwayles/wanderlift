@@ -134,10 +134,7 @@ export function TrailProgressChart({
             describeValue={(i) => page.ladder.labels[i] ?? null}
             describePoint={(i) => page.ladder.pointExercise[i] ?? null}
           />
-          <Txt variant="caption" color="text3">
-            Each step is one small upgrade: more reps, a heavier band, a slower tempo, shorter rest
-            or an extra set. A heavier band counts as a step forward even with fewer reps.
-          </Txt>
+          {/* What a step is, is explained once above all the Trails (JourneyScreen), not here. */}
         </>
       ) : (
         <View style={styles.stats} testID={`board-best-stats-${familyId}`}>

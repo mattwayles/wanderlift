@@ -46,6 +46,8 @@ describe('§14.2 cold start — Journey is never empty', () => {
     // button: the chart lives on the card itself.
     expect(screen.queryAllByTestId(/^board-chart-plot-/)).toHaveLength(0);
     expect(screen.queryAllByTestId(/^board-trail-progress-/)).toHaveLength(0);
+    // ...so the note explaining a chart's steps has nothing to explain yet.
+    expect(screen.queryByTestId('trails-step-explanation')).toBeNull();
 
     // The sections that need a first session say what will land there instead of going blank —
     // and none of them shows a zero count.

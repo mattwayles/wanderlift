@@ -175,6 +175,10 @@ export default function JourneyScreen({ navigation, route }: Props): React.JSX.E
     }
     return out;
   }, [data, db, families, library]);
+  // Any Trail with a Progress chart: the "what is a step" note above the board is for those.
+  const hasProgressChart = [...trailCharts.values()].some((t) =>
+    t.levels.some((l) => l.ladder.points.length > 0),
+  );
 
   // Reload on every focus, exactly like Today: a level change, a marker or a passport toggle made
   // anywhere must show here immediately.
@@ -499,6 +503,17 @@ export default function JourneyScreen({ navigation, route }: Props): React.JSX.E
             <Txt variant="small" color="text" style={styles.noteText}>
               You&apos;re starting at the bottom of each trail — tap Adjust on any of them to move a
               level if it&apos;s too easy or too hard.
+            </Txt>
+          </View>
+        )}
+        {/* Said once for every Trail's Progress chart; repeated under each it was noise. */}
+        {hasProgressChart && (
+          <View testID="trails-step-explanation" style={styles.note}>
+            <Icon name="trendingUp" size={18} color="sky" style={styles.noteIcon} />
+            <Txt variant="small" color="text2" style={styles.noteText}>
+              On the Progress charts, each step is one small upgrade: more reps, a heavier band, a
+              slower tempo, shorter rest or an extra set. A heavier band counts as a step forward
+              even with fewer reps.
             </Txt>
           </View>
         )}

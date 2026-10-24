@@ -6,7 +6,7 @@
  * for it but never for a lookup that found nothing.
  */
 import React from 'react';
-import { StyleSheet } from 'react-native';
+import { ScrollView, StyleSheet } from 'react-native';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import * as Haptics from 'expo-haptics';
@@ -154,6 +154,20 @@ describe('new Passport stamp on the completion screen', () => {
     );
     // The fanfare, the stamp's payoff, then the button's own beat.
     await waitFor(() => expect(notify.mock.calls.length).toBeGreaterThanOrEqual(3), EVENTUALLY);
+  });
+
+  it('scrolls back to the top once the stamp has landed and "Heck yes!" arrives', async () => {
+    lookup.mockResolvedValue(BEND);
+    const scrollTo = jest.spyOn(ScrollView.prototype, 'scrollTo').mockImplementation(() => {});
+    const notify = jest.spyOn(Haptics, 'notificationAsync');
+    await finishASession(true);
+    await waitFor(() => expect(screen.getByTestId('new-stamp')).toBeTruthy(), EVENTUALLY);
+    // The button's own beat is the third Success (fanfare, stamp payoff, button).
+    await waitFor(() => expect(notify.mock.calls.length).toBeGreaterThanOrEqual(3), EVENTUALLY);
+    await waitFor(
+      () => expect(scrollTo).toHaveBeenLastCalledWith({ y: 0, animated: true }),
+      EVENTUALLY,
+    );
   });
 
   it('tapping the stamp stamps it again', async () => {

@@ -404,7 +404,8 @@ export default function SummaryScreen({ navigation, route }: Props): React.JSX.E
   //                marked seen; at most MAX_BADGE_CARDS, the rest a '+N more' chip
   //   stamp        Passport on: a new place's stamp slams down (`NewStampCard`), after the lookup
   //                that started at FINISH has answered — "Heck yes!" waits for it, never forever
-  //   button       a Success pulse and "Heck yes!" springs in, then keeps pulsing
+  //   button       a Success pulse and "Heck yes!" springs in, then keeps pulsing; the page
+  //                scrolls back to the top now that every card has landed
   useEffect(() => {
     if (!showingCompletionScreen) return;
 
@@ -495,6 +496,8 @@ export default function SummaryScreen({ navigation, route }: Props): React.JSX.E
 
     const showButton = () => {
       hapticCompletion();
+      // Every card has landed (the beats above scroll down to each one), so return to the top.
+      scrollRef.current?.scrollTo({ y: 0, animated: true });
       Animated.spring(buttonOpacity, {
         toValue: 1,
         friction: 4,

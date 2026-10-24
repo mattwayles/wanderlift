@@ -10,6 +10,8 @@ module.exports = [
   {
     ignores: [
       '**/node_modules/**',
+      // Agent worktrees (Claude Code) hold full copies of the repo; lint the real tree only.
+      '.claude/**',
       '**/.expo/**',
       '**/dist/**',
       '**/web-build/**',

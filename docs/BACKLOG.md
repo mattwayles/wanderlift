@@ -92,13 +92,12 @@ _List exercises that you'd like to incldue in the library here. Any exercise you
   the reminders permission prompt, and "Start my first workout" opening Approval. The paywall step
   from the audit waits for monetization.
 - **Crash reporting and analytics — the rest.** Done: root error screen + local error capture
-  (Track 50a), App Store review prompt (Track 50b). Owed, in order: (1) device pass — force a
+  (Track 50a), App Store review prompt (Track 50b), Sentry SDK (errors + tracing, no PII/replay). Owed, in order: (1) device pass — force a
   render throw (fallback in both themes, large text, share sheet); the review sheet needs a new
   native build (`expo-store-review`). (2) A hosted privacy policy page (App Store needs one anyway).
-  (3) Sentry (`@sentry/react-native` + Expo plugin, source maps uploaded in EAS with an auth-token
-  secret, PII scrubbed — Passport city names especially — off in dev, App Privacy "Crash data /
-  Diagnostics, not linked"). Needs the user's go-ahead and a Sentry account; not Crashlytics
-  (Firebase was removed in Track 42). (4) After the beta: privacy-first analytics (TelemetryDeck)
+  (3) Sentry follow-ups: verify a real event from the rebuilt dev client; EAS `SENTRY_AUTH_TOKEN`
+  secret for source maps/dSYMs; privacy label ("Crash data / Diagnostics, not linked") + policy.
+  (4) After the beta: privacy-first analytics (TelemetryDeck)
   with a Settings opt-out, events queued offline, funnel onboarding → first workout → day-7 return.
   Until then, App Store Connect analytics covers retention.
 - **Per-exercise demo clips.** Every How to shows a "Video demo coming soon" tile

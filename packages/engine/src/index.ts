@@ -65,6 +65,13 @@ export { COMEBACK_VOLUME_MULTIPLIER, COMEBACK_WEEK_GAP_DAYS } from './progressio
 // generation has ever run — the engine's own pipeline only ever *reads* an existing
 // ProgressionState, it never fabricates the first one.
 export { baseStartLevel } from './progression/ladder';
+export {
+  STARTING_POINTS,
+  MIN_RUNGS_ABOVE_START,
+  isStartingPoint,
+  startingLevelFor,
+} from './progression/startingPoint';
+export type { StartingPoint } from './progression/startingPoint';
 export { resolveLadderSlot } from './progression/resolveSlot';
 export type { ResolvedLadderSlot } from './progression/resolveSlot';
 export { defaultMicroForExercise, microAdvance, microStepsToNextLevel } from './progression/micro';

@@ -57,14 +57,14 @@ describe('§9.7/§6.4 celebration view model', () => {
     expect(vm.quiet[0].text).toContain('12');
   });
 
-  it('nth_session, new_city, and recovery_week all surface as quiet, monotonic milestones', () => {
+  it('new_city and recovery_week surface as quiet milestones; nth_session is not shown', () => {
     const milestones = [
       milestone('nth_session', { n: 5 }),
       milestone('new_city', { city: 'Lisbon', countryCode: 'PT' }),
       milestone('recovery_week'),
     ];
     const vm = buildCelebrationViewModel(exerciseLibrary, familyLibrary, [], milestones);
-    expect(vm.quiet.map((q) => q.type)).toEqual(['nth_session', 'new_city', 'recovery_week']);
+    expect(vm.quiet.map((q) => q.type)).toEqual(['new_city', 'recovery_week']);
     expect(vm.quiet.every((q) => q.text.length > 0)).toBe(true);
   });
 

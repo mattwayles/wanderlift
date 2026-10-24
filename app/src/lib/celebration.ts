@@ -127,9 +127,9 @@ export function buildCelebrationViewModel(
       }
       continue;
     }
-    if (m.type === 'nth_session') {
-      quiet.push({ type: m.type, text: `Session #${m.payload.n as number}` });
-    } else if (m.type === 'new_city') {
+    // nth_session is still recorded but not shown: a bare session count on the completion screen
+    // was noise.
+    if (m.type === 'new_city') {
       quiet.push({
         type: m.type,
         text: `New place: ${formatPlace({ city: (m.payload.city as string) ?? null, region: m.payload.region as string | null, countryCode: m.payload.countryCode as string | null, country: m.payload.country as string | null }) ?? ''}`,

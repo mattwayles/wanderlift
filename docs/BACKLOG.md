@@ -94,9 +94,11 @@ _List exercises that you'd like to incldue in the library here. Any exercise you
 - **Crash reporting and analytics — the rest.** Done: root error screen + local error capture
   (Track 50a), App Store review prompt (Track 50b), Sentry SDK (errors + tracing, no PII/replay). Owed, in order: (1) device pass — force a
   render throw (fallback in both themes, large text, share sheet); the review sheet needs a new
-  native build (`expo-store-review`). (2) A hosted privacy policy page (App Store needs one anyway).
-  (3) Sentry follow-ups: verify a real event from the rebuilt dev client; EAS `SENTRY_AUTH_TOKEN`
-  secret for source maps/dSYMs; privacy label ("Crash data / Diagnostics, not linked") + policy.
+  native build (`expo-store-review`). (2) Publish the privacy policy + terms drafted in `site/` (GitHub Pages from a `gh-pages` branch
+  holding only `site/`; the repo's `docs/` must not be served), then enter the URLs in App Store Connect.
+  Update `site/privacy.html` when analytics or paid features land.
+  (3) Sentry follow-ups: verify a real event from the rebuilt dev client; a build confirming
+  source maps/dSYMs upload (EAS `SENTRY_AUTH_TOKEN` is set); privacy label ("Crash data / Diagnostics, not linked") + policy.
   (4) After the beta: privacy-first analytics (TelemetryDeck)
   with a Settings opt-out, events queued offline, funnel onboarding → first workout → day-7 return.
   Until then, App Store Connect analytics covers retention.

@@ -92,6 +92,9 @@ export interface UserRecord {
   backupDecisionPending: boolean;
   /** Track 43 — this device's data has been reconciled with iCloud. */
   icloudBackupLinked: boolean;
+  /** Track 50b — local_date / app version of the last App Store rating request; null = never. */
+  reviewPromptLastAskedDate: string | null;
+  reviewPromptLastAskedVersion: string | null;
   passportEnabled: boolean;
   healthWriteEnabled: boolean;
   cueSoundsEnabled: boolean;
@@ -210,6 +213,8 @@ function rowToUser(row: typeof schema.users.$inferSelect): UserRecord {
     icloudBackupEnabled: row.icloudBackupEnabled,
     backupDecisionPending: row.backupDecisionPending,
     icloudBackupLinked: row.icloudBackupLinked,
+    reviewPromptLastAskedDate: row.reviewPromptLastAskedDate,
+    reviewPromptLastAskedVersion: row.reviewPromptLastAskedVersion,
     passportEnabled: row.passportEnabled,
     healthWriteEnabled: row.healthWriteEnabled,
     cueSoundsEnabled: row.cueSoundsEnabled,
@@ -272,6 +277,8 @@ export interface UserPatch {
   icloudBackupEnabled?: boolean;
   backupDecisionPending?: boolean;
   icloudBackupLinked?: boolean;
+  reviewPromptLastAskedDate?: string;
+  reviewPromptLastAskedVersion?: string;
 }
 
 export function updateUser(db: Db, patch: UserPatch, now: string): void {
@@ -304,6 +311,12 @@ export function updateUser(db: Db, patch: UserPatch, now: string): void {
     values.backupDecisionPending = patch.backupDecisionPending;
   }
   if (patch.icloudBackupLinked !== undefined) values.icloudBackupLinked = patch.icloudBackupLinked;
+  if (patch.reviewPromptLastAskedDate !== undefined) {
+    values.reviewPromptLastAskedDate = patch.reviewPromptLastAskedDate;
+  }
+  if (patch.reviewPromptLastAskedVersion !== undefined) {
+    values.reviewPromptLastAskedVersion = patch.reviewPromptLastAskedVersion;
+  }
   if (patch.trainingPreferences !== undefined) {
     values.trainingPrefs = JSON.stringify({
       ...current.trainingPreferences,

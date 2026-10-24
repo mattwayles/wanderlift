@@ -725,6 +725,14 @@ const MIGRATION_0040_ICLOUD_BACKUP_LINKED = `-- 0040_icloud_backup_linked.sql �
 ALTER TABLE users ADD COLUMN icloud_backup_linked INTEGER NOT NULL DEFAULT 0;
 `;
 
+const MIGRATION_0041_REVIEW_PROMPT = `-- 0041_review_prompt.sql — Track 50b: when the App Store rating sheet was last requested, so the
+-- app asks at most once per app version and not again within 120 days. \`local_date\` string
+-- (YYYY-MM-DD, invariant 6) plus the app version string; both NULL means never asked.
+
+ALTER TABLE users ADD COLUMN review_prompt_last_asked_date TEXT;
+ALTER TABLE users ADD COLUMN review_prompt_last_asked_version TEXT;
+`;
+
 /** Ordered oldest-first — `migrate.ts` applies whichever suffix of this list isn't yet recorded
  *  in `_migrations`. Append new migrations here (and as a new `.sql` file for review) in order;
  *  never edit or reorder an existing entry once shipped. */
@@ -772,4 +780,5 @@ export const MIGRATIONS: MigrationFile[] = [
   { id: '0038_remove_firebase.sql', sql: MIGRATION_0038_REMOVE_FIREBASE },
   { id: '0039_icloud_backup.sql', sql: MIGRATION_0039_ICLOUD_BACKUP },
   { id: '0040_icloud_backup_linked.sql', sql: MIGRATION_0040_ICLOUD_BACKUP_LINKED },
+  { id: '0041_review_prompt.sql', sql: MIGRATION_0041_REVIEW_PROMPT },
 ];

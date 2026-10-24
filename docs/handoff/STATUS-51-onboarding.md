@@ -1,5 +1,5 @@
 ## Track: 51 — Onboarding rework (from the Production & Growth Readiness Audit)
-Last updated: 2026-10-24
+Last updated: 2026-10-24 (Track 51 complete)
 Orchestrated: sub-tracks are built by separate agents in git worktrees and merged here.
 
 ### Done
@@ -11,19 +11,16 @@ Orchestrated: sub-tracks are built by separate agents in git worktrees and merge
   sessionsThisWeek, goalLabel, today?, onStart, onLater}, NotificationPrimer {defaultTime,
   onEnable(time), onSkip}; weekDays.ts helpers (merged d3ccd35). Check rc=0 after both.
 
+- [x] 51c flow rebuilt and wired (merged 1727ef7; typecheck fix on master after merge).
+  Order: value screens -> where are you starting -> goal -> what do you have -> limitations ->
+  disclaimer (as care, gate) -> reminders primer -> plan reveal ("Start my first workout" ->
+  Approval with a 20-min easy full-body session).
+
 ### In progress
-- Phase 2, 51c (agent running): OnboardingFlow rebuild + wiring.
-### Phase 1 (done) was, in parallel:
-  - 51a (engine + store, no UI): "Where are you starting?" model. `StartingPoint` (4 options),
-    pure engine `startingLevelFor(family, point)`, store `applyStartingPoint(...)`, migration 0042
-    storing the chosen point on users. Climbability guarantee tested for every family x option.
-  - 51b (standalone UI components, not wired): value screens, plan reveal ("Your first week" +
-    start first workout), notification pre-prompt with a time picker.
+- none. Device pass owed (see BACKLOG).
+
 ### Next
-- (running) 51c: OnboardingFlow reorder + wiring, in the audit's order: value screens -> starting
-  point -> goal -> "What do you have?" (equipment) -> limitations -> disclaimer (worded as care,
-  never skippable) -> plan reveal -> notification pre-prompt.
-- Update the audit doc's onboarding section.
+- Paywall step: when monetization lands.
 
 ### Decisions / gotchas
 - Paywall step (audit item 6) left out: there is no subscription, and the audit itself says
@@ -38,3 +35,7 @@ Orchestrated: sub-tracks are built by separate agents in git worktrees and merge
 - TRAP: `finishOnboarding()` also sets hasAcknowledgedDisclaimer, and "Skip setup" calls it. With
   the disclaimer moved later, Skip must land ON the disclaimer; only the user's tap acknowledges it.
 - HomeScreen shows the flow while `!hasAcknowledgedDisclaimer || onboardingInProgress`.
+- 51c: picking Bands marks all five bands owned (the Your bands editor shows inline to correct it).
+  A door ticks bands too. Skipping goes disclaimer -> Today (no primer, no reveal).
+- `finishOnboarding` now returns false (no-op) until the disclaimer is acknowledged; only
+  `acknowledgeDisclaimer` sets the flag.

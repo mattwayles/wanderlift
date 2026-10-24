@@ -85,6 +85,12 @@ _List exercises that you'd like to incldue in the library here. Any exercise you
 
 ## Future Features
 
+- **Onboarding rework (Track 51) — device pass owed.** Walk the whole first run on an SE-size and a
+  Pro Max phone, both themes, Reduce Motion, largest text: value screen paging, the four starting
+  points (check Journey shows the expected rungs), equipment (Bands defaults to all five owned;
+  confirm the inline Your bands editor makes that obvious), Skip setup landing on the disclaimer,
+  the reminders permission prompt, and "Start my first workout" opening Approval. The paywall step
+  from the audit waits for monetization.
 - **Crash reporting and analytics — the rest.** Done: root error screen + local error capture
   (Track 50a), App Store review prompt (Track 50b). Owed, in order: (1) device pass — force a
   render throw (fallback in both themes, large text, share sheet); the review sheet needs a new

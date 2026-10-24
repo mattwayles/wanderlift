@@ -24,10 +24,12 @@ describe('§14.2 cold start — Journey is never empty', () => {
       </StoreProvider>,
     );
 
-    await waitFor(() => expect(screen.getByTestId('disclaimer-gate')).toBeTruthy(), WAIT_OPTS);
-    fireEvent.press(screen.getByTestId('disclaimer-acknowledge'));
+    await waitFor(() => expect(screen.getByTestId('welcome-gate')).toBeTruthy(), WAIT_OPTS);
+    fireEvent.press(screen.getByTestId('value-skip'));
     await waitFor(() => expect(screen.getByTestId('onboarding-skip')).toBeTruthy(), WAIT_OPTS);
     fireEvent.press(screen.getByTestId('onboarding-skip'));
+    await waitFor(() => expect(screen.getByTestId('disclaimer-acknowledge')).toBeTruthy(), WAIT_OPTS);
+    fireEvent.press(screen.getByTestId('disclaimer-acknowledge'));
     await waitFor(() => expect(screen.getByTestId('today-card')).toBeTruthy(), WAIT_OPTS);
 
     await fireEvent.press(screen.getByTestId('tab-Journey'));

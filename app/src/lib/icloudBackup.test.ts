@@ -35,6 +35,7 @@ const names = scratchNames(LIVE_DB_NAME);
 function onboardedUser() {
   const db = getDb();
   usersRepo.ensureUser(db, NOW.toISOString());
+  usersRepo.acknowledgeDisclaimer(db, NOW.toISOString());
   usersRepo.finishOnboarding(db, NOW.toISOString());
   return db;
 }

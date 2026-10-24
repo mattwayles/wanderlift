@@ -360,23 +360,28 @@ export function acknowledgeDisclaimer(db: Db, now: string): void {
     .run();
 }
 
-/** Track 37h — the first-launch setup's first step: the disclaimer is acknowledged and setup is
- *  under way, so a relaunch before it finishes resumes it. */
+/** Track 37h / 51c — setup is under way, so a relaunch before it finishes resumes it. This does
+ *  NOT acknowledge the disclaimer: only `acknowledgeDisclaimer` (the user pressing "I understand")
+ *  does, so no earlier step can carry anyone past it (§13.3). */
 export function beginOnboarding(db: Db, now: string): void {
   ensureUser(db, now);
   db.update(schema.users)
-    .set({ hasAcknowledgedDisclaimer: true, onboardingState: 'in_progress', updatedAt: now })
+    .set({ onboardingState: 'in_progress', updatedAt: now })
     .where(eq(schema.users.id, USER_ID))
     .run();
 }
 
-/** Track 37h — setup finished (or skipped): open Today from now on. */
-export function finishOnboarding(db: Db, now: string): void {
-  ensureUser(db, now);
+/** Track 37h / 51c — setup finished: open Today from now on. It cannot finish ahead of the
+ *  disclaimer: with `hasAcknowledgedDisclaimer` false this is a no-op and setup stays in progress.
+ *  Returns whether setup is now done. */
+export function finishOnboarding(db: Db, now: string): boolean {
+  const user = ensureUser(db, now);
+  if (!user.hasAcknowledgedDisclaimer) return false;
   db.update(schema.users)
-    .set({ hasAcknowledgedDisclaimer: true, onboardingState: 'done', updatedAt: now })
+    .set({ onboardingState: 'done', updatedAt: now })
     .where(eq(schema.users.id, USER_ID))
     .run();
+  return true;
 }
 
 export function markHasEverCompletedSession(db: Db, now: string): void {

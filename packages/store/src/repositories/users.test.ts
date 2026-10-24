@@ -183,19 +183,29 @@ describe('anchorsAvailable for a new user (track 37b)', () => {
 });
 
 describe('onboarding state (migration 0032)', () => {
-  it('begins with the disclaimer, survives a relaunch in progress, and finishes', () => {
+  it('begins without acknowledging, survives a relaunch in progress, and finishes only once acknowledged', () => {
     const { db, close } = createTestDb();
     try {
       const fresh = ensureUser(db, utcInstantFor('2026-10-18'));
       expect(fresh.hasAcknowledgedDisclaimer).toBe(false);
       expect(fresh.onboardingInProgress).toBe(false);
       beginOnboarding(db, utcInstantFor('2026-10-18'));
+      // 51c: starting setup never acknowledges the disclaimer, and finishing cannot skip past it.
       expect(getUser(db)).toMatchObject({
-        hasAcknowledgedDisclaimer: true,
+        hasAcknowledgedDisclaimer: false,
         onboardingInProgress: true,
       });
-      finishOnboarding(db, utcInstantFor('2026-10-18'));
-      expect(getUser(db)!.onboardingInProgress).toBe(false);
+      expect(finishOnboarding(db, utcInstantFor('2026-10-18'))).toBe(false);
+      expect(getUser(db)).toMatchObject({
+        hasAcknowledgedDisclaimer: false,
+        onboardingInProgress: true,
+      });
+      acknowledgeDisclaimer(db, utcInstantFor('2026-10-18'));
+      expect(finishOnboarding(db, utcInstantFor('2026-10-18'))).toBe(true);
+      expect(getUser(db)).toMatchObject({
+        hasAcknowledgedDisclaimer: true,
+        onboardingInProgress: false,
+      });
     } finally {
       close();
     }

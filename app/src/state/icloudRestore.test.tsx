@@ -39,6 +39,7 @@ const BACKUP_AT = new Date(2026, 9, 12, 18, 30).getTime();
 function makeDonorSnapshot(): void {
   const db = getDb();
   usersRepo.ensureUser(db, NOW);
+  usersRepo.acknowledgeDisclaimer(db, NOW);
   usersRepo.finishOnboarding(db, NOW);
   usersRepo.updateUser(db, { units: 'kg' }, NOW);
   createSnapshot();
@@ -62,6 +63,7 @@ function publishBackup(): void {
 function onboardedPhone(): void {
   const db = getDb();
   usersRepo.ensureUser(db, NOW);
+  usersRepo.acknowledgeDisclaimer(db, NOW);
   usersRepo.finishOnboarding(db, NOW);
   usersRepo.updateUser(db, { units: 'lb' }, NOW);
 }
@@ -105,7 +107,7 @@ describe('welcome-step offer', () => {
   it('renders the welcome step with no offer when iCloud holds no backup', async () => {
     usersRepo.ensureUser(getDb(), NOW);
     await launch();
-    await ready('disclaimer-gate');
+    await ready('welcome-gate');
     await act(async () => {
       await new Promise((r) => setTimeout(r, 50));
     });
@@ -118,7 +120,7 @@ describe('welcome-step offer', () => {
     usersRepo.updateUser(getDb(), { icloudBackupLinked: true }, NOW);
     publishBackup();
     await launch();
-    await ready('disclaimer-gate');
+    await ready('welcome-gate');
     await act(async () => {
       await new Promise((r) => setTimeout(r, 50));
     });
@@ -136,7 +138,7 @@ describe('welcome-step offer', () => {
         }),
     );
     await launch();
-    await ready('disclaimer-acknowledge');
+    await ready('value-next');
     expect(screen.queryByTestId('restore-offer')).toBeNull();
     await act(async () => release());
     await ready('restore-offer');
@@ -194,7 +196,7 @@ describe('welcome-step offer', () => {
     const before = getDb();
     await fireEvent.press(screen.getByTestId('restore-offer-restore'));
     await ready('today-screen');
-    expect(screen.queryByTestId('disclaimer-gate')).toBeNull();
+    expect(screen.queryByTestId('welcome-gate')).toBeNull();
     expect(screen.queryByTestId('onboarding-screen')).toBeNull();
     expect(getDb()).not.toBe(before);
     expect(user().units).toBe('kg');
@@ -218,7 +220,7 @@ describe('welcome-step offer', () => {
         ),
       WAIT,
     );
-    expect(screen.getByTestId('disclaimer-gate')).toBeTruthy();
+    expect(screen.getByTestId('welcome-gate')).toBeTruthy();
   });
 
   it('does not start a second restore while one is running', async () => {

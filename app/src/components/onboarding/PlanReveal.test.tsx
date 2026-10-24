@@ -5,7 +5,7 @@ import React from 'react';
 import { fireEvent, render, screen } from '@testing-library/react-native';
 import { daybreak, midnight } from '../../theme';
 import { flat, inDaybreak, ready } from '../../ui/test-utils';
-import { PlanReveal } from './PlanReveal';
+import { PlanReveal, trailIcon } from './PlanReveal';
 
 const TRAILS = [
   { trailName: 'Push', exerciseName: 'Incline push-up' },
@@ -72,5 +72,13 @@ describe('PlanReveal', () => {
     render(inDaybreak(<PlanReveal {...base} onStart={jest.fn()} onLater={jest.fn()} />));
     await ready('plan-day-2026-10-24');
     expect(flat('plan-day-2026-10-24').backgroundColor).toBe(daybreak.teal);
+  });
+
+  it('gives each trail a glyph, falling back to a flag', () => {
+    expect(trailIcon('Push')).toBe('push');
+    expect(trailIcon('Pull')).toBe('pull');
+    expect(trailIcon('Legs')).toBe('walk');
+    expect(trailIcon('Core')).toBe('core');
+    expect(trailIcon('Mystery')).toBe('flag');
   });
 });

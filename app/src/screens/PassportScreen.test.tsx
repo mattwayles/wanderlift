@@ -188,11 +188,17 @@ describe('PassportScreen', () => {
     await waitFor(() => expect(screen.getByTestId('badges-stub')).toBeTruthy(), WAIT_OPTS);
   });
 
+  it('loads its data when it opens (the hook does not load by itself)', async () => {
+    mount();
+    await waitFor(() => expect(reload).toHaveBeenCalled(), WAIT_OPTS);
+  });
+
   it('with Passport off, shows the opt-in instead of the book', async () => {
     setData({ enabled: false });
     mount();
     await waitFor(() => expect(screen.getByTestId('passport-opt-in')).toBeTruthy(), WAIT_OPTS);
     expect(screen.queryByTestId('passport-book')).toBeNull();
+    reload.mockClear(); // the load on open; the opt-in's own reload is what is checked below
     await fireEvent.press(screen.getByTestId('passport-opt-in'));
     expect(reload).toHaveBeenCalled();
   });

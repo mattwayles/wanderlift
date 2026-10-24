@@ -7,10 +7,11 @@
  * Never punish (invariant 4): a stamp is a souvenir, an unfilled last page simply ends, and
  * nothing here reads as something missing or overdue. Dates are `local_date`s (invariant 6).
  */
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import type { AccessibilityActionEvent } from 'react-native';
 import { StyleSheet, View } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
+import { useFocusEffect } from '@react-navigation/native';
 import type { RootScreenProps } from '../navigation/types';
 import { progressText, type ShelfBadge } from '../lib/badges';
 import { monthShortName, type PassportEntry } from '../lib/dashboard';
@@ -338,6 +339,12 @@ function PassportBook({
 export default function PassportScreen({ navigation, route }: Props): React.JSX.Element {
   const styles = useStyles();
   const { data, reload } = useDashboardData();
+  // The hook does not load by itself: without this the screen stayed on its empty first render.
+  useFocusEffect(
+    useCallback(() => {
+      reload();
+    }, [reload]),
+  );
   const stampLabel = route.params?.stampLabel;
   // null until the user pages; then the start page (a stamp's page, else the cover) applies.
   const [pageIndex, setPageIndex] = useState<number | null>(null);

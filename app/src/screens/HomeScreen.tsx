@@ -185,6 +185,35 @@ export default function HomeScreen({ navigation }: Props): React.JSX.Element {
     navigation.navigate('Generate');
   }, [data, db, navigation]);
 
+  /** Track 51c - the plan reveal's "Start my first workout": a gentle full-body session from the
+   *  equipment and goal just chosen, left on Approval for the user to look over and start. If
+   *  generation cannot produce one, they simply land on Today. */
+  const handleFirstWorkout = useCallback(() => {
+    try {
+      const clock = nowEngineClock();
+      const utcInstant = nowUtcInstant();
+      const { plan, comebackTier, recoveryWeekManual } = generate(db, {
+        library,
+        families,
+        request: { focus: 'full', difficulty: 'easy', targetMinutes: 20 },
+        clock,
+        rng: createRng(seedFromString(utcInstant)),
+        utcInstant,
+      });
+      const sessionId = sessionsRepo.createPendingSession(db, {
+        plan,
+        utcInstant,
+        localDate: clock.today,
+        tzId: clock.tzId,
+        comebackTier,
+        recoveryWeekManual,
+      });
+      navigation.navigate('Approval', { sessionId });
+    } catch {
+      /* Today is already showing; the Generate screen is one tap away. */
+    }
+  }, [db, library, families, navigation]);
+
   const handleTravelDay = useCallback(() => {
     statsRepo.recordTravelDay(db, nowUtcInstant(), nowEngineClock().today);
     load();
@@ -210,7 +239,7 @@ export default function HomeScreen({ navigation }: Props): React.JSX.Element {
   // lives in Settings), and a relaunch mid-setup resumes it. Installs from before onboarding have the
   // disclaimer acknowledged and no setup in progress, so they go straight to Today.
   if (!user.hasAcknowledgedDisclaimer || user.onboardingInProgress) {
-    return <OnboardingFlow onDone={load} />;
+    return <OnboardingFlow onDone={load} onStartFirstWorkout={handleFirstWorkout} />;
   }
 
   let stagger = 0;

@@ -26,18 +26,19 @@ describe('§14.2 cold start — Today is never empty', () => {
 
     // §13.3 — a truly from-scratch install shows the blocking first-launch disclaimer before
     // anything else, and takes the tab bar away so no other tab is reachable behind it.
-    await waitFor(() => expect(screen.getByTestId('disclaimer-gate')).toBeTruthy(), WAIT_OPTS);
-    expect(screen.getByTestId('disclaimer-gate-text')).toBeTruthy();
+    await waitFor(() => expect(screen.getByTestId('welcome-gate')).toBeTruthy(), WAIT_OPTS);
+    expect(screen.getByTestId('value-screens')).toBeTruthy();
     expect(screen.queryByTestId('tab-Journey')).toBeNull();
     expect(screen.queryByTestId('tab-Exercises')).toBeNull();
     expect(screen.queryByTestId('today-card')).toBeNull();
 
     // Dismiss it exactly the way a real user would (a real tap) — this is also the one test in
     // this suite honest enough to exercise that gate.
-    fireEvent.press(screen.getByTestId('disclaimer-acknowledge'));
-    // Track 37h — setup follows the disclaimer; skipping it keeps the recommended defaults.
+    fireEvent.press(screen.getByTestId('value-skip'));
     await waitFor(() => expect(screen.getByTestId('onboarding-skip')).toBeTruthy(), WAIT_OPTS);
     fireEvent.press(screen.getByTestId('onboarding-skip'));
+    await waitFor(() => expect(screen.getByTestId('disclaimer-acknowledge')).toBeTruthy(), WAIT_OPTS);
+    fireEvent.press(screen.getByTestId('disclaimer-acknowledge'));
 
     // Today card, not a resume card — nothing has ever been generated. Tabs are back.
     await waitFor(() => expect(screen.getByTestId('today-card')).toBeTruthy(), WAIT_OPTS);

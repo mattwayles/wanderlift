@@ -36,6 +36,14 @@
       "expo-location",
       "expo-secure-store",
       [
+        "@sentry/react-native/expo",
+        {
+          "url": "https://sentry.io/",
+          "organization": "matt-wayles",
+          "project": "wanderlift"
+        }
+      ],
+      [
         "@kingstinct/react-native-healthkit",
         {
           "NSHealthShareUsageDescription": "Wanderlift does not read any Health data — this permission is unused.",

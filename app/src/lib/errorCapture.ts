@@ -1,7 +1,7 @@
 /**
- * Local-only error capture: a small in-memory ring buffer of recent JS errors, fed by the global
- * handler and by the root error boundary. Nothing is persisted or sent anywhere; the buffer exists
- * so the "Share error details" action can include recent entries.
+ * Local error capture: a small in-memory ring buffer of recent JS errors, fed by the global
+ * handler and by the root error boundary. Nothing here is persisted or sent (reporting lives in
+ * `sentry.ts`); the buffer exists so the "Share error details" action can include recent entries.
  */
 
 export interface CapturedError {

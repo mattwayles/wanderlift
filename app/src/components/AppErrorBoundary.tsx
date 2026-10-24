@@ -6,6 +6,7 @@ import {
   useSafeAreaInsets,
 } from 'react-native-safe-area-context';
 import { appVersionLabel } from '../lib/appInfo';
+import { reportError } from '../lib/sentry';
 import { formatErrorReport, recordError, type CapturedError } from '../lib/errorCapture';
 import { themeFor } from '../theme';
 
@@ -38,6 +39,7 @@ export default class AppErrorBoundary extends React.Component<
 
   componentDidCatch(error: unknown, info: React.ErrorInfo) {
     const captured = recordError(error, { componentStack: info.componentStack });
+    reportError(error, { componentStack: info.componentStack });
     this.setState({ captured });
   }
 

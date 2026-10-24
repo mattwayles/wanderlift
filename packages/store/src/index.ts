@@ -11,6 +11,7 @@ export * from './completion';
 export * from './badgeAward';
 export { buildBadgeFacts } from './badgeFacts';
 export * from './levelUp';
+export * from './startingPoint';
 export * from './deviceQueueWorker';
 
 export * as usersRepo from './repositories/users';

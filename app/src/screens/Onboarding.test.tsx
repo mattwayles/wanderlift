@@ -66,7 +66,7 @@ describe('first-launch setup', () => {
     await press('start-active');
     await press('onboarding-skip');
     await ready('disclaimer-gate');
-    expect(screen.getByTestId('disclaimer-gate-text')).toHaveTextContent(DISCLAIMER_TEXT, { normalizeWhitespace: true });
+    expect(screen.getByTestId('disclaimer-gate-text')).toHaveTextContent(DISCLAIMER_TEXT);
     expect(screen.queryByTestId('tab-Journey')).toBeNull();
     expect(user().hasAcknowledgedDisclaimer).toBe(false);
     expect(user().onboardingInProgress).toBe(true);
@@ -141,7 +141,7 @@ describe('first-launch setup', () => {
     await ready('disclaimer-gate');
     expect(screen.getByTestId('onboarding-progress')).toHaveTextContent('5 of 5');
     expect(screen.getByText('One thing before you start')).toBeTruthy();
-    expect(screen.getByTestId('disclaimer-gate-text')).toHaveTextContent(DISCLAIMER_TEXT, { normalizeWhitespace: true });
+    expect(screen.getByTestId('disclaimer-gate-text')).toHaveTextContent(DISCLAIMER_TEXT);
     expect(screen.queryByTestId('onboarding-skip')).toBeNull();
     expect(screen.queryByTestId('tab-Journey')).toBeNull();
     expect(user().hasAcknowledgedDisclaimer).toBe(false);

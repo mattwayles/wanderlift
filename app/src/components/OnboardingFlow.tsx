@@ -58,14 +58,7 @@ import { PlanReveal } from './onboarding/PlanReveal';
 import { ValueScreens } from './onboarding/ValueScreens';
 
 type StepId =
-  | 'value'
-  | 'start'
-  | 'goal'
-  | 'equipment'
-  | 'limitations'
-  | 'disclaimer'
-  | 'primer'
-  | 'reveal';
+  'value' | 'start' | 'goal' | 'equipment' | 'limitations' | 'disclaimer' | 'primer' | 'reveal';
 
 /** The steps that ask something, in order; the counter counts these. */
 const QUESTION_STEPS = ['start', 'goal', 'equipment', 'limitations', 'disclaimer'] as const;
@@ -185,7 +178,8 @@ export function OnboardingFlow({
   const toggleBands = () => {
     setNothingPicked(false);
     // A band anchor point means nothing without bands: drop the door with them.
-    if (bands) save({ bandSettings: bandsToggled(user.bandSettings), anchorsAvailable: withoutDoor() });
+    if (bands)
+      save({ bandSettings: bandsToggled(user.bandSettings), anchorsAvailable: withoutDoor() });
     else save({ bandSettings: bandsToggled(user.bandSettings), bandsSetUp: true });
   };
   const toggleDoor = () => {
@@ -255,7 +249,11 @@ export function OnboardingFlow({
     return (
       <View style={styles.gate} testID="welcome-gate">
         <TopoPattern seed="wanderlift-gate" strength={0.6} />
-        <Screen edges={['top', 'left', 'right']} contentStyle={styles.welcome} style={styles.gateScreen}>
+        <Screen
+          edges={['top', 'left', 'right']}
+          contentStyle={styles.welcome}
+          style={styles.gateScreen}
+        >
           <View style={styles.welcomeTop}>
             <Image
               source={logoFor(theme.scheme)}
@@ -358,8 +356,8 @@ export function OnboardingFlow({
             {STEP_TITLES.disclaimer}
           </Txt>
           <Txt variant="body" color="text2">
-            Listen to your body. Wanderlift is here to help you move well, and it is only as
-            careful as the information it has. Please read this once.
+            Listen to your body. Wanderlift is here to help you move well, and it is only as careful
+            as the information it has. Please read this once.
           </Txt>
           <Card>
             <Txt variant="body" color="text2" testID="disclaimer-gate-text">

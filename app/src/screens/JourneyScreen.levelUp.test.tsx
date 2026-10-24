@@ -43,7 +43,10 @@ async function mountJourney() {
     fireEvent.press(screen.getByTestId('value-skip'));
     await waitFor(() => expect(screen.getByTestId('onboarding-skip')).toBeTruthy(), WAIT_OPTS);
     fireEvent.press(screen.getByTestId('onboarding-skip'));
-    await waitFor(() => expect(screen.getByTestId('disclaimer-acknowledge')).toBeTruthy(), WAIT_OPTS);
+    await waitFor(
+      () => expect(screen.getByTestId('disclaimer-acknowledge')).toBeTruthy(),
+      WAIT_OPTS,
+    );
     fireEvent.press(screen.getByTestId('disclaimer-acknowledge'));
   }
   await waitFor(() => expect(screen.getByTestId('tab-Journey')).toBeTruthy(), WAIT_OPTS);

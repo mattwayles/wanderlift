@@ -37,7 +37,10 @@ describe('§14.2 cold start — Today is never empty', () => {
     fireEvent.press(screen.getByTestId('value-skip'));
     await waitFor(() => expect(screen.getByTestId('onboarding-skip')).toBeTruthy(), WAIT_OPTS);
     fireEvent.press(screen.getByTestId('onboarding-skip'));
-    await waitFor(() => expect(screen.getByTestId('disclaimer-acknowledge')).toBeTruthy(), WAIT_OPTS);
+    await waitFor(
+      () => expect(screen.getByTestId('disclaimer-acknowledge')).toBeTruthy(),
+      WAIT_OPTS,
+    );
     fireEvent.press(screen.getByTestId('disclaimer-acknowledge'));
 
     // Today card, not a resume card — nothing has ever been generated. Tabs are back.

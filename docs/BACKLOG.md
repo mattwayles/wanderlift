@@ -85,6 +85,16 @@ _List exercises that you'd like to incldue in the library here. Any exercise you
 
 ## Future Features
 
+- **Crash reporting and analytics — the rest.** Done: root error screen + local error capture
+  (Track 50a), App Store review prompt (Track 50b). Owed, in order: (1) device pass — force a
+  render throw (fallback in both themes, large text, share sheet); the review sheet needs a new
+  native build (`expo-store-review`). (2) A hosted privacy policy page (App Store needs one anyway).
+  (3) Sentry (`@sentry/react-native` + Expo plugin, source maps uploaded in EAS with an auth-token
+  secret, PII scrubbed — Passport city names especially — off in dev, App Privacy "Crash data /
+  Diagnostics, not linked"). Needs the user's go-ahead and a Sentry account; not Crashlytics
+  (Firebase was removed in Track 42). (4) After the beta: privacy-first analytics (TelemetryDeck)
+  with a Settings opt-out, events queued offline, funnel onboarding → first workout → day-7 return.
+  Until then, App Store Connect analytics covers retention.
 - **Per-exercise demo clips.** Every How to shows a "Video demo coming soon" tile
   (`components/HowToDemo.tsx`) until the clips exist; online, the YouTube search sits under it as
   "In the meantime". Plan: self-recorded 3-6s silent loops (one clip can serve anchor/stance

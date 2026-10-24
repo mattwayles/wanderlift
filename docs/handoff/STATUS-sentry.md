@@ -1,16 +1,15 @@
 ## Track: sentry — crash reporting + tracing (Sentry)
 Last updated: 2026-10-24
 ### Done
+- [x] SDK installed, init, boundary reporting, tests — fdd74f5 (new dependency `@sentry/react-native` ~7.11.0)
+- [x] Real event verified from the dev client: WANDERLIFT-1 (resolved); temporary throw never committed
 - [x] Sentry project `wanderlift` created in org `matt-wayles` (react-native). DSN is public-safe (ingest-only).
 ### In progress
-- none (verified 2026-10-24: WANDERLIFT-1 from the dev client; temporary throw removed, never committed)
-- Install `@sentry/react-native` (new dependency, via `npx expo install` in `app/`), `app/metro.config.js`
-  (`getSentryExpoConfig`), `@sentry/react-native/expo` plugin in `app/app.json`, `app/src/lib/sentry.ts`
-  (init + scrubbing + `reportError`), wire into `index.ts`, `App.tsx` (`Sentry.wrap`) and `AppErrorBoundary`.
+- none
 ### Next
-- EAS: `SENTRY_AUTH_TOKEN` secret + `EXPO_PUBLIC_SENTRY_DSN` env for production builds so source maps/dSYMs upload.
-- Privacy: App Privacy "Crash data / Diagnostics, not linked"; hosted privacy policy must mention crash reports.
-- Remove the "Sentry" item from BACKLOG item "Crash reporting and analytics — the rest" once verified.
+- Confirm a production EAS build uploads source maps/dSYMs (`SENTRY_AUTH_TOKEN` is set as an EAS production secret).
+- Decide on Sentry project setting "Prevent Storing of IP Addresses" (see gotchas).
+- Publish `site/` (privacy + terms) and enter the URLs in App Store Connect; App Privacy "Crash data / Diagnostics, not linked".
 ### Decisions / gotchas
 - Errors + tracing only. `sendDefaultPii: false`, NO Session Replay / screenshots (workout + Passport location data),
   no console breadcrumbs (could carry city names). Off in `__DEV__` unless `EXPO_PUBLIC_SENTRY_DEV=1`.

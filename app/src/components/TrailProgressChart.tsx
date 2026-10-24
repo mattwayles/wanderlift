@@ -9,24 +9,29 @@
  *   of the latest session. Earlier levels are a tap back — progress over time, level by level.
  * - **Progress** (default): steps up this level, so moving to a heavier band and doing fewer reps
  *   reads as a step forward, which is what it is.
- * - **Best set**: not a graph — one stat per exercise at this level: its top reps or seconds at
- *   the heaviest band it was done with ("8 reps @ B3").
+ * - **Best set**: not a graph — a tile per exercise at this level: its top reps or seconds, big,
+ *   at the heaviest band it was done with (that band as the user's own colour chip).
  *
  * Progress is hidden on a page where no session could be placed on the ladder, and that page falls
  * back to Best set. Nothing here is styled as a decline (invariant 4).
  */
 import React, { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { makeStyles, space } from '../theme';
-import { Chip, IconButton, Txt } from '../ui';
+import { makeStyles, radius, space } from '../theme';
+import { Chip, Icon, IconButton, Txt } from '../ui';
+import BandChip from './BandChip';
+import type { BandTensions } from '../lib/bandDisplay';
 import { ProgressChart } from './ProgressChart';
 import { formatLocalDate } from '../lib/exerciseProgress';
-import { bestSetLabel, steps } from '../lib/ladderSeries';
+import { bestSetLabel, steps, type BestSetStat } from '../lib/ladderSeries';
+import type { ProgressUnit } from '../lib/exerciseProgress';
 import type { TrailProgress } from '../lib/trailProgress';
 
 export interface TrailProgressChartProps {
   familyId: string;
   progress: TrailProgress;
+  /** The user's band colours, for the Best set tiles. Without them a band shows by its id. */
+  tensions?: BandTensions;
 }
 
 type Mode = 'progress' | 'best';
@@ -34,6 +39,7 @@ type Mode = 'progress' | 'best';
 export function TrailProgressChart({
   familyId,
   progress,
+  tensions,
 }: TrailProgressChartProps): React.JSX.Element | null {
   const styles = useStyles();
   const [picked, setPicked] = useState<Mode>('progress');
@@ -138,16 +144,17 @@ export function TrailProgressChart({
         </>
       ) : (
         <View style={styles.stats} testID={`board-best-stats-${familyId}`}>
-          {best.map((stat) => (
-            <View key={stat.exerciseId} style={styles.stat}>
-              <Txt variant="body" numberOfLines={1} style={styles.statName}>
-                {stat.name}
-              </Txt>
-              <Txt variant="h3" testID={`board-best-stat-${familyId}-${stat.exerciseId}`}>
-                {unit ? bestSetLabel(unit, stat.value, stat.band) : String(stat.value)}
-              </Txt>
-            </View>
-          ))}
+          <View style={styles.tiles}>
+            {best.map((stat) => (
+              <BestSetTile
+                key={stat.exerciseId}
+                testID={`board-best-stat-${familyId}-${stat.exerciseId}`}
+                stat={stat}
+                unit={unit}
+                tensions={tensions}
+              />
+            ))}
+          </View>
           <Txt variant="caption" color="text3">
             Each exercise's top set at the heaviest band you've used.
           </Txt>
@@ -157,7 +164,57 @@ export function TrailProgressChart({
   );
 }
 
-const useStyles = makeStyles(() =>
+/** One exercise's best set: the number big, its unit beside it, the band as the user's own colour
+ *  chip (or "Bodyweight"), the exercise under it. Gold, like every other personal best in the app. */
+function BestSetTile({
+  stat,
+  unit,
+  tensions,
+  testID,
+}: {
+  stat: BestSetStat;
+  unit: ProgressUnit | null;
+  tensions: BandTensions | undefined;
+  testID: string;
+}): React.JSX.Element {
+  const styles = useStyles();
+  const label = unit ? bestSetLabel(unit, stat.value, stat.band) : String(stat.value);
+  const unitWord = unit === 'seconds' ? 'sec' : unit ? (stat.value === 1 ? 'rep' : 'reps') : '';
+  return (
+    <View
+      testID={testID}
+      accessible
+      accessibilityLabel={`${stat.name}, best set ${label}`}
+      style={styles.tile}
+    >
+      <View style={styles.tileTop}>
+        <Icon name="trophy" size={16} color="gold" />
+        {stat.band ? (
+          <BandChip band={stat.band} tensions={tensions ?? ({} as BandTensions)} />
+        ) : (
+          <Txt variant="eyebrow" color="text3">
+            Bodyweight
+          </Txt>
+        )}
+      </View>
+      <View style={styles.tileValue}>
+        <Txt variant="display" style={styles.tileNumber}>
+          {String(stat.value)}
+        </Txt>
+        {unitWord ? (
+          <Txt variant="eyebrow" color="gold">
+            {unitWord}
+          </Txt>
+        ) : null}
+      </View>
+      <Txt variant="small" color="text2" numberOfLines={2}>
+        {stat.name}
+      </Txt>
+    </View>
+  );
+}
+
+const useStyles = makeStyles((t) =>
   StyleSheet.create({
     wrap: { gap: space.sm },
     head: {
@@ -170,12 +227,20 @@ const useStyles = makeStyles(() =>
     pager: { flexDirection: 'row', alignItems: 'center', gap: space.sm },
     pageTitle: { flex: 1, alignItems: 'center' },
     stats: { gap: space.sm },
-    stat: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      gap: space.sm,
+    // Two across; a lone tile (or the odd one out) takes the full row.
+    tiles: { flexDirection: 'row', flexWrap: 'wrap', gap: space.sm },
+    tile: {
+      flexGrow: 1,
+      flexBasis: '45%',
+      gap: space.xs,
+      padding: space.md,
+      borderRadius: radius.md,
+      borderWidth: 1,
+      borderColor: t.colors.line,
+      backgroundColor: t.tints.gold,
     },
-    statName: { flex: 1 },
+    tileTop: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+    tileValue: { flexDirection: 'row', alignItems: 'baseline', gap: space.xs },
+    tileNumber: { fontVariant: ['tabular-nums'] },
   }),
 );

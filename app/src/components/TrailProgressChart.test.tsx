@@ -1,5 +1,5 @@
 import React from 'react';
-import { fireEvent, render, screen } from '@testing-library/react-native';
+import { fireEvent, render, screen, within } from '@testing-library/react-native';
 import { TrailProgressChart } from './TrailProgressChart';
 import type { TrailLevelPage, TrailProgress } from '../lib/trailProgress';
 import { inDaybreak, ready } from '../ui/test-utils';
@@ -110,12 +110,18 @@ describe.each([
     await fireEvent.press(screen.getByTestId('board-chart-mode-best-vertical_pull'));
     expect(screen.getAllByText('Best set')).toHaveLength(2); // eyebrow + toggle chip
     expect(screen.queryByTestId(plot)).toBeNull();
-    expect(screen.getByTestId('board-best-stat-vertical_pull-assist')).toHaveTextContent(
-      '12 reps @ B4',
-    );
+    // Each exercise is its own tile: the number, its unit, the band chip and the exercise name.
+    const assist = screen.getByTestId('board-best-stat-vertical_pull-assist');
+    expect(assist.props.accessibilityLabel).toBe('Band-assisted pull-up, best set 12 reps @ B4');
+    expect(within(assist).getByText('12')).toBeTruthy();
+    expect(within(assist).getByText('reps')).toBeTruthy();
+    expect(within(assist).getByTestId('band-chip-B4')).toBeTruthy();
     // The mode carries across pages; a bodyweight exercise shows no band.
     await fireEvent.press(screen.getByTestId('board-level-next-vertical_pull'));
-    expect(screen.getByTestId('board-best-stat-vertical_pull-pullup')).toHaveTextContent('4 reps');
+    const pullup = screen.getByTestId('board-best-stat-vertical_pull-pullup');
+    expect(pullup.props.accessibilityLabel).toBe('Pull-up, best set 4 reps');
+    expect(within(pullup).getByText('Bodyweight')).toBeTruthy();
+    expect(within(pullup).queryByTestId(/^band-chip-/)).toBeNull();
   });
 
   it('shows no arrows for a trail trained at one level', async () => {

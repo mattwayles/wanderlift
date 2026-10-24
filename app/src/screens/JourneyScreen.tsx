@@ -590,7 +590,11 @@ export default function JourneyScreen({ navigation, route }: Props): React.JSX.E
                     ) : null}
 
                     {chart ? (
-                      <TrailProgressChart familyId={entry.familyId} progress={chart} />
+                      <TrailProgressChart
+                        familyId={entry.familyId}
+                        progress={chart}
+                        tensions={user.bandTensions}
+                      />
                     ) : null}
 
                     {/* ADR 0012 — raise or drop the rung from the board, before generating anything.

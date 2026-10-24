@@ -90,8 +90,6 @@ describe('lookupNewStamp against the real store', () => {
     );
     expect(stamp).toMatchObject({
       label: 'Bend, OR, USA',
-      placeCount: 1,
-      countryCount: 1,
       newCountry: true,
     });
     expect(stamp?.dateLabel).toMatch(/^[A-Z]{3} \d{1,2}, \d{4}$/);

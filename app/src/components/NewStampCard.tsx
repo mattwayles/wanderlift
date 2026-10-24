@@ -8,7 +8,7 @@
  *   3. IMPACT, `STAMP_IMPACT_MS` after mount: the stamp squashes into the page, the card dents a
  *      few pixels and springs back, an ink ring shocks outward and fades, and `onImpact` fires so
  *      the screen can shake, burst confetti and play the thunk + haptics;
- *   4. the "Stamp #N" line, any "new country" chip and the tap hint fade up, the glow starts to
+ *   4. any "new country" chip and the tap hint fade up, the glow starts to
  *      breathe.
  * Tapping the stamp lifts it and stamps it again, impact and all; a small "See it in your
  * passport" link under it (fading in with the rest of step 4) opens the book at this stamp. Reduce Motion: the stamp is
@@ -147,10 +147,6 @@ export default function NewStampCard({
     return () => timers.current.forEach(clearTimeout);
     // Mount-only: the card is mounted exactly when the stamp is earned.
   }, []);
-
-  const placeLine = `Stamp #${stamp.placeCount} · ${stamp.countryCount} ${
-    stamp.countryCount === 1 ? 'country' : 'countries'
-  }`;
 
   return (
     <View testID={testID} style={styles.wrap}>
@@ -296,9 +292,6 @@ export default function NewStampCard({
             </View>
 
             <Animated.View style={[styles.after, { opacity: after }]}>
-              <Txt variant="eyebrow" color="text2" align="center">
-                {placeLine}
-              </Txt>
               {stamp.newCountry && (
                 <Chip
                   testID={`${testID}-new-country`}

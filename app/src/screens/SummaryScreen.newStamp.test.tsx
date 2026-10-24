@@ -30,8 +30,6 @@ const EVENTUALLY = { timeout: 12000, interval: 50 };
 const BEND: NewStamp = {
   label: 'Bend, OR, USA',
   dateLabel: 'OCT 3, 2026',
-  placeCount: 4,
-  countryCount: 2,
   newCountry: true,
 };
 
@@ -134,7 +132,7 @@ describe('new Passport stamp on the completion screen', () => {
     await waitFor(() => expect(screen.getByTestId('new-stamp')).toBeTruthy(), EVENTUALLY);
     expect(screen.getByText('YOU EARNED A NEW STAMP!')).toBeTruthy();
     expect(screen.getByLabelText('Bend, OR, USA, OCT 3, 2026')).toBeTruthy();
-    expect(screen.getByText('Stamp #4 · 2 countries')).toBeTruthy();
+    expect(screen.queryByText(/^Stamp #/)).toBeNull();
     expect(
       StyleSheet.flatten(screen.getByTestId('new-stamp-new-country').props.style),
     ).toMatchObject({

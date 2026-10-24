@@ -12,7 +12,6 @@
  */
 import { milestonesRepo, processDeviceQueue, sessionsRepo } from '@roamfit/store';
 import type { Db } from '@roamfit/store';
-import { buildPassportSummary } from './dashboard';
 import { geocodeCaller } from './geocode';
 import { healthKitWriter } from './healthKit';
 import { nowUtcInstant } from './localClock';
@@ -27,9 +26,6 @@ export interface NewStamp {
   label: string;
   /** "OCT 3, 2026" — the session's own local date, set in the stamp like a passport entry. */
   dateLabel: string;
-  /** How many distinct places the passport now holds (this one included). */
-  placeCount: number;
-  countryCount: number;
   /** The first stamp from this country. */
   newCountry: boolean;
 }
@@ -75,13 +71,10 @@ export async function lookupNewStamp(
     if (!label) return null;
 
     const completed = sessionsRepo.getCompletedSessionsForDashboard(db);
-    const passport = buildPassportSummary(completed);
     const country = (p.country as string | null) ?? null;
     return {
       label,
       dateLabel: formatStampDate(session.localDate),
-      placeCount: passport.places.length,
-      countryCount: passport.countries.length,
       newCountry: country !== null && completed.filter((s) => s.country === country).length <= 1,
     };
   } catch {

@@ -3,6 +3,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useFonts } from 'expo-font';
 import { NavigationContainer } from '@react-navigation/native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import AppErrorBoundary from './src/components/AppErrorBoundary';
 import RootNavigator from './src/navigation/RootNavigator';
 import { StoreProvider } from './src/state/StoreContext';
 import { useBackupOnBackground } from './src/state/useBackupOnBackground';
@@ -26,13 +27,15 @@ export default function App() {
   }
 
   return (
-    <SafeAreaProvider>
-      <StoreProvider>
-        <ThemeProvider>
-          <ThemedShell />
-        </ThemeProvider>
-      </StoreProvider>
-    </SafeAreaProvider>
+    <AppErrorBoundary>
+      <SafeAreaProvider>
+        <StoreProvider>
+          <ThemeProvider>
+            <ThemedShell />
+          </ThemeProvider>
+        </StoreProvider>
+      </SafeAreaProvider>
+    </AppErrorBoundary>
   );
 }
 

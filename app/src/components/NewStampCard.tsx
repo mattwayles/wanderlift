@@ -305,6 +305,7 @@ export default function NewStampCard({
                   tone="gold"
                   icon="star"
                   label="New country!"
+                  style={styles.newCountry}
                 />
               )}
               <Txt variant="small" color="text3" align="center">
@@ -353,5 +354,7 @@ const useStyles = makeStyles((t) =>
     shadow: { position: 'absolute', backgroundColor: withAlpha('#000000', 0.5) },
     passportLink: { minHeight: 44, justifyContent: 'center', paddingHorizontal: space.md },
     after: { alignItems: 'center', gap: space.xs, marginTop: space.xs },
+    // Chip pins itself to the start (alignSelf), which beats `after`'s centring.
+    newCountry: { alignSelf: 'center' },
   }),
 );

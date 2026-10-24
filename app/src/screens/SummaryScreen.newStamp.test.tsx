@@ -6,6 +6,7 @@
  * for it but never for a lookup that found nothing.
  */
 import React from 'react';
+import { StyleSheet } from 'react-native';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import * as Haptics from 'expo-haptics';
@@ -134,7 +135,11 @@ describe('new Passport stamp on the completion screen', () => {
     expect(screen.getByText('YOU EARNED A NEW STAMP!')).toBeTruthy();
     expect(screen.getByLabelText('Bend, OR, USA, OCT 3, 2026')).toBeTruthy();
     expect(screen.getByText('Stamp #4 · 2 countries')).toBeTruthy();
-    expect(screen.getByTestId('new-stamp-new-country')).toBeTruthy();
+    expect(
+      StyleSheet.flatten(screen.getByTestId('new-stamp-new-country').props.style),
+    ).toMatchObject({
+      alignSelf: 'center',
+    });
 
     // Contact: a sharp rigid hit, then the heavy weight behind it (the headline's own slam is the
     // first Heavy, so the stamp's is the second).

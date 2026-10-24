@@ -38,6 +38,8 @@ describe('Journey - Badges card', () => {
     expect(screen.getByText('Your first badge comes with your first workout.')).toBeTruthy();
     expect(screen.queryByTestId('badges-new-dot')).toBeNull();
     expect(screen.getByTestId('badges-next-line')).toBeTruthy();
+    // Like the Passport card, it says it opens something.
+    expect(screen.getByTestId('badges-open-hint')).toHaveTextContent('Open your badges ›');
 
     badgesRepo.insertEarnedBadges(
       getDb(),

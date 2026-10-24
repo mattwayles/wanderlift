@@ -772,6 +772,10 @@ export default function JourneyScreen({ navigation, route }: Props): React.JSX.E
               Next: {data.badges.next.def.name} · {progressText(data.badges.next.progress)}
             </Txt>
           ) : null}
+          {/* Same affordance as the Passport card: say the card opens something. */}
+          <Txt variant="small" color="text2" align="center" testID="badges-open-hint">
+            Open your badges ›
+          </Txt>
         </Card>
       </Enter>
 

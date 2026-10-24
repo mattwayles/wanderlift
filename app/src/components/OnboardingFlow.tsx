@@ -26,8 +26,8 @@
  * ("Welcome back"). The check is asynchronous and never gates the step; ignoring the offer leaves
  * the decision pending for Settings, and no backup can overwrite iCloud meanwhile.
  */
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { AccessibilityInfo, Image, StyleSheet, View } from 'react-native';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { AccessibilityInfo, Image, ScrollView, StyleSheet, View } from 'react-native';
 import { applyStartingPoint, progressionStateRepo, usersRepo } from '@roamfit/store';
 import type { Anchor } from '@roamfit/data';
 import type { StartingPoint } from '@roamfit/engine';
@@ -108,6 +108,11 @@ export function OnboardingFlow({
   const [step, setStep] = useState<StepId>(() =>
     user.onboardingInProgress ? (user.hasAcknowledgedDisclaimer ? 'primer' : 'start') : 'value',
   );
+  // The question steps share one scroll view, so each step starts back at the top.
+  const scrollRef = useRef<ScrollView>(null);
+  useEffect(() => {
+    scrollRef.current?.scrollTo({ y: 0, animated: false });
+  }, [step]);
   const [skipped, setSkipped] = useState(false);
   const [nothingPicked, setNothingPicked] = useState(false);
   const [offer, setOffer] = useState<BackupStat | null>(null);
@@ -392,6 +397,7 @@ export function OnboardingFlow({
   return (
     <Screen
       scroll
+      scrollRef={scrollRef}
       edges={['top', 'left', 'right']}
       testID="onboarding-screen"
       contentStyle={styles.content}

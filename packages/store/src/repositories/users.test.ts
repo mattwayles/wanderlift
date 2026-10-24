@@ -323,3 +323,28 @@ describe('iCloud backup linked (migration 0040)', () => {
     }
   });
 });
+
+describe('review prompt bookkeeping (migration 0041)', () => {
+  it('starts null and round-trips through updateUser without disturbing other fields', () => {
+    const { db, close } = createTestDb();
+    try {
+      expect(ensureUser(db, utcInstantFor('2026-10-20'))).toMatchObject({
+        reviewPromptLastAskedDate: null,
+        reviewPromptLastAskedVersion: null,
+      });
+      updateUser(
+        db,
+        { reviewPromptLastAskedDate: '2026-10-23', reviewPromptLastAskedVersion: '1.0.0' },
+        utcInstantFor('2026-10-23'),
+      );
+      updateUser(db, { cueSoundsEnabled: false }, utcInstantFor('2026-10-23'));
+      expect(getUser(db)).toMatchObject({
+        reviewPromptLastAskedDate: '2026-10-23',
+        reviewPromptLastAskedVersion: '1.0.0',
+        cueSoundsEnabled: false,
+      });
+    } finally {
+      close();
+    }
+  });
+});

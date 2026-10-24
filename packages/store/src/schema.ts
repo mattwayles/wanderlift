@@ -81,6 +81,10 @@ export const users = sqliteTable('users', {
   /** Track 43 — this device's data has been reconciled with iCloud (uploaded, restored, or kept
    *  on purpose); until then a backup that already exists is never overwritten (migration 0040). */
   icloudBackupLinked: integer('icloud_backup_linked', { mode: 'boolean' }).notNull().default(false),
+  /** Track 50b — local_date and app version of the last App Store rating request (migration 0041);
+   *  null until the first ask. */
+  reviewPromptLastAskedDate: text('review_prompt_last_asked_date'),
+  reviewPromptLastAskedVersion: text('review_prompt_last_asked_version'),
   /** JSON: { enabled, quiet_hours, observed_training_window }. */
   notificationPrefs: text('notification_prefs').notNull().default('{}'),
   /** §12 — the tz_id last observed for this device; compared against a new session's tz_id to

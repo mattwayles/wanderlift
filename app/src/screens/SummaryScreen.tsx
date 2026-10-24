@@ -56,7 +56,8 @@ import type { CompleteSessionResult } from '@roamfit/store';
 import type { RootStackParamList } from '../navigation/types';
 import { homeReset } from '../navigation/routes';
 import { useStore } from '../state/StoreContext';
-import { nowUtcInstant } from '../lib/localClock';
+import { nowEngineClock, nowUtcInstant } from '../lib/localClock';
+import { maybeRequestReview } from '../lib/reviewPrompt';
 import { findCurrentEntry } from '../lib/sessionProgress';
 import {
   buildCelebrationViewModel,
@@ -874,6 +875,13 @@ export default function SummaryScreen({ navigation, route }: Props): React.JSX.E
                 haptic={false}
                 onPress={() => {
                   hapticHeavy();
+                  // Track 50b — the one good moment to ask for a rating: the user is leaving the
+                  // celebration, not in it. Fire and forget; navigation never waits.
+                  void maybeRequestReview(db, {
+                    completedWorkouts: workoutCount,
+                    levelledUp: result.progressionEvents.some((p) => p.event.kind === 'level_up'),
+                    todayLocalDate: nowEngineClock().today,
+                  });
                   navigation.reset(homeReset());
                 }}
               />

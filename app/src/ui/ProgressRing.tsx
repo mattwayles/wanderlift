@@ -23,6 +23,8 @@ export interface ProgressRingProps {
   style?: StyleProp<ViewStyle>;
   testID?: string;
   accessibilityLabel?: string;
+  /** Spoken value ("42 seconds remaining") in place of the percentage, for rings that are clocks. */
+  accessibilityValueText?: string;
   children?: React.ReactNode;
 }
 
@@ -39,6 +41,7 @@ export function ProgressRing({
   style,
   testID = 'progress-ring',
   accessibilityLabel,
+  accessibilityValueText,
   children,
 }: ProgressRingProps): React.JSX.Element {
   const theme = useTheme();
@@ -76,7 +79,11 @@ export function ProgressRing({
       accessible
       accessibilityRole="progressbar"
       accessibilityLabel={accessibilityLabel}
-      accessibilityValue={{ min: 0, max: 100, now: Math.round(p * 100) }}
+      accessibilityValue={
+        accessibilityValueText != null
+          ? { text: accessibilityValueText }
+          : { min: 0, max: 100, now: Math.round(p * 100) }
+      }
       style={[{ width: size, height: size }, style]}
     >
       <Svg width={size} height={size}>

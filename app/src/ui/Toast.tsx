@@ -5,7 +5,13 @@
  * Reduce Motion drops the rise and keeps a plain fade.
  */
 import React, { useEffect, useRef, useState } from 'react';
-import { Animated, StyleSheet, type StyleProp, type ViewStyle } from 'react-native';
+import {
+  AccessibilityInfo,
+  Animated,
+  StyleSheet,
+  type StyleProp,
+  type ViewStyle,
+} from 'react-native';
 import { makeStyles, radius, space } from '../theme';
 import { Txt } from './Txt';
 import { useReduceMotion } from './useReduceMotion';
@@ -38,6 +44,8 @@ export function Toast({
   useEffect(() => {
     if (!message) return;
     setShown(message);
+    // iOS ignores `accessibilityLiveRegion`, so VoiceOver is told directly.
+    AccessibilityInfo.announceForAccessibility?.(message);
     opacity.setValue(0);
     rise.setValue(0);
     const anim = Animated.sequence([

@@ -33,7 +33,15 @@
  * screen and fully editable while paused; only the clocks stop.
  */
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, Animated, ScrollView, StyleSheet, TextInput, View } from 'react-native';
+import {
+  AccessibilityInfo,
+  ActivityIndicator,
+  Animated,
+  ScrollView,
+  StyleSheet,
+  TextInput,
+  View,
+} from 'react-native';
 import { useKeepAwake } from 'expo-keep-awake';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { exerciseStateRepo, sessionsRepo, usersRepo } from '@roamfit/store';
@@ -1009,6 +1017,7 @@ export default function WorkoutScreen({ navigation, route }: Props): React.JSX.E
           <Txt
             variant="hero"
             testID="workout-elapsed"
+            accessibilityLabel={`Elapsed ${Math.floor(sessionElapsedSec / 60)} minutes ${Math.floor(sessionElapsedSec % 60)} seconds`}
             numberOfLines={1}
             adjustsFontSizeToFit
             minimumFontScale={0.6}
@@ -1407,6 +1416,13 @@ function ExerciseHeader({
   onPickBand: (band: BandId) => void;
 }): React.JSX.Element {
   const styles = useStyles();
+  // The set view is remounted per set and VoiceOver focus is lost with the old one, so say where we
+  // are. Mount-only on purpose: a re-render must not repeat it.
+  useEffect(() => {
+    AccessibilityInfo.announceForAccessibility?.(
+      `${exerciseName}. Set ${setIndex + 1} of ${entry.sets}${setSuffix ?? ''}`,
+    );
+  }, []);
   // A skipped set is a quiet empty dot, never a filled one (invariant 4): only completed sets fill.
   const done = Array.from({ length: entry.sets }, (_, i) =>
     entry.setLogs.some((l) => l.setIndex === i && l.status === 'completed'),
@@ -2151,6 +2167,9 @@ function TimedExercise({
             testID="timed-circle"
             accessibilityRole="button"
             accessibilityLabel={circleLabel}
+            accessibilityValue={
+              inHold ? { text: `${remainingSeconds} seconds remaining` } : undefined
+            }
             accessibilityHint={started ? 'Press and hold to end this hold early' : undefined}
             // The tap that starts the hold gets the bigger START buzz; a pause/resume tap a tick.
             haptic={
@@ -2319,6 +2338,7 @@ function RestPhase({
 
   useEffect(() => {
     countdown.controller.start();
+    AccessibilityInfo.announceForAccessibility?.(`Rest. ${restSec} seconds. Up next: ${nextLabel}`);
     void ensureNotificationPermission();
     let cancelled = false;
     void scheduleRestZeroNotification(restSec, nextLabel).then((id) => {
@@ -2443,6 +2463,8 @@ function RestPhase({
           <Animated.View style={{ transform: [{ scale: pulse }] }}>
             <ProgressRing
               testID="rest-circle"
+              accessibilityLabel="Rest time remaining"
+              accessibilityValueText={`${remainingSeconds} seconds`}
               progress={mostMsRef.current > 0 ? remainingMs / mostMsRef.current : 0}
               size={REST_RING_SIZE}
               stroke={14}
@@ -2661,7 +2683,7 @@ const useStyles = makeStyles((t) =>
     setRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
     chipRow: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: space.sm },
     actionRow: { flexDirection: 'row', justifyContent: 'space-around', marginTop: space.xs },
-    completeButton: { height: 72 },
+    completeButton: { minHeight: 72 },
 
     // -- reps: the counter is the centerpiece
     counter: { alignItems: 'center', gap: space.xs, paddingVertical: space.sm },

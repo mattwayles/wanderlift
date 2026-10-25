@@ -174,6 +174,9 @@ export default function WorkoutScreen({ navigation, route }: Props): React.JSX.E
   // The "how did that feel" modal over the rest page. Opened by `commitSetAndRest` (a completed
   // set just landed), never derived from `phase`, so resuming a persisted rest does not re-ask.
   const [feedbackPromptOpen, setFeedbackPromptOpen] = useState(false);
+  // The exercise the inline "Never again" was pressed for, so the button can confirm instead of
+  // offering it twice.
+  const [neverAgainId, setNeverAgainId] = useState<string | null>(null);
   // §8.1 — which entry the rest screen's feedback controls apply to (the one just performed,
   // not `current`'s post-reload "next up" entry). See the comment in `finishSetAndRest`.
   const [restingEntryId, setRestingEntryId] = useState<string | null>(null);
@@ -965,6 +968,7 @@ export default function WorkoutScreen({ navigation, route }: Props): React.JSX.E
    *  recorded for the entry stays. */
   const handleNeverAgain = () => {
     exerciseStateRepo.setDisabled(db, noteExerciseId, true, nowUtcInstant());
+    setNeverAgainId(noteExerciseId);
     setFeedbackPromptOpen(false);
   };
 
@@ -1270,6 +1274,8 @@ export default function WorkoutScreen({ navigation, route }: Props): React.JSX.E
               }
               difficulty={difficulty}
               onDifficultyChange={handleDifficultyChange}
+              neverAgainDone={neverAgainId === noteExerciseId}
+              onNeverAgain={handleNeverAgain}
               feedbackQuestion={feedbackDue && !feedbackAsModal ? feedbackQuestion : null}
               holdAutoAdvance={feedbackPromptOpen && feedbackDue}
               onNext={handleNextAfterRest}
@@ -1626,13 +1632,16 @@ function RepsExercise({
             prescription), so it now sits under the numeral as a quiet "target" note instead of a
             second headline. Tapping the numeral still edits it. */}
         <View style={styles.counter}>
-          <Txt variant="eyebrow" color="text3">
+          <Txt variant="eyebrow" color="text2" style={styles.counterLabel}>
             Reps
           </Txt>
           {repBasisText != null && (
-            <Txt variant="caption" color="text2" testID="rep-basis">
-              {repBasisText}
-            </Txt>
+            <Chip
+              label={repBasisText}
+              size="lg"
+              tone={repBasisText === 'per side' ? 'teal' : 'gold'}
+              testID="rep-basis"
+            />
           )}
           <View style={styles.counterRow}>
             <IconButton
@@ -1664,7 +1673,7 @@ function RepsExercise({
             />
           </View>
           {entry.repTarget != null && (
-            <Txt variant="caption" color="text3">
+            <Txt variant="small" color="text2" style={styles.targetNote}>
               target {entry.repTarget}
             </Txt>
           )}
@@ -2301,6 +2310,8 @@ function RestPhase({
   howTo,
   difficulty,
   onDifficultyChange,
+  neverAgainDone,
+  onNeverAgain,
   feedbackQuestion,
   holdAutoAdvance,
   onNext,
@@ -2333,6 +2344,9 @@ function RestPhase({
   howTo: { body: string; name: string } | null;
   difficulty: Difficulty | null;
   onDifficultyChange: (d: Difficulty | undefined) => void;
+  /** The exercise just finished was disabled from the inline "Never again" below. */
+  neverAgainDone: boolean;
+  onNeverAgain: () => void;
   /** The inline feedback question, or null when none is due on this rest (not the exercise's last
    *  set) or it is asked in a modal over this page instead. */
   feedbackQuestion: string | null;
@@ -2532,6 +2546,27 @@ function RestPhase({
                 {feedbackQuestion}
               </Txt>
               <FeedbackControls difficulty={difficulty} onDifficultyChange={onDifficultyChange} />
+              {neverAgainDone ? (
+                <Txt
+                  testID="feedback-never-done"
+                  variant="caption"
+                  color="text2"
+                  align="center"
+                  style={styles.feelLabel}
+                >
+                  Disabled — turn it back on in the Field Guide.
+                </Txt>
+              ) : (
+                <Button
+                  testID="feedback-never"
+                  label="Never again — disable this exercise"
+                  accessibilityHint="Removes it from future workouts until you turn it back on in the Field Guide"
+                  variant="secondary"
+                  size="md"
+                  fullWidth
+                  onPress={onNeverAgain}
+                />
+              )}
             </>
           )}
 
@@ -2704,6 +2739,8 @@ const useStyles = makeStyles((t) =>
 
     // -- reps: the counter is the centerpiece
     counter: { alignItems: 'center', gap: space.xs, paddingVertical: space.sm },
+    counterLabel: { fontSize: 18, lineHeight: 22 },
+    targetNote: { fontSize: 17, lineHeight: 22 },
     counterRow: {
       flexDirection: 'row',
       alignItems: 'center',

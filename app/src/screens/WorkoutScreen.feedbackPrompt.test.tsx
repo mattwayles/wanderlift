@@ -173,6 +173,13 @@ describe('"How did that set feel?" modal over the rest screen, driven through Wo
     expect(screen.getByTestId('difficulty-segment')).toBeTruthy();
   });
 
+  it('with the setting off, the inline "Never again" disables the exercise and confirms', async () => {
+    const { db, exerciseId } = await restAfterFirstRepsSet(false);
+    await fireEvent.press(screen.getByTestId('feedback-never'));
+    await waitFor(() => expect(screen.getByTestId('feedback-never-done')).toBeTruthy(), WAIT_OPTS);
+    expect(exerciseStateRepo.getExerciseState(db, exerciseId)?.disabledAt).toBeTruthy();
+  });
+
   it('asks once per exercise: nothing after a middle set, then the question names the sets and the exercise', async () => {
     const { entryFeedback, exerciseId } = await restAfterFirstRepsSet(true, 2);
     // Set 1 of 2: a plain rest, no modal and no inline question.

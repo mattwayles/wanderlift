@@ -17,7 +17,7 @@ export interface ChipProps {
   icon?: IconName;
   /** Custom leading element, e.g. a band color dot. */
   leading?: React.ReactNode;
-  size?: 'md' | 'sm';
+  size?: 'lg' | 'md' | 'sm';
   /** Let a long label wrap onto more lines instead of truncating (e.g. a milestone sentence). */
   wrap?: boolean;
   onPress?: () => void;
@@ -27,7 +27,11 @@ export interface ChipProps {
 }
 
 /** Vertical slop that brings each chip size's touch target to 44pt (horizontal is ample). */
-const CHIP_HIT_SLOP = { md: { top: 7, bottom: 7 }, sm: { top: 10, bottom: 10 } } as const;
+const CHIP_HIT_SLOP = {
+  lg: { top: 4, bottom: 4 },
+  md: { top: 7, bottom: 7 },
+  sm: { top: 10, bottom: 10 },
+} as const;
 
 export function Chip({
   label,
@@ -50,7 +54,7 @@ export function Chip({
 
   const containerStyle = [
     styles.chip,
-    size === 'sm' ? styles.sm : styles.md,
+    size === 'sm' ? styles.sm : size === 'lg' ? styles.lg : styles.md,
     { backgroundColor: bg },
     tone === 'neutral' && !selected && styles.neutralBorder,
     style,
@@ -59,13 +63,13 @@ export function Chip({
     <>
       {leading ? <View style={styles.gap}>{leading}</View> : null}
       {icon ? (
-        <Icon name={icon} size={size === 'sm' ? 12 : 14} color={textColor} style={styles.gap} />
+        <Icon name={icon} size={size === 'sm' ? 12 : size === 'lg' ? 18 : 14} color={textColor} style={styles.gap} />
       ) : null}
       <Txt
         variant="eyebrow"
         color={textColor}
         numberOfLines={wrap ? undefined : 1}
-        style={wrap ? styles.wrapText : undefined}
+        style={[size === 'lg' && styles.lgText, wrap && styles.wrapText]}
       >
         {label}
       </Txt>
@@ -110,8 +114,10 @@ const useStyles = makeStyles((t) =>
       borderRadius: radius.pill,
     },
     md: { paddingHorizontal: space.md, paddingVertical: 7, minHeight: 30 },
+    lg: { paddingHorizontal: space.md + 4, paddingVertical: 8, minHeight: 38 },
     sm: { paddingHorizontal: space.sm + 2, paddingVertical: 4, minHeight: 24 },
     neutralBorder: { borderWidth: 1, borderColor: t.colors.line },
+    lgText: { fontSize: 18, lineHeight: 22 },
     gap: { marginRight: 6 },
     wrapText: { flexShrink: 1 },
   }),

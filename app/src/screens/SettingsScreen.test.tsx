@@ -88,7 +88,7 @@ describe('appearance', () => {
 });
 
 describe('settings', () => {
-  it('lays the groups out in order: Appearance, Your body, Training, Motivation, Travel & privacy, Apple Health, iCloud backup, Learn, Feedback, disclaimer, Advanced', async () => {
+  it('lays the groups out in order: Appearance, Your body, Training, Music, Motivation, Travel & privacy, Apple Health, iCloud backup, Learn, Feedback, disclaimer, Advanced', async () => {
     await openSettings();
     const order = screen
       .getAllByTestId(/^settings-section-/)
@@ -97,6 +97,7 @@ describe('settings', () => {
       'Appearance',
       'Your body',
       'Training',
+      'Music',
       'Motivation',
       'Travel & privacy',
       'Apple Health',

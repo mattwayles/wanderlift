@@ -6,7 +6,7 @@ import React from 'react';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 import { createRng, seedFromString } from '@roamfit/engine';
 import { exerciseLibrary, familyLibrary } from '@roamfit/data';
-import { generate, schema, sessionsRepo, usersRepo } from '@roamfit/store';
+import { exerciseStateRepo, generate, schema, sessionsRepo, usersRepo } from '@roamfit/store';
 import { eq } from 'drizzle-orm';
 import WorkoutScreen from './WorkoutScreen';
 import { StoreProvider, useStore } from '../state/StoreContext';
@@ -121,7 +121,7 @@ describe('"How did that set feel?" modal over the rest screen, driven through Wo
     const entryFeedback = () =>
       sessionsRepo.getSession(db, sessionId)!.entries.find((e) => e.id === firstRepsEntry.id)!
         .difficultyFeedback;
-    return { entryFeedback, exerciseId: firstRepsEntry.exerciseId };
+    return { db, entryFeedback, exerciseId: firstRepsEntry.exerciseId };
   }
 
   it('opens over the running rest timer; an answer records it and closes the modal', async () => {
@@ -141,6 +141,14 @@ describe('"How did that set feel?" modal over the rest screen, driven through Wo
     await fireEvent.press(screen.getByTestId('feedback-prompt-skip'));
     await waitFor(() => expect(screen.queryByTestId('feedback-prompt')).toBeNull(), WAIT_OPTS);
     expect(entryFeedback()).toBeNull();
+  });
+
+  it('"Never again" disables the exercise in the Field Guide and closes the modal', async () => {
+    const { db, exerciseId } = await restAfterFirstRepsSet(true);
+    expect(exerciseStateRepo.getExerciseState(db, exerciseId)?.disabledAt ?? null).toBeNull();
+    await fireEvent.press(screen.getByTestId('feedback-prompt-never'));
+    await waitFor(() => expect(screen.queryByTestId('feedback-prompt')).toBeNull(), WAIT_OPTS);
+    expect(exerciseStateRepo.getExerciseState(db, exerciseId)?.disabledAt).toBeTruthy();
   });
 
   it('does not move on at zero while the modal is open, and does once it is dismissed', async () => {

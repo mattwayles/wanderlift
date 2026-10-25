@@ -960,6 +960,14 @@ export default function WorkoutScreen({ navigation, route }: Props): React.JSX.E
     setFeedbackPromptOpen(false);
   };
 
+  /** "Never again": disables the exercise just finished — the same switch as the Field Guide's
+   *  detail page, so it can be re-enabled there — and closes the prompt. Any difficulty already
+   *  recorded for the entry stays. */
+  const handleNeverAgain = () => {
+    exerciseStateRepo.setDisabled(db, noteExerciseId, true, nowUtcInstant());
+    setFeedbackPromptOpen(false);
+  };
+
   const sessionSection = entry.section as Section;
   const sectionTone = SECTION_TONE[sessionSection] ?? 'teal';
   const entries = activeEntries(session);
@@ -1147,6 +1155,15 @@ export default function WorkoutScreen({ navigation, route }: Props): React.JSX.E
                 size="md"
                 fullWidth
                 onPress={() => handleFeedbackPromptAnswer(null)}
+              />
+              <Button
+                testID="feedback-prompt-never"
+                label="Never again — disable this exercise"
+                accessibilityHint="Removes it from future workouts until you turn it back on in the Field Guide"
+                variant="secondary"
+                size="md"
+                fullWidth
+                onPress={handleNeverAgain}
               />
             </View>
           </Sheet>

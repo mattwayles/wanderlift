@@ -1480,10 +1480,10 @@ export function getCompletedSessionDetail(db: Db, sessionId: string): SessionRec
 
 /** How many recent fully-completed sessions the changeover is learned from, and how many it needs
  *  before it replaces the default at all. */
-const CHANGEOVER_SAMPLE_SESSIONS = 5;
-const CHANGEOVER_MIN_SAMPLES = 3;
+const CHANGEOVER_SAMPLE_SESSIONS = 3;
+const CHANGEOVER_MIN_SAMPLES = 1;
 /** Never learn a changeover outside this range, whatever a single odd week looked like. */
-const CHANGEOVER_MIN_SEC = 30;
+const CHANGEOVER_MIN_SEC = 10;
 const CHANGEOVER_MAX_SEC = 150;
 const DEFAULT_CHANGEOVER_SEC = 60;
 
@@ -1495,10 +1495,10 @@ const DEFAULT_CHANGEOVER_SEC = 60;
  * One sample per recent completed session in which every set of every exercise was completed (a
  * skipped set makes a session short for a reason that is not pace): the gap between the active
  * time actually trained and the plan's estimate, spread over its exercises, added to the allowance
- * that estimate already carried. The median of the latest five such samples, clamped to 30-150s
+ * that estimate already carried. The median of the latest three such samples, clamped to 10-150s
  * and rounded to 5s. Everything that makes a real session longer or shorter than its estimate —
  * band changes, finding the anchor, reading the next move, resting longer than prescribed — lands
- * here, which is exactly what time fit needs to know. `undefined` until there are three samples.
+ * here, which is exactly what time fit needs to know. `undefined` until there is one sample.
  */
 export function learnedChangeoverSec(db: Db): number | undefined {
   const rows = db

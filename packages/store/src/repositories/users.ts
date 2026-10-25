@@ -295,7 +295,7 @@ export interface UserPatch {
   reviewPromptLastAskedDate?: string;
   reviewPromptLastAskedVersion?: string;
   startingPoint?: StartingPoint;
-  musicApp?: MusicApp;
+  musicApp?: MusicApp | null;
 }
 
 export function updateUser(db: Db, patch: UserPatch, now: string): void {

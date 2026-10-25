@@ -75,15 +75,14 @@ function train(db: Db, localDate: string, endMinute: number, skipOne = false): v
 }
 
 describe('learnedChangeoverSec', () => {
-  it('stays at the default until three fully completed sessions exist', () => {
+  it('stays at the default until one fully completed session exists', () => {
     const { db, close } = createTestDb();
     try {
       expect(learnedChangeoverSec(db)).toBeUndefined();
-      train(db, '2026-10-01', 50);
+      train(db, '2026-10-01', 50, true); // a skipped set: not a pace sample
+      expect(learnedChangeoverSec(db)).toBeUndefined();
       train(db, '2026-10-03', 50);
-      expect(learnedChangeoverSec(db)).toBeUndefined();
-      train(db, '2026-10-05', 50, true); // a skipped set: not a pace sample
-      expect(learnedChangeoverSec(db)).toBeUndefined();
+      expect(learnedChangeoverSec(db)).toBeDefined();
     } finally {
       close();
     }
@@ -104,13 +103,13 @@ describe('learnedChangeoverSec', () => {
     }
   });
 
-  it('a user who runs short learns a shorter one, never below 30s', () => {
+  it('a user who runs short learns a shorter one, never below 10s', () => {
     const { db, close } = createTestDb();
     try {
       for (const d of ['2026-10-01', '2026-10-03', '2026-10-05']) train(db, d, 12);
       const learned = learnedChangeoverSec(db)!;
       expect(learned).toBeLessThan(60);
-      expect(learned).toBeGreaterThanOrEqual(30);
+      expect(learned).toBeGreaterThanOrEqual(10);
     } finally {
       close();
     }

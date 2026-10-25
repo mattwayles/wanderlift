@@ -80,7 +80,7 @@ import {
   useReduceMotion,
 } from '../ui';
 import { useInsets } from '../ui/useInsets';
-import SpotifyButton from '../components/SpotifyButton';
+import MusicButton from '../components/MusicButton';
 import { exerciseComplete, lastSet, pick, rest as restLines, setComplete } from '../lib/hypeCopy';
 import type { RootStackParamList } from '../navigation/types';
 import { homeReset } from '../navigation/routes';
@@ -1075,7 +1075,7 @@ export default function WorkoutScreen({ navigation, route }: Props): React.JSX.E
             <Chip label={SECTION_LABEL[sessionSection] ?? entry.section} tone={sectionTone} />
             {paused && <PausedChip />}
             <View style={styles.metaSpacer} />
-            <SpotifyButton />
+            <MusicButton />
             {/* §14.1's real-time progress view — a persistent way to check completed/skipped sets
                 and where you currently are, from any phase of the active workout. "Done" replaces
                 it once reviewing from Summary (before FINISH): that mode has no front edge for the

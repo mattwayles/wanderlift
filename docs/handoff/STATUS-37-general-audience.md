@@ -34,7 +34,8 @@ The plan, its scope cuts and the sub-track list (37a–37n) live in `docs/BACKLO
       days per week); quiet-hours window editable (`notificationPrefs.quietHoursStart/End`).
 
 - [x] 37f changeover — learned per-exercise changeover (`sessionsRepo.learnedChangeoverSec`: median of
-      the last 5 fully-completed sessions, clamped 30-150s, needs 3) → `UserProfile.changeoverSec` →
+      the last 3 fully-completed sessions, clamped 10-150s, needs 1 — loosened from 5/30/3 after a user
+      reported plans running 10-20 min long) → `UserProfile.changeoverSec` →
       `SessionEntry.transitionSec` (persisted, `session_entries.transition_sec`, migration 0031) so
       every re-estimate keeps it.
 

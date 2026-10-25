@@ -474,3 +474,23 @@ describe('iCloud backup', () => {
     expect(screen.getByText(/^A backup from another phone was found\./)).toBeTruthy();
   });
 });
+
+describe('music app', () => {
+  const selected = (id: string) =>
+    screen.getByTestId(id).props.accessibilityState.checked as boolean;
+
+  it('lists the supported apps plus None, shows the default selected, and stores a pick', async () => {
+    usersRepo.updateUser(getDb(), { musicApp: null }, nowUtcInstant());
+    jest.spyOn(Linking, 'canOpenURL').mockResolvedValue(true);
+    await openSettings();
+    await waitFor(() => expect(selected('music-app-spotify')).toBe(true), WAIT);
+    for (const id of ['apple_music', 'youtube_music', 'amazon_music', 'none']) {
+      expect(selected(`music-app-${id}`)).toBe(false);
+    }
+
+    await fireEvent.press(screen.getByTestId('music-app-youtube_music'));
+    await waitFor(() => expect(selected('music-app-youtube_music')).toBe(true), WAIT);
+    expect(selected('music-app-spotify')).toBe(false);
+    expect(usersRepo.getUser(getDb())?.musicApp).toBe('youtube_music');
+  });
+});

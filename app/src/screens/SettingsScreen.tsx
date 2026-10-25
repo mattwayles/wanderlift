@@ -1,6 +1,6 @@
 /**
  * §13.3/§13.5 Settings — a grouped, iOS-style list on `bg` (DESIGN.md §5.10), most-changed first:
- * Appearance, Training, Motivation, Travel & privacy, Apple Health, iCloud backup, the Medical disclaimer card, and the rare
+ * Appearance, Training, Music, Motivation, Travel & privacy, Apple Health, iCloud backup, the Medical disclaimer card, and the rare
  * stuff (diagnostics, reset) tucked behind an Advanced disclosure. It is the permanent home for:
  *
  *  - §13.3's medical disclaimer, permanently available (not just the first-launch prompt).
@@ -61,7 +61,15 @@ import {
   type IconName,
 } from '../ui';
 import { IconBadge } from '../components/IconBadge';
-import { Group, IconTile, NavRow, SETTINGS_ROW_PAD, SwitchRow } from '../components/SettingsList';
+import {
+  CheckRow,
+  Group,
+  IconTile,
+  NavRow,
+  SETTINGS_ROW_PAD,
+  SwitchRow,
+} from '../components/SettingsList';
+import { MUSIC_APP_INFO, useMusicApp } from '../lib/musicApps';
 
 const DEFAULT_MOTIVATION_TIMES = ['18:00'];
 
@@ -111,6 +119,7 @@ function AppearanceControl(): React.JSX.Element {
 
 export default function SettingsScreen(): React.JSX.Element {
   const { db, library, families } = useStore();
+  const { app: musicApp, setApp: setMusicApp } = useMusicApp();
   const styles = useStyles();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [user, setUser] = useState<usersRepo.UserRecord>(() =>
@@ -373,6 +382,29 @@ export default function SettingsScreen(): React.JSX.Element {
       </Enter>
 
       <Enter index={4}>
+        <Group title="Music" subtitle="The app the music button on your workout opens">
+          {MUSIC_APP_INFO.map((a) => (
+            <CheckRow
+              key={a.id}
+              testID={`music-app-${a.id}`}
+              label={a.label}
+              single
+              checked={musicApp === a.id}
+              onPress={() => setMusicApp(a.id)}
+            />
+          ))}
+          <CheckRow
+            testID="music-app-none"
+            label="None"
+            description="Hide the music button"
+            single
+            checked={musicApp === 'none'}
+            onPress={() => setMusicApp('none')}
+          />
+        </Group>
+      </Enter>
+
+      <Enter index={5}>
         <Group title="Motivation" subtitle="Push notifications to help get you going">
           <SwitchRow
             testID="toggle-motivation"
@@ -429,7 +461,7 @@ export default function SettingsScreen(): React.JSX.Element {
         </Group>
       </Enter>
 
-      <Enter index={5}>
+      <Enter index={6}>
         <Group title="Travel & privacy">
           <SwitchRow
             testID="toggle-passport"
@@ -442,7 +474,7 @@ export default function SettingsScreen(): React.JSX.Element {
         </Group>
       </Enter>
 
-      <Enter index={6}>
+      <Enter index={7}>
         <Group title="Apple Health">
           <SwitchRow
             testID="toggle-healthkit-write"
@@ -455,7 +487,7 @@ export default function SettingsScreen(): React.JSX.Element {
         </Group>
       </Enter>
 
-      <Enter index={7}>
+      <Enter index={8}>
         <Group
           title="iCloud backup"
           subtitle="Your workouts and progress are saved to iCloud when connected to the internet"
@@ -493,7 +525,7 @@ export default function SettingsScreen(): React.JSX.Element {
         </Group>
       </Enter>
 
-      <Enter index={8}>
+      <Enter index={9}>
         <Group title="Learn">
           <NavRow
             testID="settings-anchor-safety"
@@ -514,7 +546,7 @@ export default function SettingsScreen(): React.JSX.Element {
         </Group>
       </Enter>
 
-      <Enter index={9}>
+      <Enter index={10}>
         <Group title="Feedback">
           <NavRow
             testID="settings-feedback"
@@ -528,7 +560,7 @@ export default function SettingsScreen(): React.JSX.Element {
         </Group>
       </Enter>
 
-      <Enter index={10}>
+      <Enter index={11}>
         <Card padding="md" style={styles.disclaimer} testID="settings-section-Medical disclaimer">
           <IconBadge icon="shield" tone="gold" size={40} />
           <View style={styles.disclaimerBody}>
@@ -542,7 +574,7 @@ export default function SettingsScreen(): React.JSX.Element {
         </Card>
       </Enter>
 
-      <Enter index={11}>
+      <Enter index={12}>
         <Group title="Advanced">
           <Pressable
             testID="settings-advanced-toggle"

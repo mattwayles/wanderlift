@@ -88,6 +88,8 @@ export const users = sqliteTable('users', {
   /** Track 51a — onboarding's "Where are you starting?" answer; null until answered
    *  (migration 0042). */
   startingPoint: text('starting_point'),
+  /** Track 52 — the music app the workout button opens; null until chosen (migration 0043). */
+  musicApp: text('music_app'),
   /** JSON: { enabled, quiet_hours, observed_training_window }. */
   notificationPrefs: text('notification_prefs').notNull().default('{}'),
   /** §12 — the tz_id last observed for this device; compared against a new session's tz_id to

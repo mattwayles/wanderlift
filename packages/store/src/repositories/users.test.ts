@@ -385,3 +385,29 @@ describe('review prompt bookkeeping (migration 0041)', () => {
     }
   });
 });
+
+describe('music app (migration 0043)', () => {
+  it('starts null and round-trips through updateUser, including "none"', () => {
+    const { db, close } = createTestDb();
+    try {
+      expect(ensureUser(db, utcInstantFor('2026-10-24')).musicApp).toBeNull();
+      updateUser(db, { musicApp: 'youtube_music' }, utcInstantFor('2026-10-24'));
+      expect(getUser(db)?.musicApp).toBe('youtube_music');
+      updateUser(db, { musicApp: 'none' }, utcInstantFor('2026-10-24'));
+      expect(getUser(db)?.musicApp).toBe('none');
+    } finally {
+      close();
+    }
+  });
+
+  it('reads an unrecognised stored value as never chosen', () => {
+    const { db, close } = createTestDb();
+    try {
+      ensureUser(db, utcInstantFor('2026-10-24'));
+      db.update(schema.users).set({ musicApp: 'napster' }).run();
+      expect(getUser(db)?.musicApp).toBeNull();
+    } finally {
+      close();
+    }
+  });
+});

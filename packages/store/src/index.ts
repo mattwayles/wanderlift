@@ -15,7 +15,8 @@ export * from './startingPoint';
 export * from './deviceQueueWorker';
 
 export * as usersRepo from './repositories/users';
-export type { BandTension, ThemePreference } from './repositories/users';
+export type { BandTension, MusicApp, ThemePreference } from './repositories/users';
+export { MUSIC_APPS } from './repositories/users';
 export { DEFAULT_BAND_TENSIONS } from './repositories/users';
 export * as exerciseStateRepo from './repositories/exerciseState';
 export * as exerciseCatalogRepo from './repositories/exerciseCatalog';

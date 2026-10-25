@@ -76,6 +76,12 @@ export const DEFAULT_NOTIFICATION_PREFS: Required<NotificationPrefs> = {
 /** Which look the app wears: follow iOS, Daybreak (light), or Midnight (dark). */
 export type ThemePreference = 'system' | 'light' | 'dark';
 
+export const MUSIC_APPS = ['spotify', 'apple_music', 'youtube_music', 'amazon_music', 'none'] as const;
+export type MusicApp = (typeof MUSIC_APPS)[number];
+export function isMusicApp(v: unknown): v is MusicApp {
+  return (MUSIC_APPS as readonly unknown[]).includes(v);
+}
+
 export interface UserRecord {
   id: string;
   units: 'kg' | 'lb';
@@ -99,6 +105,8 @@ export interface UserRecord {
   reviewPromptLastAskedVersion: string | null;
   /** Track 51a — onboarding's "Where are you starting?" answer; null = never answered. */
   startingPoint: StartingPoint | null;
+  /** Track 52 — the chosen music app; null = never chosen (the app resolves a default). */
+  musicApp: MusicApp | null;
   passportEnabled: boolean;
   healthWriteEnabled: boolean;
   cueSoundsEnabled: boolean;
@@ -221,6 +229,7 @@ function rowToUser(row: typeof schema.users.$inferSelect): UserRecord {
     reviewPromptLastAskedVersion: row.reviewPromptLastAskedVersion,
     // Unknown stored text (damage, a future build's value) reads as unanswered.
     startingPoint: isStartingPoint(row.startingPoint) ? row.startingPoint : null,
+    musicApp: isMusicApp(row.musicApp) ? row.musicApp : null,
     passportEnabled: row.passportEnabled,
     healthWriteEnabled: row.healthWriteEnabled,
     cueSoundsEnabled: row.cueSoundsEnabled,
@@ -286,6 +295,7 @@ export interface UserPatch {
   reviewPromptLastAskedDate?: string;
   reviewPromptLastAskedVersion?: string;
   startingPoint?: StartingPoint;
+  musicApp?: MusicApp;
 }
 
 export function updateUser(db: Db, patch: UserPatch, now: string): void {
@@ -325,6 +335,7 @@ export function updateUser(db: Db, patch: UserPatch, now: string): void {
     values.reviewPromptLastAskedVersion = patch.reviewPromptLastAskedVersion;
   }
   if (patch.startingPoint !== undefined) values.startingPoint = patch.startingPoint;
+  if (patch.musicApp !== undefined) values.musicApp = patch.musicApp;
   if (patch.trainingPreferences !== undefined) {
     values.trainingPrefs = JSON.stringify({
       ...current.trainingPreferences,

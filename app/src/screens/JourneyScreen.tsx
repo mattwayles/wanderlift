@@ -87,6 +87,9 @@ type Props = TabScreenProps<'Journey'>;
 /** How many of the newest stamps the Passport teaser shows. */
 const PASSPORT_TEASER_STAMPS = 3;
 
+/** The "your starting points" note over the Trails stays until this many workouts are done. */
+const STARTING_NOTE_SESSIONS = 3;
+
 /** The most a Journey list staggers by, so a long board never delays its own tail. */
 const MAX_STAGGER = 9;
 
@@ -322,7 +325,7 @@ export default function JourneyScreen({ navigation, route }: Props): React.JSX.E
   };
   const lifetime = data.lifetimeCounters;
   const hasSessions = stats.lifetimeSessionCount > 0;
-  const isZeroSession = !hasSessions;
+  const showStartingNote = stats.lifetimeSessionCount < STARTING_NOTE_SESSIONS;
   const calendarWeeks = buildCalendarWeeks(calendarDays);
   const maxSets = muscleBalance[0]?.hardSets || 1;
   const editingTitle = editingDay !== null ? formatFullLocalDate(editingDay) : undefined;
@@ -497,7 +500,7 @@ export default function JourneyScreen({ navigation, route }: Props): React.JSX.E
             caption="Every movement has a ladder. Here is where you are on each."
           />
         </Enter>
-        {isZeroSession && (
+        {showStartingNote && (
           <View testID="first-session-explanation" style={styles.note}>
             <Icon name="sparkles" size={18} color="sky" style={styles.noteIcon} />
             <Txt variant="small" color="text" style={styles.noteText}>

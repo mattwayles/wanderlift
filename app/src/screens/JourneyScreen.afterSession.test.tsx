@@ -166,9 +166,9 @@ describe('Journey after a completed session', () => {
     expect(sections.every((i) => i >= 0)).toBe(true);
     expect([...sections].sort((a, b) => a - b)).toEqual(sections);
 
-    // The zero-session first-session note and the empty states must be gone now that a session
-    // exists.
-    expect(screen.queryByTestId('first-session-explanation')).toBeNull();
+    // The empty states must be gone now that a session exists. The starting-points note stays
+    // for the first few workouts (STARTING_NOTE_SESSIONS), so one session does not clear it.
+    expect(screen.getByTestId('first-session-explanation')).toBeTruthy();
     expect(screen.queryByTestId('journey-empty')).toBeNull();
     expect(screen.queryByTestId('logbook-empty')).toBeNull();
   });

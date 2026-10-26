@@ -8,8 +8,11 @@ Last updated: 2026-10-26
   sheet; Delete all data behind a confirm Sheet). `userDataRepo` in packages/store; `StoreContext.restart()`.
 - [x] `HowToDemo`: dashed tile removed; Watch a demo (online) + one plain note line. Verdict: cannot be
   confirmed publishable with the tile (2.1(a) placeholder wording), so replaced.
+- [x] Unused files removed: `docs/handoff/wave-*.md` (spec scaffolding), unreferenced `app/assets`
+  android-icon-*.png and favicon.png (iOS-only app), `react-native-webview` dependency + jest mock
+  (removal only; native pod drops at next build). No orphan source modules found.
 ### In progress
-- Unused-file sweep, then full `npm run check`.
+- Full `npm run check`.
 ### Next
 4. Remove unused files; BACKLOG tidy; full `npm run check`.
 ### Decisions / gotchas

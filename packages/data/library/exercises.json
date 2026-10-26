@@ -12971,6 +12971,824 @@
       ],
       "setup": "On your back, press the low back flat and lift into a hollow hold, arms and legs extended and hovering. Keep that exact shape and rock from shoulders to hips. End the set when the low back lifts.",
       "video_search": "https://www.youtube.com/results?search_query=Hollow+Body+Rock+proper+form+tutorial"
+    },
+    {
+      "id": "bw-prone-hip-extension",
+      "name": "Prone Hip Extension",
+      "aliases": [
+        "prone leg lift"
+      ],
+      "focus": [
+        "legs"
+      ],
+      "pattern": "hip_extension",
+      "primary": [
+        "glutes"
+      ],
+      "secondary": [
+        "hamstrings",
+        "lower_back"
+      ],
+      "equipment": "bodyweight",
+      "band": null,
+      "anchor": "none",
+      "anchor_alt": null,
+      "anchor_class": "none",
+      "unilateral": true,
+      "metric": "reps",
+      "default_seconds": null,
+      "tier": "fill",
+      "roles": [
+        "main",
+        "warmup"
+      ],
+      "difficulty": "easy",
+      "progression_family": null,
+      "progression_level_id": null,
+      "contraindications": [
+        "lower_back_extension",
+        "lying_prone"
+      ],
+      "setup": "Lie face down, forehead resting on your hands. Squeeze one glute and lift that straight leg a few inches off the floor without arching the low back or twisting the hips. Pause, lower slowly. Finish one side, then switch.",
+      "video_search": "https://www.youtube.com/results?search_query=Prone+Hip+Extension+proper+form+tutorial"
+    },
+    {
+      "id": "bw-bench-reverse-hyper",
+      "name": "Bench Reverse Hyperextension",
+      "aliases": [
+        "reverse hyper"
+      ],
+      "focus": [
+        "legs"
+      ],
+      "pattern": "hip_extension",
+      "primary": [
+        "glutes"
+      ],
+      "secondary": [
+        "hamstrings",
+        "lower_back"
+      ],
+      "equipment": "bodyweight",
+      "band": null,
+      "anchor": "body-support",
+      "anchor_alt": null,
+      "anchor_class": "bodyweight_bearing",
+      "unilateral": false,
+      "metric": "reps",
+      "default_seconds": null,
+      "tier": "fill",
+      "roles": [
+        "main"
+      ],
+      "difficulty": "medium",
+      "progression_family": null,
+      "progression_level_id": null,
+      "contraindications": [
+        "lower_back_extension",
+        "lying_prone"
+      ],
+      "setup": "Lie face down on a sturdy bench or table with your hips at the edge and legs hanging, holding the sides. Squeeze the glutes to raise straight legs until they are level with your body, pause, lower with control. Do not swing above level.",
+      "video_search": "https://www.youtube.com/results?search_query=Bench+Reverse+Hyperextension+proper+form+tutorial"
+    },
+    {
+      "id": "banded-seated-hamstring-curl",
+      "name": "Banded Seated Hamstring Curl",
+      "aliases": [],
+      "focus": [
+        "legs"
+      ],
+      "pattern": "knee_flexion",
+      "primary": [
+        "hamstrings"
+      ],
+      "secondary": [],
+      "equipment": "band",
+      "band": "B1-B2",
+      "anchor": "anchor-low",
+      "anchor_alt": null,
+      "anchor_class": "band_tension",
+      "unilateral": true,
+      "metric": "reps",
+      "default_seconds": null,
+      "tier": "fill",
+      "roles": [
+        "main"
+      ],
+      "difficulty": "easy",
+      "progression_family": null,
+      "progression_level_id": null,
+      "contraindications": [
+        "knee_flexion_loaded"
+      ],
+      "setup": "Anchor the band low in front of you and sit on a chair facing it, band looped around one ankle with that leg straight out. Pull the heel down and back under the chair against the band, pause, return slowly. Finish one side, then switch.",
+      "video_search": "https://www.youtube.com/results?search_query=loop+resistance+band+Banded+Seated+Hamstring+Curl+proper+form+tutorial"
+    },
+    {
+      "id": "bw-glute-bridge-walkout",
+      "name": "Glute Bridge Walkout",
+      "aliases": [
+        "hamstring walkout"
+      ],
+      "focus": [
+        "legs"
+      ],
+      "pattern": "knee_flexion",
+      "primary": [
+        "hamstrings"
+      ],
+      "secondary": [
+        "glutes"
+      ],
+      "equipment": "bodyweight",
+      "band": null,
+      "anchor": "none",
+      "anchor_alt": null,
+      "anchor_class": "none",
+      "unilateral": false,
+      "metric": "reps",
+      "default_seconds": null,
+      "tier": "fill",
+      "roles": [
+        "main"
+      ],
+      "difficulty": "medium",
+      "progression_family": null,
+      "progression_level_id": null,
+      "contraindications": [
+        "knee_flexion_loaded",
+        "lower_back_extension",
+        "lying_supine"
+      ],
+      "setup": "Lie on your back, knees bent, and lift into a glute bridge. Keeping the hips up, walk the heels out in small steps until the legs are nearly straight, then walk them back in. That out-and-back is one rep.",
+      "video_search": "https://www.youtube.com/results?search_query=Glute+Bridge+Walkout+proper+form+tutorial"
+    },
+    {
+      "id": "bw-sissy-squat",
+      "name": "Sissy Squat",
+      "aliases": [],
+      "focus": [
+        "legs"
+      ],
+      "pattern": "knee_extension",
+      "primary": [
+        "quads"
+      ],
+      "secondary": [
+        "hip_flexors",
+        "abs"
+      ],
+      "equipment": "bodyweight",
+      "band": null,
+      "anchor": "none",
+      "anchor_alt": null,
+      "anchor_class": "none",
+      "unilateral": false,
+      "metric": "reps",
+      "default_seconds": null,
+      "tier": "fill",
+      "roles": [
+        "main"
+      ],
+      "difficulty": "hard",
+      "progression_family": null,
+      "progression_level_id": null,
+      "contraindications": [
+        "knee_flexion_loaded"
+      ],
+      "setup": "Hold a doorframe or sturdy post with one hand, feet hip width. Rise onto the balls of your feet and lean back, bending only at the knees, so the knees travel forward while hips and torso stay in one line. Go only as deep as you control, then press back up.",
+      "video_search": "https://www.youtube.com/results?search_query=Sissy+Squat+proper+form+tutorial"
+    },
+    {
+      "id": "bw-reverse-nordic",
+      "name": "Reverse Nordic",
+      "aliases": [
+        "reverse nordic curl"
+      ],
+      "focus": [
+        "legs"
+      ],
+      "pattern": "knee_extension",
+      "primary": [
+        "quads"
+      ],
+      "secondary": [
+        "hip_flexors"
+      ],
+      "equipment": "bodyweight",
+      "band": null,
+      "anchor": "none",
+      "anchor_alt": null,
+      "anchor_class": "none",
+      "unilateral": false,
+      "metric": "reps",
+      "default_seconds": null,
+      "tier": "fill",
+      "roles": [
+        "main"
+      ],
+      "difficulty": "medium",
+      "progression_family": null,
+      "progression_level_id": null,
+      "contraindications": [
+        "knee_flexion_loaded"
+      ],
+      "setup": "Kneel on something soft, knees hip width, body upright. Keeping one straight line from knees to head, lean back as far as you can control, then pull yourself upright with the quads. Do not bend at the hips.",
+      "video_search": "https://www.youtube.com/results?search_query=Reverse+Nordic+proper+form+tutorial"
+    },
+    {
+      "id": "banded-spanish-squat",
+      "name": "Banded Spanish Squat",
+      "aliases": [
+        "spanish squat"
+      ],
+      "focus": [
+        "legs"
+      ],
+      "pattern": "knee_extension",
+      "primary": [
+        "quads"
+      ],
+      "secondary": [
+        "glutes"
+      ],
+      "equipment": "band",
+      "band": "B3-B5",
+      "anchor": "anchor-low",
+      "anchor_alt": null,
+      "anchor_class": "band_tension",
+      "unilateral": false,
+      "metric": "reps",
+      "default_seconds": null,
+      "tier": "fill",
+      "roles": [
+        "main"
+      ],
+      "difficulty": "medium",
+      "progression_family": null,
+      "progression_level_id": null,
+      "contraindications": [
+        "knee_flexion_loaded"
+      ],
+      "setup": "Loop a heavy band around something immovable and step into it so it sits behind both knees. Walk back to strong tension, feet hip width. Sit back into a squat with shins vertical and torso upright, letting the band hold your knees, then stand.",
+      "video_search": "https://www.youtube.com/results?search_query=loop+resistance+band+Banded+Spanish+Squat+proper+form+tutorial"
+    },
+    {
+      "id": "bw-copenhagen-plank",
+      "name": "Copenhagen Plank",
+      "aliases": [
+        "copenhagen adductor plank"
+      ],
+      "focus": [
+        "legs"
+      ],
+      "pattern": "adduction",
+      "primary": [
+        "adductors"
+      ],
+      "secondary": [
+        "obliques",
+        "abs"
+      ],
+      "equipment": "bodyweight",
+      "band": null,
+      "anchor": "body-support",
+      "anchor_alt": null,
+      "anchor_class": "bodyweight_bearing",
+      "unilateral": true,
+      "metric": "time",
+      "default_seconds": 20,
+      "tier": "fill",
+      "roles": [
+        "main"
+      ],
+      "difficulty": "hard",
+      "progression_family": null,
+      "progression_level_id": null,
+      "contraindications": [
+        "core_pressure",
+        "hip"
+      ],
+      "setup": "Side plank on your forearm with the top foot resting on a bench and the bottom leg hanging free beneath it. Lift the hips into a straight line and hold. Finish one side, then switch.",
+      "video_search": "https://www.youtube.com/results?search_query=Copenhagen+Plank+proper+form+tutorial"
+    },
+    {
+      "id": "bw-short-lever-copenhagen-plank",
+      "name": "Short-Lever Copenhagen Plank",
+      "aliases": [
+        "bent-knee copenhagen plank"
+      ],
+      "focus": [
+        "legs"
+      ],
+      "pattern": "adduction",
+      "primary": [
+        "adductors"
+      ],
+      "secondary": [
+        "obliques",
+        "abs"
+      ],
+      "equipment": "bodyweight",
+      "band": null,
+      "anchor": "body-support",
+      "anchor_alt": null,
+      "anchor_class": "bodyweight_bearing",
+      "unilateral": true,
+      "metric": "time",
+      "default_seconds": 20,
+      "tier": "fill",
+      "roles": [
+        "main"
+      ],
+      "difficulty": "medium",
+      "progression_family": null,
+      "progression_level_id": null,
+      "contraindications": [
+        "core_pressure",
+        "hip"
+      ],
+      "setup": "Side plank on your forearm with the inside of your top knee resting on a bench and the bottom leg tucked under. Press the top knee down into the bench to lift the hips into a straight line and hold. Finish one side, then switch.",
+      "video_search": "https://www.youtube.com/results?search_query=Short-Lever+Copenhagen+Plank+proper+form+tutorial"
+    },
+    {
+      "id": "bw-side-lying-hip-abduction",
+      "name": "Side-Lying Hip Abduction",
+      "aliases": [
+        "side-lying leg raise"
+      ],
+      "focus": [
+        "legs"
+      ],
+      "pattern": "abduction",
+      "primary": [
+        "abductors"
+      ],
+      "secondary": [
+        "glutes"
+      ],
+      "equipment": "bodyweight",
+      "band": null,
+      "anchor": "none",
+      "anchor_alt": null,
+      "anchor_class": "none",
+      "unilateral": true,
+      "metric": "reps",
+      "default_seconds": null,
+      "tier": "fill",
+      "roles": [
+        "main",
+        "warmup"
+      ],
+      "difficulty": "easy",
+      "progression_family": null,
+      "progression_level_id": null,
+      "contraindications": [
+        "hip"
+      ],
+      "setup": "Lie on your side, bottom knee bent for balance, top leg straight and slightly behind your body. Lift the top leg toward the ceiling, heel leading and toes facing forward, pause, lower slowly. Finish one side, then switch.",
+      "video_search": "https://www.youtube.com/results?search_query=Side-Lying+Hip+Abduction+proper+form+tutorial"
+    },
+    {
+      "id": "banded-seated-hip-abduction",
+      "name": "Banded Seated Hip Abduction",
+      "aliases": [],
+      "focus": [
+        "legs"
+      ],
+      "pattern": "abduction",
+      "primary": [
+        "abductors"
+      ],
+      "secondary": [
+        "glutes"
+      ],
+      "equipment": "band",
+      "band": "B1-B2",
+      "anchor": "thigh-loop",
+      "anchor_alt": null,
+      "anchor_class": "band_tension",
+      "unilateral": false,
+      "metric": "reps",
+      "default_seconds": null,
+      "tier": "fill",
+      "roles": [
+        "main"
+      ],
+      "difficulty": "easy",
+      "progression_family": null,
+      "progression_level_id": null,
+      "contraindications": [
+        "hip"
+      ],
+      "setup": "Sit on the edge of a chair with the band around your thighs just above the knees, feet hip width. Press the knees out against the band, pause, return with control. Lean slightly forward to bias the glutes.",
+      "video_search": "https://www.youtube.com/results?search_query=loop+resistance+band+Banded+Seated+Hip+Abduction+proper+form+tutorial"
+    },
+    {
+      "id": "banded-fire-hydrant",
+      "name": "Banded Fire Hydrant",
+      "aliases": [],
+      "focus": [
+        "legs"
+      ],
+      "pattern": "abduction",
+      "primary": [
+        "abductors"
+      ],
+      "secondary": [
+        "glutes"
+      ],
+      "equipment": "band",
+      "band": "B1",
+      "anchor": "thigh-loop",
+      "anchor_alt": null,
+      "anchor_class": "band_tension",
+      "unilateral": true,
+      "metric": "reps",
+      "default_seconds": null,
+      "tier": "fill",
+      "roles": [
+        "main",
+        "warmup"
+      ],
+      "difficulty": "easy",
+      "progression_family": null,
+      "progression_level_id": null,
+      "contraindications": [
+        "hip",
+        "wrist_extension"
+      ],
+      "setup": "On hands and knees with the band around your thighs just above the knees. Lift one knee out to the side against the band, keeping it bent and the hips square. Finish one side, then switch.",
+      "video_search": "https://www.youtube.com/results?search_query=loop+resistance+band+Banded+Fire+Hydrant+proper+form+tutorial"
+    },
+    {
+      "id": "banded-glute-bridge-abduction",
+      "name": "Banded Glute Bridge Abduction",
+      "aliases": [],
+      "focus": [
+        "legs"
+      ],
+      "pattern": "abduction",
+      "primary": [
+        "abductors"
+      ],
+      "secondary": [
+        "glutes",
+        "hamstrings"
+      ],
+      "equipment": "band",
+      "band": "B1-B2",
+      "anchor": "thigh-loop",
+      "anchor_alt": null,
+      "anchor_class": "band_tension",
+      "unilateral": false,
+      "metric": "reps",
+      "default_seconds": null,
+      "tier": "fill",
+      "roles": [
+        "main"
+      ],
+      "difficulty": "easy",
+      "progression_family": null,
+      "progression_level_id": null,
+      "contraindications": [
+        "lower_back_extension",
+        "lying_supine"
+      ],
+      "setup": "Lie on your back, band around your thighs just above the knees, feet flat. Lift into a glute bridge, then press the knees out against the band and back in while the hips stay up. Lower at the end of the set.",
+      "video_search": "https://www.youtube.com/results?search_query=loop+resistance+band+Banded+Glute+Bridge+Abduction+proper+form+tutorial"
+    },
+    {
+      "id": "bw-deficit-calf-raise",
+      "name": "Deficit Calf Raise",
+      "aliases": [
+        "step calf raise"
+      ],
+      "focus": [
+        "legs"
+      ],
+      "pattern": "calf",
+      "primary": [
+        "calves"
+      ],
+      "secondary": [],
+      "equipment": "bodyweight",
+      "band": null,
+      "anchor": "body-support",
+      "anchor_alt": null,
+      "anchor_class": "bodyweight_bearing",
+      "unilateral": false,
+      "metric": "reps",
+      "default_seconds": null,
+      "tier": "fill",
+      "roles": [
+        "main"
+      ],
+      "difficulty": "medium",
+      "progression_family": null,
+      "progression_level_id": null,
+      "contraindications": [
+        "ankle"
+      ],
+      "setup": "Stand with the balls of your feet on the edge of a stair, holding a rail. Lower the heels below the step for a full stretch, then rise as high as you can. Do it on one leg to make it harder.",
+      "video_search": "https://www.youtube.com/results?search_query=Deficit+Calf+Raise+proper+form+tutorial"
+    },
+    {
+      "id": "bw-inverted-bicep-curl",
+      "name": "Bodyweight Bicep Curl",
+      "aliases": [
+        "inverted bicep curl",
+        "low bar bicep curl"
+      ],
+      "focus": [
+        "upper"
+      ],
+      "pattern": "elbow_flexion",
+      "primary": [
+        "biceps"
+      ],
+      "secondary": [
+        "forearms"
+      ],
+      "equipment": "bodyweight",
+      "band": null,
+      "anchor": "low-bar",
+      "anchor_alt": null,
+      "anchor_class": "bodyweight_bearing",
+      "unilateral": false,
+      "metric": "reps",
+      "default_seconds": null,
+      "tier": "fill",
+      "roles": [
+        "main"
+      ],
+      "difficulty": "medium",
+      "progression_family": null,
+      "progression_level_id": null,
+      "contraindications": [
+        "elbow"
+      ],
+      "setup": "Grip a sturdy waist-height bar underhand, shoulder width, and lean back under it with straight arms and a straight body. Curl your forehead toward the bar by bending only the elbows, then lower slowly. Walk the feet back to make it easier.",
+      "video_search": "https://www.youtube.com/results?search_query=Bodyweight+Bicep+Curl+proper+form+tutorial"
+    },
+    {
+      "id": "banded-bayesian-curl",
+      "name": "Banded Bayesian Curl",
+      "aliases": [
+        "bayesian curl"
+      ],
+      "focus": [
+        "upper"
+      ],
+      "pattern": "elbow_flexion",
+      "primary": [
+        "biceps"
+      ],
+      "secondary": [
+        "forearms"
+      ],
+      "equipment": "band",
+      "band": "B1-B2",
+      "anchor": "anchor-low",
+      "anchor_alt": null,
+      "anchor_class": "band_tension",
+      "unilateral": true,
+      "metric": "reps",
+      "default_seconds": null,
+      "tier": "fill",
+      "roles": [
+        "main"
+      ],
+      "difficulty": "medium",
+      "progression_family": null,
+      "progression_level_id": null,
+      "contraindications": [
+        "elbow"
+      ],
+      "setup": "Anchor the band low behind you and hold it in one hand, facing away. Step forward until the arm is drawn slightly behind your body. Keeping that elbow back, curl to the shoulder, then lower slowly into the stretch. Finish one side, then switch.",
+      "video_search": "https://www.youtube.com/results?search_query=loop+resistance+band+Banded+Bayesian+Curl+proper+form+tutorial"
+    },
+    {
+      "id": "bw-bodyweight-triceps-extension",
+      "name": "Bodyweight Triceps Extension",
+      "aliases": [
+        "bodyweight skull crusher"
+      ],
+      "focus": [
+        "upper"
+      ],
+      "pattern": "elbow_extension",
+      "primary": [
+        "triceps"
+      ],
+      "secondary": [],
+      "equipment": "bodyweight",
+      "band": null,
+      "anchor": "low-bar",
+      "anchor_alt": "body-support",
+      "anchor_class": "bodyweight_bearing",
+      "unilateral": false,
+      "metric": "reps",
+      "default_seconds": null,
+      "tier": "fill",
+      "roles": [
+        "main"
+      ],
+      "difficulty": "medium",
+      "progression_family": null,
+      "progression_level_id": null,
+      "contraindications": [
+        "elbow",
+        "wrist_extension"
+      ],
+      "setup": "Grip a sturdy waist-height bar, or the edge of a bench, shoulder width, and walk your feet back into a straight-body lean. Bend only the elbows to lower your head below your hands, then press back to straight arms. A more upright lean is easier.",
+      "video_search": "https://www.youtube.com/results?search_query=Bodyweight+Triceps+Extension+proper+form+tutorial"
+    },
+    {
+      "id": "banded-cuban-press",
+      "name": "Banded Cuban Press",
+      "aliases": [
+        "cuban press"
+      ],
+      "focus": [
+        "upper"
+      ],
+      "pattern": "shoulder_isolation",
+      "primary": [
+        "rear_delts"
+      ],
+      "secondary": [
+        "side_delts",
+        "front_delts",
+        "traps"
+      ],
+      "equipment": "band",
+      "band": "B1",
+      "anchor": "stance",
+      "anchor_alt": null,
+      "anchor_class": "band_tension",
+      "unilateral": false,
+      "metric": "reps",
+      "default_seconds": null,
+      "tier": "fill",
+      "roles": [
+        "main"
+      ],
+      "difficulty": "medium",
+      "progression_family": null,
+      "progression_level_id": null,
+      "contraindications": [
+        "shoulder_overhead"
+      ],
+      "setup": "Stand mid-band, hands close. Pull the hands to chest height with elbows high and wide, rotate the forearms up until they point at the ceiling, then press overhead. Reverse each step slowly.",
+      "video_search": "https://www.youtube.com/results?search_query=loop+resistance+band+Banded+Cuban+Press+proper+form+tutorial"
+    },
+    {
+      "id": "banded-scaption-raise",
+      "name": "Banded Scaption Raise",
+      "aliases": [
+        "scaption"
+      ],
+      "focus": [
+        "upper"
+      ],
+      "pattern": "shoulder_isolation",
+      "primary": [
+        "front_delts"
+      ],
+      "secondary": [
+        "side_delts",
+        "traps"
+      ],
+      "equipment": "band",
+      "band": "B1",
+      "anchor": "stance",
+      "anchor_alt": null,
+      "anchor_class": "band_tension",
+      "unilateral": false,
+      "metric": "reps",
+      "default_seconds": null,
+      "tier": "fill",
+      "roles": [
+        "main",
+        "warmup"
+      ],
+      "difficulty": "easy",
+      "progression_family": null,
+      "progression_level_id": null,
+      "contraindications": [
+        "shoulder_overhead"
+      ],
+      "setup": "Stand mid-band, thumbs up. Raise straight arms to shoulder height in a Y, about 30 degrees forward of your sides, then lower slowly.",
+      "video_search": "https://www.youtube.com/results?search_query=loop+resistance+band+Banded+Scaption+Raise+proper+form+tutorial"
+    },
+    {
+      "id": "banded-single-arm-external-rotation",
+      "name": "Banded Single-Arm External Rotation",
+      "aliases": [],
+      "focus": [
+        "upper"
+      ],
+      "pattern": "shoulder_isolation",
+      "primary": [
+        "rear_delts"
+      ],
+      "secondary": [
+        "upper_back"
+      ],
+      "equipment": "band",
+      "band": "B1",
+      "anchor": "anchor-mid",
+      "anchor_alt": null,
+      "anchor_class": "band_tension",
+      "unilateral": true,
+      "metric": "reps",
+      "default_seconds": null,
+      "tier": "fill",
+      "roles": [
+        "main",
+        "warmup"
+      ],
+      "difficulty": "easy",
+      "progression_family": null,
+      "progression_level_id": null,
+      "contraindications": [],
+      "setup": "Anchor the band at waist height beside you and hold it in the far hand, elbow bent 90 degrees and pinned to your side. Rotate the forearm out away from your belly, pause, return slowly. Finish one side, then switch.",
+      "video_search": "https://www.youtube.com/results?search_query=loop+resistance+band+Banded+Single-Arm+External+Rotation+proper+form+tutorial"
+    },
+    {
+      "id": "bw-wall-slide",
+      "name": "Wall Slide",
+      "aliases": [],
+      "focus": [
+        "upper",
+        "full"
+      ],
+      "pattern": "shoulder_isolation",
+      "primary": [
+        "traps"
+      ],
+      "secondary": [
+        "upper_back",
+        "front_delts"
+      ],
+      "equipment": "bodyweight",
+      "band": null,
+      "anchor": "none",
+      "anchor_alt": null,
+      "anchor_class": "none",
+      "unilateral": false,
+      "metric": "reps",
+      "default_seconds": null,
+      "tier": "fill",
+      "roles": [
+        "warmup"
+      ],
+      "difficulty": "easy",
+      "progression_family": null,
+      "progression_level_id": null,
+      "contraindications": [
+        "shoulder_overhead"
+      ],
+      "setup": "Stand with your back, head and arms against a wall, elbows bent 90 degrees and forearms flat on it. Slide the arms up as far as you can without anything leaving the wall, then draw them back down, squeezing the shoulder blades.",
+      "video_search": "https://www.youtube.com/results?search_query=Wall+Slide+proper+form+tutorial"
+    },
+    {
+      "id": "banded-zottman-curl",
+      "name": "Banded Zottman Curl",
+      "aliases": [
+        "zottman curl"
+      ],
+      "focus": [
+        "upper"
+      ],
+      "pattern": "elbow_flexion",
+      "primary": [
+        "biceps"
+      ],
+      "secondary": [
+        "forearms"
+      ],
+      "equipment": "band",
+      "band": "B1-B2",
+      "anchor": "stance",
+      "anchor_alt": null,
+      "anchor_class": "band_tension",
+      "unilateral": false,
+      "metric": "reps",
+      "default_seconds": null,
+      "tier": "fill",
+      "roles": [
+        "main"
+      ],
+      "difficulty": "medium",
+      "progression_family": null,
+      "progression_level_id": null,
+      "contraindications": [
+        "elbow"
+      ],
+      "setup": "Stand mid-band, palms up, elbows at your sides. Curl to the shoulders, turn the palms over to an overhand grip at the top, lower slowly overhand, then turn them back up at the bottom.",
+      "video_search": "https://www.youtube.com/results?search_query=loop+resistance+band+Banded+Zottman+Curl+proper+form+tutorial"
     }
   ]
 }

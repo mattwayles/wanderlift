@@ -360,7 +360,353 @@ const LADDER_SIBLINGS = [
   },
 ];
 
-const BATCHES = [LADDER_SIBLINGS];
+/* ---------------------------------------------------------------------------------------------
+ * 2. Accessory patterns — template slots that had one record (hip_extension), only band records
+ *    (knee flexion/extension, biceps), or almost no bodyweight option, so a no-band day left the
+ *    slot empty and a band day repeated the same move.
+ * ------------------------------------------------------------------------------------------- */
+const ACCESSORIES = [
+  // --- hip_extension (was: banded donkey kick only) ---
+  {
+    id: 'bw-prone-hip-extension',
+    name: 'Prone Hip Extension',
+    aliases: ['prone leg lift'],
+    focus: ['legs'],
+    pattern: 'hip_extension',
+    primary: ['glutes'],
+    secondary: ['hamstrings', 'lower_back'],
+    unilateral: true,
+    roles: ['main', 'warmup'],
+    difficulty: 'easy',
+    contraindications: ['lower_back_extension', 'lying_prone'],
+    setup:
+      'Lie face down, forehead resting on your hands. Squeeze one glute and lift that straight leg a few inches off the floor without arching the low back or twisting the hips. Pause, lower slowly. Finish one side, then switch.',
+  },
+  {
+    id: 'bw-bench-reverse-hyper',
+    name: 'Bench Reverse Hyperextension',
+    aliases: ['reverse hyper'],
+    focus: ['legs'],
+    pattern: 'hip_extension',
+    primary: ['glutes'],
+    secondary: ['hamstrings', 'lower_back'],
+    anchor: 'body-support',
+    difficulty: 'medium',
+    contraindications: ['lower_back_extension', 'lying_prone'],
+    setup:
+      'Lie face down on a sturdy bench or table with your hips at the edge and legs hanging, holding the sides. Squeeze the glutes to raise straight legs until they are level with your body, pause, lower with control. Do not swing above level.',
+  },
+
+  // --- knee_flexion (was: two anchor-low band curls) ---
+  {
+    id: 'banded-seated-hamstring-curl',
+    name: 'Banded Seated Hamstring Curl',
+    focus: ['legs'],
+    pattern: 'knee_flexion',
+    primary: ['hamstrings'],
+    band: 'B1-B2',
+    anchor: 'anchor-low',
+    unilateral: true,
+    difficulty: 'easy',
+    contraindications: ['knee_flexion_loaded'],
+    setup:
+      'Anchor the band low in front of you and sit on a chair facing it, band looped around one ankle with that leg straight out. Pull the heel down and back under the chair against the band, pause, return slowly. Finish one side, then switch.',
+  },
+  {
+    id: 'bw-glute-bridge-walkout',
+    name: 'Glute Bridge Walkout',
+    aliases: ['hamstring walkout'],
+    focus: ['legs'],
+    pattern: 'knee_flexion',
+    primary: ['hamstrings'],
+    secondary: ['glutes'],
+    difficulty: 'medium',
+    contraindications: ['knee_flexion_loaded', 'lower_back_extension', 'lying_supine'],
+    setup:
+      'Lie on your back, knees bent, and lift into a glute bridge. Keeping the hips up, walk the heels out in small steps until the legs are nearly straight, then walk them back in. That out-and-back is one rep.',
+  },
+
+  // --- knee_extension (was: TKE and seated leg extension, both banded) ---
+  {
+    id: 'bw-sissy-squat',
+    name: 'Sissy Squat',
+    focus: ['legs'],
+    pattern: 'knee_extension',
+    primary: ['quads'],
+    secondary: ['hip_flexors', 'abs'],
+    difficulty: 'hard',
+    contraindications: ['knee_flexion_loaded'],
+    setup:
+      'Hold a doorframe or sturdy post with one hand, feet hip width. Rise onto the balls of your feet and lean back, bending only at the knees, so the knees travel forward while hips and torso stay in one line. Go only as deep as you control, then press back up.',
+  },
+  {
+    id: 'bw-reverse-nordic',
+    name: 'Reverse Nordic',
+    aliases: ['reverse nordic curl'],
+    focus: ['legs'],
+    pattern: 'knee_extension',
+    primary: ['quads'],
+    secondary: ['hip_flexors'],
+    difficulty: 'medium',
+    contraindications: ['knee_flexion_loaded'],
+    setup:
+      'Kneel on something soft, knees hip width, body upright. Keeping one straight line from knees to head, lean back as far as you can control, then pull yourself upright with the quads. Do not bend at the hips.',
+  },
+  {
+    id: 'banded-spanish-squat',
+    name: 'Banded Spanish Squat',
+    aliases: ['spanish squat'],
+    focus: ['legs'],
+    pattern: 'knee_extension',
+    primary: ['quads'],
+    secondary: ['glutes'],
+    band: 'B3-B5',
+    anchor: 'anchor-low',
+    difficulty: 'medium',
+    contraindications: ['knee_flexion_loaded'],
+    setup:
+      'Loop a heavy band around something immovable and step into it so it sits behind both knees. Walk back to strong tension, feet hip width. Sit back into a squat with shins vertical and torso upright, letting the band hold your knees, then stand.',
+  },
+
+  // --- adduction (was: two records) ---
+  {
+    id: 'bw-copenhagen-plank',
+    name: 'Copenhagen Plank',
+    aliases: ['copenhagen adductor plank'],
+    focus: ['legs'],
+    pattern: 'adduction',
+    primary: ['adductors'],
+    secondary: ['obliques', 'abs'],
+    anchor: 'body-support',
+    metric: 'time',
+    default_seconds: 20,
+    unilateral: true,
+    difficulty: 'hard',
+    contraindications: ['core_pressure', 'hip'],
+    setup:
+      'Side plank on your forearm with the top foot resting on a bench and the bottom leg hanging free beneath it. Lift the hips into a straight line and hold. Finish one side, then switch.',
+  },
+  {
+    id: 'bw-short-lever-copenhagen-plank',
+    name: 'Short-Lever Copenhagen Plank',
+    aliases: ['bent-knee copenhagen plank'],
+    focus: ['legs'],
+    pattern: 'adduction',
+    primary: ['adductors'],
+    secondary: ['obliques', 'abs'],
+    anchor: 'body-support',
+    metric: 'time',
+    default_seconds: 20,
+    unilateral: true,
+    difficulty: 'medium',
+    contraindications: ['core_pressure', 'hip'],
+    setup:
+      'Side plank on your forearm with the inside of your top knee resting on a bench and the bottom leg tucked under. Press the top knee down into the bench to lift the hips into a straight line and hold. Finish one side, then switch.',
+  },
+
+  // --- abduction ---
+  {
+    id: 'bw-side-lying-hip-abduction',
+    name: 'Side-Lying Hip Abduction',
+    aliases: ['side-lying leg raise'],
+    focus: ['legs'],
+    pattern: 'abduction',
+    primary: ['abductors'],
+    secondary: ['glutes'],
+    unilateral: true,
+    roles: ['main', 'warmup'],
+    difficulty: 'easy',
+    contraindications: ['hip'],
+    setup:
+      'Lie on your side, bottom knee bent for balance, top leg straight and slightly behind your body. Lift the top leg toward the ceiling, heel leading and toes facing forward, pause, lower slowly. Finish one side, then switch.',
+  },
+  {
+    id: 'banded-seated-hip-abduction',
+    name: 'Banded Seated Hip Abduction',
+    focus: ['legs'],
+    pattern: 'abduction',
+    primary: ['abductors'],
+    secondary: ['glutes'],
+    band: 'B1-B2',
+    anchor: 'thigh-loop',
+    difficulty: 'easy',
+    contraindications: ['hip'],
+    setup:
+      'Sit on the edge of a chair with the band around your thighs just above the knees, feet hip width. Press the knees out against the band, pause, return with control. Lean slightly forward to bias the glutes.',
+  },
+  {
+    id: 'banded-fire-hydrant',
+    name: 'Banded Fire Hydrant',
+    focus: ['legs'],
+    pattern: 'abduction',
+    primary: ['abductors'],
+    secondary: ['glutes'],
+    band: 'B1',
+    anchor: 'thigh-loop',
+    unilateral: true,
+    roles: ['main', 'warmup'],
+    difficulty: 'easy',
+    contraindications: ['hip', 'wrist_extension'],
+    setup:
+      'On hands and knees with the band around your thighs just above the knees. Lift one knee out to the side against the band, keeping it bent and the hips square. Finish one side, then switch.',
+  },
+  {
+    id: 'banded-glute-bridge-abduction',
+    name: 'Banded Glute Bridge Abduction',
+    focus: ['legs'],
+    pattern: 'abduction',
+    primary: ['abductors'],
+    secondary: ['glutes', 'hamstrings'],
+    band: 'B1-B2',
+    anchor: 'thigh-loop',
+    difficulty: 'easy',
+    contraindications: ['lower_back_extension', 'lying_supine'],
+    setup:
+      'Lie on your back, band around your thighs just above the knees, feet flat. Lift into a glute bridge, then press the knees out against the band and back in while the hips stay up. Lower at the end of the set.',
+  },
+
+  // --- calf ---
+  {
+    id: 'bw-deficit-calf-raise',
+    name: 'Deficit Calf Raise',
+    aliases: ['step calf raise'],
+    focus: ['legs'],
+    pattern: 'calf',
+    primary: ['calves'],
+    anchor: 'body-support',
+    difficulty: 'medium',
+    contraindications: ['ankle'],
+    setup:
+      'Stand with the balls of your feet on the edge of a stair, holding a rail. Lower the heels below the step for a full stretch, then rise as high as you can. Do it on one leg to make it harder.',
+  },
+
+  // --- elbow_flexion (was: band only) ---
+  {
+    id: 'bw-inverted-bicep-curl',
+    name: 'Bodyweight Bicep Curl',
+    aliases: ['inverted bicep curl', 'low bar bicep curl'],
+    focus: ['upper'],
+    pattern: 'elbow_flexion',
+    primary: ['biceps'],
+    secondary: ['forearms'],
+    anchor: 'low-bar',
+    difficulty: 'medium',
+    contraindications: ['elbow'],
+    setup:
+      'Grip a sturdy waist-height bar underhand, shoulder width, and lean back under it with straight arms and a straight body. Curl your forehead toward the bar by bending only the elbows, then lower slowly. Walk the feet back to make it easier.',
+  },
+  {
+    id: 'banded-bayesian-curl',
+    name: 'Banded Bayesian Curl',
+    aliases: ['bayesian curl'],
+    focus: ['upper'],
+    pattern: 'elbow_flexion',
+    primary: ['biceps'],
+    secondary: ['forearms'],
+    band: 'B1-B2',
+    anchor: 'anchor-low',
+    unilateral: true,
+    difficulty: 'medium',
+    contraindications: ['elbow'],
+    setup:
+      'Anchor the band low behind you and hold it in one hand, facing away. Step forward until the arm is drawn slightly behind your body. Keeping that elbow back, curl to the shoulder, then lower slowly into the stretch. Finish one side, then switch.',
+  },
+  {
+    id: 'banded-zottman-curl',
+    name: 'Banded Zottman Curl',
+    aliases: ['zottman curl'],
+    focus: ['upper'],
+    pattern: 'elbow_flexion',
+    primary: ['biceps'],
+    secondary: ['forearms'],
+    band: 'B1-B2',
+    anchor: 'stance',
+    difficulty: 'medium',
+    contraindications: ['elbow'],
+    setup:
+      'Stand mid-band, palms up, elbows at your sides. Curl to the shoulders, turn the palms over to an overhand grip at the top, lower slowly overhand, then turn them back up at the bottom.',
+  },
+
+  // --- elbow_extension ---
+  {
+    id: 'bw-bodyweight-triceps-extension',
+    name: 'Bodyweight Triceps Extension',
+    aliases: ['bodyweight skull crusher'],
+    focus: ['upper'],
+    pattern: 'elbow_extension',
+    primary: ['triceps'],
+    anchor: 'low-bar',
+    anchor_alt: 'body-support',
+    difficulty: 'medium',
+    contraindications: ['elbow', 'wrist_extension'],
+    setup:
+      'Grip a sturdy waist-height bar, or the edge of a bench, shoulder width, and walk your feet back into a straight-body lean. Bend only the elbows to lower your head below your hands, then press back to straight arms. A more upright lean is easier.',
+  },
+
+  // --- shoulder_isolation ---
+  {
+    id: 'banded-cuban-press',
+    name: 'Banded Cuban Press',
+    aliases: ['cuban press'],
+    focus: ['upper'],
+    pattern: 'shoulder_isolation',
+    primary: ['rear_delts'],
+    secondary: ['side_delts', 'front_delts', 'traps'],
+    band: 'B1',
+    anchor: 'stance',
+    difficulty: 'medium',
+    contraindications: ['shoulder_overhead'],
+    setup:
+      'Stand mid-band, hands close. Pull the hands to chest height with elbows high and wide, rotate the forearms up until they point at the ceiling, then press overhead. Reverse each step slowly.',
+  },
+  {
+    id: 'banded-scaption-raise',
+    name: 'Banded Scaption Raise',
+    aliases: ['scaption'],
+    focus: ['upper'],
+    pattern: 'shoulder_isolation',
+    primary: ['front_delts'],
+    secondary: ['side_delts', 'traps'],
+    band: 'B1',
+    anchor: 'stance',
+    roles: ['main', 'warmup'],
+    difficulty: 'easy',
+    contraindications: ['shoulder_overhead'],
+    setup:
+      'Stand mid-band, thumbs up. Raise straight arms to shoulder height in a Y, about 30 degrees forward of your sides, then lower slowly.',
+  },
+  {
+    id: 'banded-single-arm-external-rotation',
+    name: 'Banded Single-Arm External Rotation',
+    focus: ['upper'],
+    pattern: 'shoulder_isolation',
+    primary: ['rear_delts'],
+    secondary: ['upper_back'],
+    band: 'B1',
+    anchor: 'anchor-mid',
+    unilateral: true,
+    roles: ['main', 'warmup'],
+    difficulty: 'easy',
+    contraindications: [],
+    setup:
+      'Anchor the band at waist height beside you and hold it in the far hand, elbow bent 90 degrees and pinned to your side. Rotate the forearm out away from your belly, pause, return slowly. Finish one side, then switch.',
+  },
+  {
+    id: 'bw-wall-slide',
+    name: 'Wall Slide',
+    focus: ['upper', 'full'],
+    pattern: 'shoulder_isolation',
+    primary: ['traps'],
+    secondary: ['upper_back', 'front_delts'],
+    roles: ['warmup'],
+    difficulty: 'easy',
+    contraindications: ['shoulder_overhead'],
+    setup:
+      'Stand with your back, head and arms against a wall, elbows bent 90 degrees and forearms flat on it. Slide the arms up as far as you can without anything leaving the wall, then draw them back down, squeezing the shoulder blades.',
+  },
+];
+
+const BATCHES = [LADDER_SIBLINGS, ACCESSORIES];
 
 const exPath = path.join(LIB, 'exercises.json');
 const famPath = path.join(LIB, 'families.json');

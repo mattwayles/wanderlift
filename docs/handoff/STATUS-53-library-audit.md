@@ -1,17 +1,19 @@
 ## Track: 53 — Exercise library audit
 Last updated: 2026-10-26
 ### Done
-- (none yet)
+- [x] Increment 1, ladder siblings: 19 exercises on thin rungs, validator's stale same-metric
+  rule dropped, ENGINE_VERSION 2.13.0 (a09b75f)
 ### In progress
-- Increment 1: ladder siblings. New exercises + rung placements authored in
-  `packages/data/scripts/add_library_audit_exercises.js` (idempotent, same shape as
-  `add_sibling_exercises.js`), run it, regenerate goldens, `npm run check`, commit.
+- Increment 2: accessory patterns. Add an `ACCESSORIES` batch to
+  `scripts/add_library_audit_exercises.js` and append it to `BATCHES`: hip_extension (prone hip
+  extension, bench reverse hyper), knee_flexion (banded seated ham curl, glute bridge walkout),
+  knee_extension (sissy squat, reverse Nordic, banded Spanish squat), adduction (Copenhagen plank,
+  short-lever Copenhagen), abduction (side-lying hip abduction, banded seated abduction, banded
+  fire hydrant, banded bridge abduction), calf (deficit calf raise), elbow_flexion (bodyweight
+  curl on a low bar, banded Bayesian and Zottman curls), elbow_extension (bodyweight triceps
+  extension), shoulder_isolation (banded Cuban press, scaption, single-arm external rotation,
+  wall slide). Then goldens, check, commit. Extend `libraryAudit.test.ts`.
 ### Next
-1. Ladder siblings for thin rungs (squat l0/l1/l7, lunge l0/l1/l7, hinge l3/l4/l7,
-   horizontal_push l4/l7/l8, vertical_push l6b, vertical_pull l6b/l8/l9, anti_extension l4/l6/l7).
-2. Accessory patterns with no or one bodyweight option: hip_extension (1 record), knee_flexion and
-   knee_extension (band only), adduction (2), elbow_flexion (no bodyweight), elbow_extension,
-   shoulder_isolation, abduction, calf.
 3. Core (hanging raises, toe-touch crunch, etc.), cardio additions, quad and other missing
    stretches (BACKLOG "No quad stretch"), dynamic warm-ups.
 ### Decisions / gotchas

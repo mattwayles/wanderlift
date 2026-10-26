@@ -47,6 +47,36 @@ describe('track 53: ladder rungs that held one exercise now have a sibling', () 
   });
 });
 
+describe('track 53: accessory slots have more than one move, and a bodyweight one', () => {
+  const main = (pattern: string) =>
+    exerciseLibrary.exercises.filter((e) => e.pattern === pattern && e.roles.includes('main'));
+
+  it.each([
+    ['hip_extension', 3],
+    ['knee_flexion', 4],
+    ['knee_extension', 5],
+    ['adduction', 4],
+    ['abduction', 9],
+    ['elbow_flexion', 9],
+    ['elbow_extension', 7],
+  ])('%s has at least %i main exercises', (pattern, n) => {
+    expect(main(pattern).length).toBeGreaterThanOrEqual(n);
+  });
+
+  it.each(['hip_extension', 'knee_flexion', 'knee_extension', 'elbow_flexion', 'elbow_extension'])(
+    '%s has a bodyweight main exercise',
+    (pattern) => {
+      expect(main(pattern).some((e) => e.equipment === 'bodyweight')).toBe(true);
+    },
+  );
+
+  it('hip_extension can be trained with no gear and no fixed point', () => {
+    expect(
+      main('hip_extension').some((e) => e.equipment === 'bodyweight' && e.anchor === 'none'),
+    ).toBe(true);
+  });
+});
+
 const AUDIT_LADDER_IDS = [
   'bw-assisted-squat',
   'bw-prisoner-squat',

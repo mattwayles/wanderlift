@@ -3,6 +3,7 @@
  * pools back out. Authored by `scripts/add_library_audit_exercises.js`.
  */
 import { exerciseLibrary, familyLibrary } from './index';
+import type { Focus } from './schema';
 
 const byId = new Map(exerciseLibrary.exercises.map((e) => [e.id, e]));
 const level = (levelId: string) =>
@@ -74,6 +75,57 @@ describe('track 53: accessory slots have more than one move, and a bodyweight on
     expect(
       main('hip_extension').some((e) => e.equipment === 'bodyweight' && e.anchor === 'none'),
     ).toBe(true);
+  });
+});
+
+describe('track 53: cool-downs, warm-ups and cardio', () => {
+  const cooldowns = (focus: Focus) =>
+    exerciseLibrary.exercises.filter(
+      (e) => e.roles.includes('cooldown') && e.focus.includes(focus),
+    );
+
+  it('a Cardio cool-down can stretch the quads', () => {
+    expect(cooldowns('cardio').some((e) => e.primary.includes('quads'))).toBe(true);
+  });
+
+  it('there is a cool-down for each big muscle group a session trains', () => {
+    const stretched = new Set(
+      exerciseLibrary.exercises
+        .filter((e) => e.roles.includes('cooldown'))
+        .flatMap((e) => e.primary),
+    );
+    for (const m of [
+      'quads',
+      'hamstrings',
+      'glutes',
+      'adductors',
+      'calves',
+      'chest',
+      'lats',
+      'triceps',
+      'rear_delts',
+    ]) {
+      expect({ m, ok: stretched.has(m) }).toEqual({ m, ok: true });
+    }
+  });
+
+  it('every new conditioning move is timed and carries only the cardio focus', () => {
+    for (const id of [
+      'bw-squat-jack',
+      'bw-grapevine',
+      'bw-front-kick',
+      'bw-pogo-hop',
+      'bw-a-skip',
+    ]) {
+      const e = byId.get(id)!;
+      expect(e.metric).toBe('time');
+      expect(e.focus).toEqual(['cardio']);
+    }
+  });
+
+  it('the bodyweight and banded lateral shuffles are one movement', () => {
+    expect(byId.get('bw-lateral-shuffle')!.equipment).toBe('bodyweight');
+    expect(byId.get('banded-lateral-shuffle')!.equipment).toBe('band');
   });
 });
 

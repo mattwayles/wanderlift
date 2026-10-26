@@ -4,15 +4,15 @@ Last updated: 2026-10-26
 - [x] Increment 1, ladder siblings: 19 exercises on thin rungs, validator's stale same-metric
   rule dropped, ENGINE_VERSION 2.13.0 (a09b75f)
 - [x] Increment 2, accessory slots: 22 exercises (a569c56)
+- [x] Increment 3, core / cardio / stretches / warm-up: 24 exercises, BACKLOG quad-stretch item
+  closed, reachability sim widened (this commit)
 ### In progress
-- Increment 3: `CORE_CARDIO_STRETCH` batch in the script — hanging knee/leg raise, toe-touch
-  crunch, seated knee tuck, plank hip dip, side plank reach-through; squat jack, step touch,
-  grapevine, front kick, cross-body mountain climber, pogo hop, bodyweight lateral shuffle, A-skip,
-  rope criss-cross, rope single-leg hop; standing quad stretch (closes the BACKLOG item), standing
-  hamstring, butterfly, cross-body shoulder, overhead triceps, supine twist, downward dog; leg
-  swings. Then goldens, tests, BACKLOG, commit.
+- (none) Library 320 -> 385 exercises.
 ### Next
 - Pop the user's stash (see gotchas), re-run `jest -u` on goldens if the pop conflicts.
+- Not done, by choice: siblings for the 5 rungs listed in BACKLOG; wrist/forearm work (no
+  pattern for it); band cardio beyond the 8 existing (no established banded move that the
+  thigh-loop / anchor model describes honestly).
 ### Decisions / gotchas
 - The user had uncommitted WIP (medium restSec 75 -> 60 in `difficultyTable.ts`, its test, the
   golden snapshot). It is in `git stash` ("user WIP: medium rest 75->60 ...") so each commit here
@@ -27,6 +27,13 @@ Last updated: 2026-10-26
 - Tag to the 37c standard; the text guards in `contraindications.test.ts` key off cue wording
   ("on your back", "face down", "hands and knees", "high plank").
 - Goldens shift with pool size; regenerate and bump ENGINE_VERSION.
+- Track-number clash: a parallel session opened `STATUS-53-launch-items.md` at the same time.
+  This file is the library audit; tell them apart by slug.
+- `isolation.test.ts` reachability sim now rotates easy/medium/hard over 160 sessions: hard
+  accessories are only eligible on hard days (`isDifficultyEligible`), and the 80-session
+  easy/medium run lost `banded-seated-leg-extension` to the bigger knee_extension pool. The abs
+  flexion pool (~30) is too deep for one rotating user (6 pre-existing crunches never appear
+  either), so the two new medium flexion moves get an independent 200-seed check instead.
 - Another session commits to master in parallel (a8fc9f3, untracked store `userData.*`,
   `app/src/lib/legal.ts`). Stage only this track's files; its in-progress store typecheck error is
   not ours.

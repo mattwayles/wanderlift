@@ -155,8 +155,6 @@ _List exercises that you'd like to incldue in the library here. Any exercise you
   lean (`lightestMuscles`), which still count planned sets including skipped ones. Moving them to the
   same weighting needs those thresholds re-tuned. Cardio counts completed sets unweighted (no reps or
   band to weigh); an interval's seconds could weight it if cardio vs strength feels off.
-- **No quad stretch in the library**, so a Cardio cool-down can't target quads. Add one (and give
-  it the `cardio` focus) if cardio cool-downs feel lopsided.
 
 - **Completion screen — the remaining native-dependency tier.** Everything the built-in `Animated` API
   can do has landed (track 17: slammed-in headline, physics confetti cannons/pops, drifting glow-orb

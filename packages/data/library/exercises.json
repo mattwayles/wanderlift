@@ -12244,6 +12244,733 @@
       ],
       "setup": "Long split stance with your feet fixed. Lower your back knee toward the floor, keeping the front knee over your foot, then push up through the front heel.",
       "video_search": "https://www.youtube.com/results?search_query=Split+Squat+proper+form+tutorial"
+    },
+    {
+      "id": "bw-assisted-squat",
+      "name": "Assisted Squat",
+      "aliases": [
+        "supported squat"
+      ],
+      "focus": [
+        "legs"
+      ],
+      "pattern": "squat",
+      "primary": [
+        "quads"
+      ],
+      "secondary": [
+        "glutes"
+      ],
+      "equipment": "bodyweight",
+      "band": null,
+      "anchor": "none",
+      "anchor_alt": null,
+      "anchor_class": "none",
+      "unilateral": false,
+      "metric": "reps",
+      "default_seconds": null,
+      "tier": "core",
+      "roles": [
+        "main"
+      ],
+      "difficulty": "easy",
+      "progression_family": "squat",
+      "progression_level_id": "squat.l0",
+      "contraindications": [
+        "knee_flexion_loaded"
+      ],
+      "setup": "Hold a doorframe, sturdy counter edge or chair back with both hands, feet shoulder width. Sit down and back as deep as is comfortable, using your hands only as much as you need, then stand tall. Lean on them less as it gets easier.",
+      "video_search": "https://www.youtube.com/results?search_query=Assisted+Squat+proper+form+tutorial"
+    },
+    {
+      "id": "bw-prisoner-squat",
+      "name": "Prisoner Squat",
+      "aliases": [],
+      "focus": [
+        "legs",
+        "full"
+      ],
+      "pattern": "squat",
+      "primary": [
+        "quads"
+      ],
+      "secondary": [
+        "glutes",
+        "upper_back"
+      ],
+      "equipment": "bodyweight",
+      "band": null,
+      "anchor": "none",
+      "anchor_alt": null,
+      "anchor_class": "none",
+      "unilateral": false,
+      "metric": "reps",
+      "default_seconds": null,
+      "tier": "core",
+      "roles": [
+        "main"
+      ],
+      "difficulty": "easy",
+      "progression_family": "squat",
+      "progression_level_id": "squat.l1",
+      "contraindications": [
+        "knee_flexion_loaded"
+      ],
+      "setup": "Fingertips behind your head, elbows wide and chest tall. Sit down and back to at least parallel, knees tracking over the toes, then stand and squeeze the glutes. Keep the elbows pulled back the whole set.",
+      "video_search": "https://www.youtube.com/results?search_query=Prisoner+Squat+proper+form+tutorial"
+    },
+    {
+      "id": "bw-shrimp-squat",
+      "name": "Shrimp Squat",
+      "aliases": [],
+      "focus": [
+        "legs"
+      ],
+      "pattern": "squat",
+      "primary": [
+        "quads"
+      ],
+      "secondary": [
+        "glutes",
+        "abs"
+      ],
+      "equipment": "bodyweight",
+      "band": null,
+      "anchor": "none",
+      "anchor_alt": null,
+      "anchor_class": "none",
+      "unilateral": true,
+      "metric": "reps",
+      "default_seconds": null,
+      "tier": "core",
+      "roles": [
+        "main"
+      ],
+      "difficulty": "hard",
+      "progression_family": "squat",
+      "progression_level_id": "squat.l7",
+      "contraindications": [
+        "hip",
+        "knee_flexion_loaded"
+      ],
+      "setup": "Stand on one leg, bend the other knee and hold that foot behind you. Lower until the back knee touches the floor, then drive back up through the standing heel. Reach the free arm forward to balance; touch something sturdy while learning.",
+      "video_search": "https://www.youtube.com/results?search_query=Shrimp+Squat+proper+form+tutorial"
+    },
+    {
+      "id": "bw-low-step-up",
+      "name": "Low Step-Up",
+      "aliases": [],
+      "focus": [
+        "legs"
+      ],
+      "pattern": "lunge",
+      "primary": [
+        "quads"
+      ],
+      "secondary": [
+        "glutes"
+      ],
+      "equipment": "bodyweight",
+      "band": null,
+      "anchor": "body-support",
+      "anchor_alt": null,
+      "anchor_class": "bodyweight_bearing",
+      "unilateral": true,
+      "metric": "reps",
+      "default_seconds": null,
+      "tier": "core",
+      "roles": [
+        "main"
+      ],
+      "difficulty": "easy",
+      "progression_family": "lunge",
+      "progression_level_id": "lunge.l0",
+      "contraindications": [
+        "hip",
+        "knee_flexion_loaded"
+      ],
+      "setup": "Face a single stair or a low, sturdy step. Step up with one foot, press through that heel to stand tall on the step, then step down with control. Finish one side, then switch. Hold a rail if you need balance.",
+      "video_search": "https://www.youtube.com/results?search_query=Low+Step-Up+proper+form+tutorial"
+    },
+    {
+      "id": "bw-forward-lunge",
+      "name": "Forward Lunge",
+      "aliases": [
+        "front lunge"
+      ],
+      "focus": [
+        "legs"
+      ],
+      "pattern": "lunge",
+      "primary": [
+        "quads"
+      ],
+      "secondary": [
+        "glutes",
+        "hamstrings"
+      ],
+      "equipment": "bodyweight",
+      "band": null,
+      "anchor": "none",
+      "anchor_alt": null,
+      "anchor_class": "none",
+      "unilateral": true,
+      "metric": "reps",
+      "default_seconds": null,
+      "tier": "core",
+      "roles": [
+        "main"
+      ],
+      "difficulty": "easy",
+      "progression_family": "lunge",
+      "progression_level_id": "lunge.l1",
+      "contraindications": [
+        "knee_flexion_loaded"
+      ],
+      "setup": "Stand tall and step one foot well forward. Lower until both knees are near 90 degrees, front knee over the foot, then push back through the front heel to the start.",
+      "video_search": "https://www.youtube.com/results?search_query=Forward+Lunge+proper+form+tutorial"
+    },
+    {
+      "id": "bw-skater-squat",
+      "name": "Skater Squat",
+      "aliases": [],
+      "focus": [
+        "legs"
+      ],
+      "pattern": "lunge",
+      "primary": [
+        "quads"
+      ],
+      "secondary": [
+        "glutes",
+        "hamstrings"
+      ],
+      "equipment": "bodyweight",
+      "band": null,
+      "anchor": "none",
+      "anchor_alt": null,
+      "anchor_class": "none",
+      "unilateral": true,
+      "metric": "reps",
+      "default_seconds": null,
+      "tier": "core",
+      "roles": [
+        "main"
+      ],
+      "difficulty": "hard",
+      "progression_family": "lunge",
+      "progression_level_id": "lunge.l7",
+      "contraindications": [
+        "hip",
+        "knee_flexion_loaded"
+      ],
+      "setup": "Stand on one leg with the other knee bent and that foot off the floor behind you. Lean forward slightly and lower until the back knee lightly touches the floor (a folded towel under it helps), then drive up through the standing foot. Reach the arms forward to counterbalance.",
+      "video_search": "https://www.youtube.com/results?search_query=Skater+Squat+proper+form+tutorial"
+    },
+    {
+      "id": "banded-pull-through",
+      "name": "Banded Pull-Through",
+      "aliases": [
+        "pull-through",
+        "pull through"
+      ],
+      "focus": [
+        "legs",
+        "full"
+      ],
+      "pattern": "hinge",
+      "primary": [
+        "glutes"
+      ],
+      "secondary": [
+        "hamstrings"
+      ],
+      "equipment": "band",
+      "band": "B2-B3",
+      "anchor": "anchor-low",
+      "anchor_alt": null,
+      "anchor_class": "band_tension",
+      "unilateral": false,
+      "metric": "reps",
+      "default_seconds": null,
+      "tier": "core",
+      "roles": [
+        "main"
+      ],
+      "difficulty": "easy",
+      "progression_family": "hinge",
+      "progression_level_id": "hinge.l3",
+      "contraindications": [
+        "lower_back_extension"
+      ],
+      "setup": "Anchor the band low behind you and face away, the band running between your legs with both hands holding it. Walk out to tension. Push the hips back with a flat back, then drive them forward to stand tall and squeeze the glutes. Arms stay straight; the hips do the work.",
+      "video_search": "https://www.youtube.com/results?search_query=loop+resistance+band+Banded+Pull-Through+proper+form+tutorial"
+    },
+    {
+      "id": "banded-kickstand-rdl",
+      "name": "Banded Kickstand RDL",
+      "aliases": [],
+      "focus": [
+        "legs"
+      ],
+      "pattern": "hinge",
+      "primary": [
+        "hamstrings"
+      ],
+      "secondary": [
+        "glutes",
+        "lower_back"
+      ],
+      "equipment": "band",
+      "band": "B2-B3",
+      "anchor": "stance",
+      "anchor_alt": null,
+      "anchor_class": "band_tension",
+      "unilateral": true,
+      "metric": "reps",
+      "default_seconds": null,
+      "tier": "core",
+      "roles": [
+        "main"
+      ],
+      "difficulty": "medium",
+      "progression_family": "hinge",
+      "progression_level_id": "hinge.l4",
+      "contraindications": [
+        "lower_back_flexion",
+        "lower_back_extension"
+      ],
+      "setup": "Stand on the band with your front foot, an end in each hand, and rest the other toe a step behind you for balance. Push your hips back with a flat back until you feel the front hamstring, then drive them forward to stand. Most of the weight stays on the front leg.",
+      "video_search": "https://www.youtube.com/results?search_query=loop+resistance+band+Banded+Kickstand+RDL+proper+form+tutorial"
+    },
+    {
+      "id": "bw-single-leg-slider-curl",
+      "name": "Single-Leg Hamstring Slider Curl",
+      "aliases": [
+        "single leg slider curl"
+      ],
+      "focus": [
+        "legs"
+      ],
+      "pattern": "hinge",
+      "primary": [
+        "hamstrings"
+      ],
+      "secondary": [
+        "glutes"
+      ],
+      "equipment": "bodyweight",
+      "band": null,
+      "anchor": "none",
+      "anchor_alt": null,
+      "anchor_class": "none",
+      "unilateral": true,
+      "metric": "reps",
+      "default_seconds": null,
+      "tier": "core",
+      "roles": [
+        "main"
+      ],
+      "difficulty": "hard",
+      "progression_family": "hinge",
+      "progression_level_id": "hinge.l7",
+      "contraindications": [
+        "knee_flexion_loaded",
+        "lower_back_extension",
+        "lying_supine"
+      ],
+      "setup": "Lie on your back with one heel on a towel on a smooth floor and the other leg lifted. Lift your hips, slide the heel out until the leg is nearly straight, then pull it back in, hips up throughout. Finish one side, then switch.",
+      "video_search": "https://www.youtube.com/results?search_query=Single-Leg+Hamstring+Slider+Curl+proper+form+tutorial"
+    },
+    {
+      "id": "bw-hand-release-push-up",
+      "name": "Hand-Release Push-Up",
+      "aliases": [],
+      "focus": [
+        "upper",
+        "full"
+      ],
+      "pattern": "horizontal_push",
+      "primary": [
+        "chest"
+      ],
+      "secondary": [
+        "triceps",
+        "front_delts",
+        "abs"
+      ],
+      "equipment": "bodyweight",
+      "band": null,
+      "anchor": "none",
+      "anchor_alt": null,
+      "anchor_class": "none",
+      "unilateral": false,
+      "metric": "reps",
+      "default_seconds": null,
+      "tier": "core",
+      "roles": [
+        "main"
+      ],
+      "difficulty": "medium",
+      "progression_family": "horizontal_push",
+      "progression_level_id": "horizontal_push.l4",
+      "contraindications": [
+        "shoulder_horizontal",
+        "wrist_extension",
+        "lying_prone"
+      ],
+      "setup": "From a high plank, lower all the way until your chest and thighs touch the floor. Lift your hands an inch off the floor, place them back beside your chest and press up to the plank in one straight line. Every rep starts from a dead stop.",
+      "video_search": "https://www.youtube.com/results?search_query=Hand-Release+Push-Up+proper+form+tutorial"
+    },
+    {
+      "id": "bw-plyo-push-up",
+      "name": "Plyometric Push-Up",
+      "aliases": [
+        "clap push-up",
+        "explosive push-up"
+      ],
+      "focus": [
+        "upper"
+      ],
+      "pattern": "horizontal_push",
+      "primary": [
+        "chest"
+      ],
+      "secondary": [
+        "triceps",
+        "front_delts"
+      ],
+      "equipment": "bodyweight",
+      "band": null,
+      "anchor": "none",
+      "anchor_alt": null,
+      "anchor_class": "none",
+      "unilateral": false,
+      "metric": "reps",
+      "default_seconds": null,
+      "tier": "core",
+      "roles": [
+        "main"
+      ],
+      "difficulty": "hard",
+      "progression_family": "horizontal_push",
+      "progression_level_id": "horizontal_push.l7",
+      "contraindications": [
+        "elbow",
+        "shoulder_horizontal",
+        "wrist_extension"
+      ],
+      "setup": "From a high plank, lower under control, then press up hard enough that your hands leave the floor. Land with soft elbows and flow into the next rep. Add a clap only once the landings are quiet.",
+      "video_search": "https://www.youtube.com/results?search_query=Plyometric+Push-Up+proper+form+tutorial"
+    },
+    {
+      "id": "bw-typewriter-push-up",
+      "name": "Typewriter Push-Up",
+      "aliases": [],
+      "focus": [
+        "upper"
+      ],
+      "pattern": "horizontal_push",
+      "primary": [
+        "chest"
+      ],
+      "secondary": [
+        "triceps",
+        "front_delts",
+        "abs"
+      ],
+      "equipment": "bodyweight",
+      "band": null,
+      "anchor": "none",
+      "anchor_alt": null,
+      "anchor_class": "none",
+      "unilateral": false,
+      "metric": "reps",
+      "default_seconds": null,
+      "tier": "core",
+      "roles": [
+        "main"
+      ],
+      "difficulty": "hard",
+      "progression_family": "horizontal_push",
+      "progression_level_id": "horizontal_push.l8",
+      "contraindications": [
+        "shoulder_horizontal",
+        "wrist_extension"
+      ],
+      "setup": "High plank with your hands very wide. Lower to the bottom, slide your chest across toward one hand, then back across to the other, staying low, and press up. One slide each way is one rep.",
+      "video_search": "https://www.youtube.com/results?search_query=Typewriter+Push-Up+proper+form+tutorial"
+    },
+    {
+      "id": "bw-wall-hspu-negative",
+      "name": "Wall Handstand Push-Up Negative",
+      "aliases": [
+        "eccentric handstand push-up",
+        "negative handstand push-up"
+      ],
+      "focus": [
+        "upper"
+      ],
+      "pattern": "vertical_push",
+      "primary": [
+        "front_delts"
+      ],
+      "secondary": [
+        "triceps",
+        "abs"
+      ],
+      "equipment": "bodyweight",
+      "band": null,
+      "anchor": "none",
+      "anchor_alt": null,
+      "anchor_class": "none",
+      "unilateral": false,
+      "metric": "reps",
+      "default_seconds": null,
+      "tier": "core",
+      "roles": [
+        "main"
+      ],
+      "difficulty": "hard",
+      "progression_family": "vertical_push",
+      "progression_level_id": "vertical_push.l6b",
+      "contraindications": [
+        "core_pressure",
+        "neck",
+        "shoulder_overhead",
+        "wrist_extension"
+      ],
+      "setup": "Kick up into a handstand against a wall, chest facing the wall, hands shoulder-width. Lower your head toward a folded towel as slowly as you can, about four seconds, then come down off the wall and kick back up. Only the lowering is trained; skip it without a wall and a clear head-landing zone.",
+      "video_search": "https://www.youtube.com/results?search_query=Wall+Handstand+Push-Up+Negative+proper+form+tutorial"
+    },
+    {
+      "id": "bw-negative-pull-up",
+      "name": "Negative Pull-Up",
+      "aliases": [],
+      "focus": [
+        "upper"
+      ],
+      "pattern": "vertical_pull",
+      "primary": [
+        "lats"
+      ],
+      "secondary": [
+        "biceps",
+        "upper_back"
+      ],
+      "equipment": "bodyweight",
+      "band": null,
+      "anchor": "pullup-bar",
+      "anchor_alt": null,
+      "anchor_class": "bodyweight_bearing",
+      "unilateral": false,
+      "metric": "reps",
+      "default_seconds": null,
+      "tier": "core",
+      "roles": [
+        "main"
+      ],
+      "difficulty": "hard",
+      "progression_family": "vertical_pull",
+      "progression_level_id": "vertical_pull.l6b",
+      "contraindications": [
+        "elbow",
+        "shoulder_overhead"
+      ],
+      "setup": "Step or jump up to the top of a pull-up, chin over the bar, palms facing away. Lower yourself as slowly as you can, about five seconds, to a full hang.",
+      "video_search": "https://www.youtube.com/results?search_query=Negative+Pull-Up+proper+form+tutorial"
+    },
+    {
+      "id": "bw-wide-grip-pull-up",
+      "name": "Wide-Grip Pull-Up",
+      "aliases": [
+        "wide pull-up"
+      ],
+      "focus": [
+        "upper"
+      ],
+      "pattern": "vertical_pull",
+      "primary": [
+        "lats"
+      ],
+      "secondary": [
+        "upper_back",
+        "biceps"
+      ],
+      "equipment": "bodyweight",
+      "band": null,
+      "anchor": "pullup-bar",
+      "anchor_alt": null,
+      "anchor_class": "bodyweight_bearing",
+      "unilateral": false,
+      "metric": "reps",
+      "default_seconds": null,
+      "tier": "core",
+      "roles": [
+        "main"
+      ],
+      "difficulty": "hard",
+      "progression_family": "vertical_pull",
+      "progression_level_id": "vertical_pull.l8",
+      "contraindications": [
+        "elbow",
+        "shoulder_overhead"
+      ],
+      "setup": "Overhand grip a hand-width or two outside shoulder width. From a full hang, pull until your chin clears the bar, driving the elbows down and out, then lower all the way.",
+      "video_search": "https://www.youtube.com/results?search_query=Wide-Grip+Pull-Up+proper+form+tutorial"
+    },
+    {
+      "id": "bw-typewriter-pull-up",
+      "name": "Typewriter Pull-Up",
+      "aliases": [],
+      "focus": [
+        "upper"
+      ],
+      "pattern": "vertical_pull",
+      "primary": [
+        "lats"
+      ],
+      "secondary": [
+        "biceps",
+        "upper_back",
+        "abs"
+      ],
+      "equipment": "bodyweight",
+      "band": null,
+      "anchor": "pullup-bar",
+      "anchor_alt": null,
+      "anchor_class": "bodyweight_bearing",
+      "unilateral": false,
+      "metric": "reps",
+      "default_seconds": null,
+      "tier": "core",
+      "roles": [
+        "main"
+      ],
+      "difficulty": "hard",
+      "progression_family": "vertical_pull",
+      "progression_level_id": "vertical_pull.l9",
+      "contraindications": [
+        "elbow",
+        "shoulder_overhead"
+      ],
+      "setup": "Wide overhand grip. Pull your chin over the bar, slide across toward one hand, then back across to the other with your chin at bar height, and lower. One slide each way is one rep.",
+      "video_search": "https://www.youtube.com/results?search_query=Typewriter+Pull-Up+proper+form+tutorial"
+    },
+    {
+      "id": "bw-rkc-plank",
+      "name": "RKC Plank",
+      "aliases": [
+        "hardstyle plank"
+      ],
+      "focus": [
+        "abs"
+      ],
+      "pattern": "anti_extension",
+      "primary": [
+        "abs"
+      ],
+      "secondary": [
+        "glutes",
+        "front_delts"
+      ],
+      "equipment": "bodyweight",
+      "band": null,
+      "anchor": "none",
+      "anchor_alt": null,
+      "anchor_class": "none",
+      "unilateral": false,
+      "metric": "time",
+      "default_seconds": 20,
+      "tier": "core",
+      "roles": [
+        "main"
+      ],
+      "difficulty": "hard",
+      "progression_family": "anti_extension",
+      "progression_level_id": "anti_extension.l4",
+      "contraindications": [
+        "core_pressure"
+      ],
+      "setup": "Forearm plank with elbows a little in front of your shoulders. Squeeze fists, glutes and thighs as hard as you can and pull your elbows toward your toes without moving them. Short, maximal holds.",
+      "video_search": "https://www.youtube.com/results?search_query=RKC+Plank+proper+form+tutorial"
+    },
+    {
+      "id": "bw-star-side-plank",
+      "name": "Star Side Plank",
+      "aliases": [],
+      "focus": [
+        "abs"
+      ],
+      "pattern": "anti_extension",
+      "primary": [
+        "obliques"
+      ],
+      "secondary": [
+        "abductors",
+        "glutes"
+      ],
+      "equipment": "bodyweight",
+      "band": null,
+      "anchor": "none",
+      "anchor_alt": null,
+      "anchor_class": "none",
+      "unilateral": true,
+      "metric": "time",
+      "default_seconds": 20,
+      "tier": "core",
+      "roles": [
+        "main"
+      ],
+      "difficulty": "hard",
+      "progression_family": "anti_extension",
+      "progression_level_id": "anti_extension.l6",
+      "contraindications": [
+        "core_pressure",
+        "wrist_extension"
+      ],
+      "setup": "Side plank on a straight arm, hand under the shoulder. Reach the top arm to the ceiling and lift the top leg as high as you can control, body in one line. Finish one side, then switch.",
+      "video_search": "https://www.youtube.com/results?search_query=Star+Side+Plank+proper+form+tutorial"
+    },
+    {
+      "id": "bw-hollow-rock",
+      "name": "Hollow Body Rock",
+      "aliases": [
+        "hollow rock"
+      ],
+      "focus": [
+        "abs"
+      ],
+      "pattern": "anti_extension",
+      "primary": [
+        "abs"
+      ],
+      "secondary": [
+        "hip_flexors"
+      ],
+      "equipment": "bodyweight",
+      "band": null,
+      "anchor": "none",
+      "anchor_alt": null,
+      "anchor_class": "none",
+      "unilateral": false,
+      "metric": "reps",
+      "default_seconds": null,
+      "tier": "core",
+      "roles": [
+        "main"
+      ],
+      "difficulty": "hard",
+      "progression_family": "anti_extension",
+      "progression_level_id": "anti_extension.l7",
+      "contraindications": [
+        "core_pressure",
+        "lower_back_flexion",
+        "lying_supine",
+        "neck"
+      ],
+      "setup": "On your back, press the low back flat and lift into a hollow hold, arms and legs extended and hovering. Keep that exact shape and rock from shoulders to hips. End the set when the low back lifts.",
+      "video_search": "https://www.youtube.com/results?search_query=Hollow+Body+Rock+proper+form+tutorial"
     }
   ]
 }

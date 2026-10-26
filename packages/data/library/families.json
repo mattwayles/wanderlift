@@ -42,7 +42,8 @@
           "exercise_ids": [
             "bw-push-up",
             "bw-wide-push-up",
-            "single-arm-chest-press"
+            "single-arm-chest-press",
+            "bw-hand-release-push-up"
           ]
         },
         {
@@ -68,14 +69,16 @@
           "anchor_exercise_id": "bw-decline-push-up",
           "exercise_ids": [
             "bw-decline-push-up",
-            "bw-pseudo-planche-push-up"
+            "bw-pseudo-planche-push-up",
+            "bw-plyo-push-up"
           ]
         },
         {
           "level_id": "horizontal_push.l8",
           "anchor_exercise_id": "bw-archer-push-up",
           "exercise_ids": [
-            "bw-archer-push-up"
+            "bw-archer-push-up",
+            "bw-typewriter-push-up"
           ]
         },
         {
@@ -231,7 +234,8 @@
           "level_id": "vertical_push.l6b",
           "anchor_exercise_id": "bw-wall-walk",
           "exercise_ids": [
-            "bw-wall-walk"
+            "bw-wall-walk",
+            "bw-wall-hspu-negative"
           ]
         },
         {
@@ -304,7 +308,8 @@
           "level_id": "vertical_pull.l6b",
           "anchor_exercise_id": "bw-negative-chin-up",
           "exercise_ids": [
-            "bw-negative-chin-up"
+            "bw-negative-chin-up",
+            "bw-negative-pull-up"
           ]
         },
         {
@@ -318,14 +323,16 @@
           "level_id": "vertical_pull.l8",
           "anchor_exercise_id": "bw-pull-up",
           "exercise_ids": [
-            "bw-pull-up"
+            "bw-pull-up",
+            "bw-wide-grip-pull-up"
           ]
         },
         {
           "level_id": "vertical_pull.l9",
           "anchor_exercise_id": "bw-archer-pull-up",
           "exercise_ids": [
-            "bw-archer-pull-up"
+            "bw-archer-pull-up",
+            "bw-typewriter-pull-up"
           ]
         }
       ]
@@ -339,14 +346,16 @@
           "level_id": "squat.l0",
           "anchor_exercise_id": "bw-box-squat",
           "exercise_ids": [
-            "bw-box-squat"
+            "bw-box-squat",
+            "bw-assisted-squat"
           ]
         },
         {
           "level_id": "squat.l1",
           "anchor_exercise_id": "bw-squat",
           "exercise_ids": [
-            "bw-squat"
+            "bw-squat",
+            "bw-prisoner-squat"
           ]
         },
         {
@@ -404,7 +413,8 @@
           "level_id": "squat.l7",
           "anchor_exercise_id": "bw-pistol-squat",
           "exercise_ids": [
-            "bw-pistol-squat"
+            "bw-pistol-squat",
+            "bw-shrimp-squat"
           ]
         }
       ]
@@ -439,7 +449,8 @@
             "rdl",
             "good-morning",
             "hip-thrust",
-            "bw-good-morning"
+            "bw-good-morning",
+            "banded-pull-through"
           ]
         },
         {
@@ -448,7 +459,8 @@
           "exercise_ids": [
             "deadlift",
             "band-swing",
-            "bw-kickstand-rdl"
+            "bw-kickstand-rdl",
+            "banded-kickstand-rdl"
           ]
         },
         {
@@ -481,7 +493,8 @@
           "level_id": "hinge.l7",
           "anchor_exercise_id": "bw-nordic-curl",
           "exercise_ids": [
-            "bw-nordic-curl"
+            "bw-nordic-curl",
+            "bw-single-leg-slider-curl"
           ]
         }
       ]
@@ -495,14 +508,16 @@
           "level_id": "lunge.l0",
           "anchor_exercise_id": "bw-supported-split-squat",
           "exercise_ids": [
-            "bw-supported-split-squat"
+            "bw-supported-split-squat",
+            "bw-low-step-up"
           ]
         },
         {
           "level_id": "lunge.l1",
           "anchor_exercise_id": "bw-reverse-lunge",
           "exercise_ids": [
-            "bw-reverse-lunge"
+            "bw-reverse-lunge",
+            "bw-forward-lunge"
           ]
         },
         {
@@ -550,7 +565,8 @@
           "level_id": "lunge.l7",
           "anchor_exercise_id": "bw-cossack-squat",
           "exercise_ids": [
-            "bw-cossack-squat"
+            "bw-cossack-squat",
+            "bw-skater-squat"
           ]
         }
       ]
@@ -594,7 +610,8 @@
           "anchor_exercise_id": "banded-plank",
           "exercise_ids": [
             "banded-plank",
-            "bw-long-lever-plank"
+            "bw-long-lever-plank",
+            "bw-rkc-plank"
           ]
         },
         {
@@ -611,7 +628,8 @@
           "anchor_exercise_id": "side-plank-abduction",
           "exercise_ids": [
             "side-plank-abduction",
-            "bw-side-plank-leg-lift"
+            "bw-side-plank-leg-lift",
+            "bw-star-side-plank"
           ]
         },
         {
@@ -619,7 +637,8 @@
           "anchor_exercise_id": "bw-hollow-hold",
           "exercise_ids": [
             "bw-hollow-hold",
-            "hollow-hold"
+            "hollow-hold",
+            "bw-hollow-rock"
           ]
         }
       ]

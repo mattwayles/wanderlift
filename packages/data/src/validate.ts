@@ -342,13 +342,9 @@ function main() {
             `family ${fam.id} level ${lvl.level_id}: exercise ${ex.id}.progression_level_id is "${ex.progression_level_id}", expected "${lvl.level_id}"`,
           );
         }
-        // ADR 0010 compatibility rule 1 — a level cannot be half reps and half holds; the
-        // prescription shape and the micro rep/hold range both depend on it.
-        if (anchor && ex.metric !== anchor.metric) {
-          fail(
-            `family ${fam.id} level ${lvl.level_id}: sibling ${ex.id} has metric "${ex.metric}" but anchor ${anchor.id} has "${anchor.metric}" — siblings must share a metric (ADR 0010)`,
-          );
-        }
+        // A level may mix reps and holds (c9d0c1f): `translateDose` in the engine's
+        // progression/tiers.ts gives a sibling that counts the other thing the same position in
+        // its own range, so there is no metric check here any more.
       }
     }
   }

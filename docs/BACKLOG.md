@@ -58,12 +58,12 @@ the record of what was completed and why.
   80pt stamps on a small phone, and Completion's "See it in your passport ›" link opening the right
   page. Not built: (1) a `stampLabel` param change arriving mid-turn isn't guarded, so the turn's end
   commit can override the jump; (2) the Journey teaser could show each stamp's first-visit date.
-- **Rungs with a single exercise.** Track 37k gave siblings to the high rungs the old backlog item
-  named (horizontal_push l7, horizontal_pull l4-l8, anti_extension l4/l6), but 23 rungs still hold
-  one exercise, so at that level the current-rung draw (~60%) always repeats it: horizontal_push
-  l3b, l8, l8b, l9; horizontal_pull l2; vertical_push l6, l6b, l7; vertical_pull l5-l9 and l6b;
-  squat l0, l1, l4, l5, l7; hinge l7; lunge l0, l1, l7. Lower-rung recall softens it. Add siblings
-  as people reach them; keep the 37c tagging standard and the text guards green.
+- **Rungs with a single exercise.** Tracks 37k and 53 gave siblings to most of them; 5 rungs still
+  hold one exercise, so at that level the current-rung draw (~60%) always repeats it:
+  horizontal_push l3b (negative push-up), l8b (incline one-arm), l9 (one-arm push-up);
+  vertical_push l7 (wall HSPU); vertical_pull l7 (chin-up). Track 53 left them alone on purpose:
+  there is no established movement of the same difficulty that isn't already on a neighbouring
+  rung. Lower-rung recall softens it.
 - **Show the app version in Settings' footer.** `expo-constants` is hoisted in by `expo` but not declared in
   `app/package.json`; add it (`npx expo install expo-constants`) and read `Constants.expoConfig?.version`.
 

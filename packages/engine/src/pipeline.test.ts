@@ -114,7 +114,9 @@ describe('generateSession — pipeline wiring', () => {
       clock: { today: TODAY, tzId: 'UTC' },
       rng: createRng(1),
     });
-    expect(plan.explanation).toMatch(/starting at the bottom of each ladder/);
+    expect(plan.explanation).toMatch(
+      /starting where your fitness and experience put you on each ladder/,
+    );
   });
 
   it('generation is deterministic — same inputs, byte-identical output', () => {

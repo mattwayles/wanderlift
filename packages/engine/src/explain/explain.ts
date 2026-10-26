@@ -139,7 +139,7 @@ export function composeExplanation(input: ExplanationInputs): string {
 
   if (input.firstSessionNotice) {
     sentences.push(
-      "You're starting at the bottom of each ladder — tap too easy or too hard on the board any time to move a level.",
+      "You're starting where your fitness and experience put you on each ladder — tap too easy or too hard on the board any time to move a level.",
     );
   }
 

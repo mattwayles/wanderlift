@@ -73,7 +73,7 @@ describe('§5.8 the explanation line', () => {
 
   it('shows the first-session notice only when flagged', () => {
     const text = composeExplanation({ ...base(), firstSessionNotice: true });
-    expect(text).toMatch(/starting at the bottom of each ladder/);
+    expect(text).toMatch(/starting where your fitness and experience put you on each ladder/);
   });
 
   it('names the pattern balanced against when nothing else is notable', () => {

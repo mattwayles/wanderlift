@@ -145,15 +145,15 @@ describe('Rest timer + feedback controls, driven through WorkoutScreen', () => {
     );
 
     await waitFor(() => expect(screen.getByTestId('complete-set')).toBeTruthy(), WAIT_OPTS);
-    // The exercise page's How to promises a video demo (clips are still being filmed).
-    expect(screen.getByTestId('how-to-demo-soon')).toBeTruthy();
+    // The exercise page's How to carries the demo note.
+    expect(screen.getByTestId('how-to-demo-note')).toBeTruthy();
     await fireEvent.press(screen.getByTestId('complete-set'));
 
     // Rest auto-started.
     await waitFor(() => expect(screen.getByTestId('rest-circle')).toBeTruthy(), WAIT_OPTS);
     // ...and so does the rest page's How to, for the upcoming exercise.
     expect(
-      within(screen.getByTestId('rest-how-to-block')).getByTestId('how-to-demo-soon'),
+      within(screen.getByTestId('rest-how-to-block')).getByTestId('how-to-demo-note'),
     ).toBeTruthy();
     expect(screen.getByText(/^How did (that set|those \d+ sets) of .* feel\?$/)).toBeTruthy();
     const restDisplay = () => Number(screen.getByTestId('rest-remaining').props.children);

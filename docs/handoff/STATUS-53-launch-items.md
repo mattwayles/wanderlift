@@ -6,10 +6,11 @@ Last updated: 2026-10-26
 - [x] Deleted stale `app/roamfit-test-*.sqlite*` (gitignored litter).
 - [x] Settings: Legal group (Privacy Policy, Terms of Use), Your data group (Export my data via share
   sheet; Delete all data behind a confirm Sheet). `userDataRepo` in packages/store; `StoreContext.restart()`.
+- [x] `HowToDemo`: dashed tile removed; Watch a demo (online) + one plain note line. Verdict: cannot be
+  confirmed publishable with the tile (2.1(a) placeholder wording), so replaced.
 ### In progress
-- `HowToDemo` replacement.
+- Unused-file sweep, then full `npm run check`.
 ### Next
-3. `HowToDemo`: replace the dashed "coming soon" placeholder tile (App Review 2.1(a) risk).
 4. Remove unused files; BACKLOG tidy; full `npm run check`.
 ### Decisions / gotchas
 - Working tree already had uncommitted engine changes (golden snapshot, difficultyTable,

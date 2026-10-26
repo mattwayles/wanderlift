@@ -101,11 +101,16 @@ _List exercises that you'd like to incldue in the library here. Any exercise you
   (4) After the beta: privacy-first analytics (TelemetryDeck)
   with a Settings opt-out, events queued offline, funnel onboarding → first workout → day-7 return.
   Until then, App Store Connect analytics covers retention.
-- **Per-exercise demo clips.** Every How to shows a "Video demo coming soon" tile
-  (`components/HowToDemo.tsx`) until the clips exist; online, the YouTube search sits under it as
-  "In the meantime". Plan: self-recorded 3-6s silent loops (one clip can serve anchor/stance
-  variants of the same move), bundled with the app so they play offline, core tier first. The tile
-  is where the player goes; drop the "coming soon" copy for exercises that have a clip.
+- **Per-exercise demo clips (postponed).** Online, every How to offers "Watch a demo" (a YouTube
+  search) with the line "Short video demos are on the way" under it (`components/HowToDemo.tsx`).
+  The dashed "coming soon" tile was removed: App Review 2.1(a) says placeholder and temporary
+  content should be scrubbed before submission. Plan: self-recorded 3-6s silent loops (one clip can
+  serve anchor/stance variants of the same move), bundled with the app so they play offline, core
+  tier first. `HowToDemo` is where the player goes; drop the note for exercises that have a clip.
+- **Delete the iCloud backup from inside the app.** Settings' Delete all data erases this phone
+  only; the delete sheet tells the user the iCloud copy stays until removed in iOS Settings. A true
+  wipe needs a `delete` on the native `icloud-backup` module (Swift, dev-client rebuild). After a
+  wipe, a fresh install will also see the old backup and offer "Welcome back".
 - **Field Guide rows — the rest of the icon clean-up.** Rows show a zoomed front/back muscle map on a
   neutral tile (`components/MuscleMap.tsx` `zoom`, `lib/muscleMap.ts` `focusBox`); the detail screen
   has the full front + back map. Not built yet, in suggested order: (1) the movement pattern in words

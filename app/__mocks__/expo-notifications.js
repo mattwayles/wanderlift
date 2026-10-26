@@ -38,6 +38,8 @@ async function scheduleNotificationAsync() {
 
 async function cancelScheduledNotificationAsync() {}
 
+async function cancelAllScheduledNotificationsAsync() {}
+
 const SchedulableTriggerInputTypes = {
   TIME_INTERVAL: 'timeInterval',
   DATE: 'date',
@@ -54,5 +56,6 @@ module.exports = {
   requestPermissionsAsync,
   scheduleNotificationAsync,
   cancelScheduledNotificationAsync,
+  cancelAllScheduledNotificationsAsync,
   SchedulableTriggerInputTypes,
 };

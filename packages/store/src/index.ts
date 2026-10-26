@@ -28,4 +28,5 @@ export * as milestonesRepo from './repositories/milestones';
 export * as badgesRepo from './repositories/badges';
 export * as statsRepo from './repositories/stats';
 export * as queuesRepo from './repositories/queues';
+export * as userDataRepo from './repositories/userData';
 export * as instrumentationRepo from './repositories/instrumentation';

@@ -43,6 +43,8 @@ import type { BackupStatus } from '../lib/icloudBackup';
 import { MAX_DAILY_MOTIVATION_TIMES, dateToTime, timeToDate } from '../lib/motivationNotifications';
 import { appVersionLabel } from '../lib/appInfo';
 import { openFeedbackEmail } from '../lib/feedback';
+import { PRIVACY_URL, TERMS_URL, openLegalPage } from '../lib/legal';
+import { eraseUserData, shareUserData } from '../lib/userData';
 import { makeStyles, radius, space } from '../theme';
 import { useThemePreference } from '../state/ThemeProvider';
 import type { ThemePreference } from '@roamfit/store';
@@ -118,7 +120,7 @@ function AppearanceControl(): React.JSX.Element {
 }
 
 export default function SettingsScreen(): React.JSX.Element {
-  const { db, library, families } = useStore();
+  const { db, library, families, restart } = useStore();
   const { app: musicApp, setApp: setMusicApp } = useMusicApp();
   const styles = useStyles();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -192,6 +194,32 @@ export default function SettingsScreen(): React.JSX.Element {
     },
     [db, refresh],
   );
+
+  const [legalNote, setLegalNote] = useState<string | null>(null);
+  const openLegal = useCallback(async (url: string) => {
+    setLegalNote((await openLegalPage(url)) ? null : "Couldn't open the page. Try again online.");
+  }, []);
+
+  const [dataNote, setDataNote] = useState<string | null>(null);
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const exportData = useCallback(async () => {
+    setDataNote((await shareUserData(db)) ? null : "Couldn't open the share sheet. Try again.");
+  }, [db]);
+  const deleteAllData = useCallback(async () => {
+    if (deleting) return;
+    setDeleting(true);
+    try {
+      await eraseUserData(db);
+      setDeleteOpen(false);
+      restart();
+    } catch {
+      setDeleteOpen(false);
+      setDataNote("Couldn't delete your data just now. Nothing was changed.");
+    } finally {
+      setDeleting(false);
+    }
+  }, [db, deleting, restart]);
 
   const [feedbackNote, setFeedbackNote] = useState<string | null>(null);
   const sendFeedback = useCallback(async () => {
@@ -526,6 +554,27 @@ export default function SettingsScreen(): React.JSX.Element {
       </Enter>
 
       <Enter index={9}>
+        <Group title="Your data" caption={dataNote ?? undefined}>
+          <NavRow
+            testID="settings-export-data"
+            icon="external"
+            tone="teal"
+            label="Export my data"
+            hint="Opens the share sheet with a copy of your workouts and settings"
+            onPress={() => void exportData()}
+          />
+          <NavRow
+            testID="settings-delete-data"
+            icon="close"
+            tone="gold"
+            label="Delete all data"
+            hint="Asks you to confirm, then erases everything on this phone"
+            onPress={() => setDeleteOpen(true)}
+          />
+        </Group>
+      </Enter>
+
+      <Enter index={10}>
         <Group title="Learn">
           <NavRow
             testID="settings-anchor-safety"
@@ -546,7 +595,7 @@ export default function SettingsScreen(): React.JSX.Element {
         </Group>
       </Enter>
 
-      <Enter index={10}>
+      <Enter index={11}>
         <Group title="Feedback">
           <NavRow
             testID="settings-feedback"
@@ -560,7 +609,28 @@ export default function SettingsScreen(): React.JSX.Element {
         </Group>
       </Enter>
 
-      <Enter index={11}>
+      <Enter index={12}>
+        <Group title="Legal" caption={legalNote ?? undefined}>
+          <NavRow
+            testID="settings-privacy"
+            icon="shield"
+            tone="sky"
+            label="Privacy Policy"
+            hint="Opens the privacy policy in your browser"
+            onPress={() => void openLegal(PRIVACY_URL)}
+          />
+          <NavRow
+            testID="settings-terms"
+            icon="guide"
+            tone="sky"
+            label="Terms of Use"
+            hint="Opens the terms of use in your browser"
+            onPress={() => void openLegal(TERMS_URL)}
+          />
+        </Group>
+      </Enter>
+
+      <Enter index={13}>
         <Card padding="md" style={styles.disclaimer} testID="settings-section-Medical disclaimer">
           <IconBadge icon="shield" tone="gold" size={40} />
           <View style={styles.disclaimerBody}>
@@ -574,7 +644,7 @@ export default function SettingsScreen(): React.JSX.Element {
         </Card>
       </Enter>
 
-      <Enter index={12}>
+      <Enter index={14}>
         <Group title="Advanced">
           <Pressable
             testID="settings-advanced-toggle"
@@ -692,6 +762,35 @@ export default function SettingsScreen(): React.JSX.Element {
             size="md"
             fullWidth
             onPress={resetProgressionSessions}
+          />
+        </View>
+      </Sheet>
+
+      {/* The delete confirm: same shape as the reset confirm, the safe choice is the loud one. */}
+      <Sheet
+        testID="delete-sheet"
+        visible={deleteOpen}
+        onClose={() => setDeleteOpen(false)}
+        title="Delete all your data?"
+      >
+        <Txt variant="small" color="text2" style={styles.sheetBody}>
+          This erases every workout, badge, setting and preference on this phone, and the app starts
+          again from the beginning. It can&apos;t be undone. A backup already in iCloud is kept
+          until you remove it in iOS Settings, and workouts already in Apple Health stay there.
+        </Txt>
+        <View style={styles.sheetButtons}>
+          <Button
+            testID="delete-confirm-cancel"
+            label="Keep my data"
+            onPress={() => setDeleteOpen(false)}
+          />
+          <Button
+            testID="delete-confirm-yes"
+            label={deleting ? 'Deleting…' : 'Delete everything'}
+            variant="secondary"
+            size="md"
+            fullWidth
+            onPress={() => void deleteAllData()}
           />
         </View>
       </Sheet>

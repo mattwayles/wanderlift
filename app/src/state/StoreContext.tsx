@@ -20,6 +20,9 @@ export interface StoreContextValue {
    *  `remount` the whole app subtree is rebuilt on it, so every screen re-reads and navigation
    *  returns to Today; without it only the handle changes (a restore that rolled back). */
   replaceDb: (db: Db, opts?: { remount?: boolean }) => void;
+  /** Rebuilds the whole app subtree on the current handle, with no "Welcome back" notice: used
+   *  after Delete all data, so the app starts again from first run. */
+  restart: () => void;
   /** True from a successful restore until Today has shown "Welcome back" once. */
   restoredNotice: boolean;
   clearRestoredNotice: () => void;
@@ -42,6 +45,7 @@ export function StoreProvider({ children }: PropsWithChildren): React.JSX.Elemen
     }
   }, []);
   const clearRestoredNotice = useCallback(() => setRestoredNotice(false), []);
+  const restart = useCallback(() => setGeneration((g) => g + 1), []);
 
   const value = useMemo<StoreContextValue>(
     () => ({
@@ -49,10 +53,11 @@ export function StoreProvider({ children }: PropsWithChildren): React.JSX.Elemen
       library: exerciseLibrary,
       families: familyLibrary,
       replaceDb,
+      restart,
       restoredNotice,
       clearRestoredNotice,
     }),
-    [db, replaceDb, restoredNotice, clearRestoredNotice],
+    [db, replaceDb, restart, restoredNotice, clearRestoredNotice],
   );
   return (
     <StoreContext.Provider value={value}>

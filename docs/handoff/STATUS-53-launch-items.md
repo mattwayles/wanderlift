@@ -4,12 +4,11 @@ Last updated: 2026-10-26
 - [x] Flaky screen tests: root cause was fsync per commit on a loaded disk (sys time > user time);
   `PRAGMA synchronous = OFF` under Jest only. Heavy screen suites 29s -> 12s.
 - [x] Deleted stale `app/roamfit-test-*.sqlite*` (gitignored litter).
+- [x] Settings: Legal group (Privacy Policy, Terms of Use), Your data group (Export my data via share
+  sheet; Delete all data behind a confirm Sheet). `userDataRepo` in packages/store; `StoreContext.restart()`.
 ### In progress
-- Legal links in Settings (Privacy Policy, Terms of Use rows opening the hosted pages).
+- `HowToDemo` replacement.
 ### Next
-1. Store: `exportAllUserData` / `deleteAllUserData` in packages/store (+ tests).
-2. Settings: "Export my data" (share sheet, JSON text) and "Delete all data" (confirm sheet), wiring
-   cancels notifications and remounts via `replaceDb`.
 3. `HowToDemo`: replace the dashed "coming soon" placeholder tile (App Review 2.1(a) risk).
 4. Remove unused files; BACKLOG tidy; full `npm run check`.
 ### Decisions / gotchas

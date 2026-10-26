@@ -7,8 +7,10 @@ module.exports = {
   globalTeardown: '<rootDir>/jest.globalTeardown.js',
   // Screen tests mount real screens over the real SQLite driver; with the whole suite running in
   // parallel, the 5s default intermittently expires on a loaded machine (a different test each
-  // run). Tests that chain several `waitFor`s still pass their own larger timeout.
-  testTimeout: 20000,
+  // run). Tests that chain several `waitFor`s still pass their own larger timeout. 60s because
+  // the stalls seen when another `jest` run shares the machine (this repo is often worked in by
+  // two sessions at once) reach 25-50s for a test that takes 2s alone.
+  testTimeout: 60000,
   // Half the cores. Screen tests mount real screens over real SQLite, so at full parallelism on a
   // busy machine they time out in a different suite every run; at 50% the full run was clean 3/3
   // and no slower (less contention, so less retrying and fewer timeouts).

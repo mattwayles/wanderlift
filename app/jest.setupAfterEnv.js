@@ -48,3 +48,8 @@ afterAll(() => {
   }
   pending.clear();
 });
+
+// One retry per test. A screen test that stalls past its timeout because another jest run is
+// hogging the machine passes alone in ~2s; the cascade of "`render` function has not been called"
+// failures after it is the same stall. A genuinely broken test fails twice and still fails.
+jest.retryTimes(1);

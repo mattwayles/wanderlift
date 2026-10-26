@@ -1,6 +1,9 @@
 ## Track: 53 — launch items (policy links, data export/delete, demo tile, flaky tests)
 Last updated: 2026-10-26
 ### Done
+- [x] Flaky tests, second layer: under a second concurrent jest run (the repo is often worked in by
+  two sessions) tests stalled 25-150s. `testTimeout` 60s and `jest.retryTimes(1)` in
+  `jest.setupAfterEnv.js`. `npm run check` green 2 of 2 after, one of them at load average ~12.
 - [x] Flaky screen tests: root cause was fsync per commit on a loaded disk (sys time > user time);
   `PRAGMA synchronous = OFF` under Jest only. Heavy screen suites 29s -> 12s.
 - [x] Deleted stale `app/roamfit-test-*.sqlite*` (gitignored litter).
@@ -12,7 +15,7 @@ Last updated: 2026-10-26
   android-icon-*.png and favicon.png (iOS-only app), `react-native-webview` dependency + jest mock
   (removal only; native pod drops at next build). No orphan source modules found.
 ### In progress
-- Full `npm run check`.
+- Nothing; track complete.
 ### Next
 4. Remove unused files; BACKLOG tidy; full `npm run check`.
 ### Decisions / gotchas

@@ -501,8 +501,8 @@ export default function JourneyScreen({ navigation, route }: Props): React.JSX.E
           <View testID="first-session-explanation" style={styles.note}>
             <Icon name="sparkles" size={18} color="sky" style={styles.noteIcon} />
             <Txt variant="small" color="text" style={styles.noteText}>
-              You&apos;re starting at the bottom of each trail — tap Adjust on any of them to move a
-              level if it&apos;s too easy or too hard.
+              Your starting points are set from your fitness and experience — tap Adjust on any
+              trail to move a level if it&apos;s too easy or too hard.
             </Txt>
           </View>
         )}

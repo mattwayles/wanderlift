@@ -89,6 +89,9 @@ export function getDb(): Db {
   const client = open({ name: LIVE_DB_NAME });
   client.executeSync('PRAGMA journal_mode = WAL');
   client.executeSync('PRAGMA foreign_keys = ON');
+  // Under Jest every test file builds a fresh db (all migrations) on a loaded disk, and fsync per
+  // commit was the dominant cost; a throwaway test file has no durability to protect.
+  if (process.env.JEST_WORKER_ID !== undefined) client.executeSync('PRAGMA synchronous = OFF');
   // Defense in depth alongside the per-process db name above: if anything ever DOES contend on
   // one physical file (e.g. a future change reintroduces a fixed path), a locked db should fail
   // fast with a clear SQLITE_BUSY error within a few seconds, not hang indefinitely — a hung

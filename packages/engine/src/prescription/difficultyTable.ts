@@ -37,7 +37,7 @@ export interface DifficultyRow {
 
 export const DIFFICULTY_TABLE: Record<Difficulty, DifficultyRow> = {
   easy: { sets: 3, reps: 15, restSec: 45, tempoSec: 3 },
-  medium: { sets: 3, reps: 12, restSec: 75, tempoSec: 3 },
+  medium: { sets: 3, reps: 12, restSec: 60, tempoSec: 3 },
   hard: { sets: 4, reps: 12, restSec: 60, tempoSec: 4 },
 };
 

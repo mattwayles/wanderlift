@@ -167,7 +167,7 @@ describe('§5.4 prescription', () => {
       requestedDifficulty: 'medium',
       recoveryTreatment: false,
     });
-    expect(medium.restSec).toBe(75);
+    expect(medium.restSec).toBe(60);
   });
 
   // Track 14 — CARDIO_INTERVAL_TABLE, not DIFFICULTY_TABLE, prescribes a conditioning exercise.

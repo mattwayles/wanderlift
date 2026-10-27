@@ -113,6 +113,49 @@ describe('§10.3 swap at approval', () => {
     expect(sessionsRepo.getSession(db, sessionId)!.id).toBe(sessionId);
   });
 
+  it('keeps swapping round to the planned exercise instead of only its alternatives', async () => {
+    let db!: ReturnType<typeof useStore>['db'];
+    render(
+      <StoreProvider>
+        <Setup onReady={(d) => (db = d)} />
+      </StoreProvider>,
+    );
+    await waitFor(() => expect(db).toBeDefined(), WAIT_OPTS);
+    const sessionId = await createPendingSession(db);
+    const mains = sessionsRepo
+      .getSession(db, sessionId)!
+      .entries.filter((e) => e.section === 'main');
+    const current = (entryId: string) =>
+      sessionsRepo.getSession(db, sessionId)!.entries.find((e) => e.id === entryId)!.exerciseId;
+
+    render(
+      <StoreProvider>
+        <NavigationContainer>
+          <ApprovalScreen
+            navigation={mockNavigation() as never}
+            route={{ key: 'k', name: 'Approval', params: { sessionId } } as never}
+          />
+        </NavigationContainer>
+      </StoreProvider>,
+    );
+
+    // The loop is the planned exercise plus at most five alternatives, so six taps always land
+    // back on it, and every stop before that is a different exercise. Swapping used to re-rank
+    // against the last pick, so a slot could ping-pong between two alternatives for good.
+    for (const entry of mains) {
+      const seen: string[] = [];
+      for (let tap = 0; tap < 6 && seen.at(-1) !== entry.exerciseId; tap++) {
+        const before = current(entry.id);
+        await waitFor(() => expect(screen.getByTestId(`swap-${before}`)).toBeTruthy(), WAIT_OPTS);
+        fireEvent.press(screen.getByTestId(`swap-${before}`));
+        await waitFor(() => expect(current(entry.id)).not.toBe(before), WAIT_OPTS);
+        seen.push(current(entry.id));
+      }
+      expect(seen.at(-1)).toBe(entry.exerciseId);
+      expect(new Set(seen.slice(0, -1)).size).toBe(seen.length - 1);
+    }
+  });
+
   it('no longer offers a level-up button here', async () => {
     let db!: ReturnType<typeof useStore>['db'];
     render(

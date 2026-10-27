@@ -231,3 +231,57 @@ export function alternativesForSlot(req: SwapSlotRequest): SwapAlternative[] {
     replacement: buildSwapReplacementEntry(c.exercise, req.entry, usableBands(req.bands)),
   }));
 }
+
+export interface SwapCycleRequest extends Omit<SwapSlotRequest, 'excludeAnchor'> {
+  /** What the engine originally put in this slot (the entry's `plannedExerciseId`). The cycle is
+   *  anchored on it, so it is always one tap away from coming back. */
+  plannedExerciseId: string;
+}
+
+/**
+ * The swap button's "next" — one tap steps the slot through a fixed loop: the planned exercise,
+ * then `alternativesForSlot`'s ranked alternatives *to the planned exercise*, then back to the
+ * planned exercise.
+ *
+ * Ranking against whatever is in the slot right now (what the button did before) meant each swap
+ * re-anchored the list on the last pick: the exercise swapped away from was just one candidate
+ * among many for the new one, so a couple of taps ping-ponged between two alternatives and the
+ * original never came back. Anchoring on the plan keeps the loop the same however many times it
+ * is walked.
+ *
+ * The planned exercise rejoins the loop only if it still passes the hard filters (an injury
+ * logged mid-session must still keep it out, invariant 3). Returns `null` when nothing else fits.
+ */
+export function nextSwapForSlot(req: SwapCycleRequest): SwapAlternative | null {
+  const currentId = req.entry.exerciseId;
+  const planned = findExercise(req.library, req.plannedExerciseId);
+  if (!planned) return alternativesForSlot(req)[0] ?? null;
+
+  // The exercise in the slot now is a stop on the loop, not another entry's exercise to avoid.
+  const otherIds = (req.workoutExerciseIds ?? []).filter((id) => id !== currentId);
+  const ranked = alternativesForSlot({
+    ...req,
+    entry: { ...req.entry, exerciseId: planned.id, pattern: planned.pattern },
+    workoutExerciseIds: req.workoutExerciseIds ? [...otherIds, planned.id] : undefined,
+  }).map((a) => a.exercise);
+
+  const plannedStillFits = applyHardFilters({
+    library: [planned],
+    request: { equipmentPreference: req.equipmentPreference },
+    anchorsAvailable: req.anchorsAvailable,
+    limitations: req.limitations,
+    disabledExerciseIds: new Set(req.disabledExerciseIds),
+    today: req.today,
+    ownsBands: (req.bands?.owned ?? SINGLE_BANDS).length > 0,
+  }).length;
+
+  const loop = plannedStillFits ? [planned, ...ranked] : ranked;
+  const at = loop.findIndex((e) => e.id === currentId);
+  // Off the loop (the planned exercise filtered out from under it, say) = start at the top.
+  const next = at < 0 ? loop[0] : loop[(at + 1) % loop.length];
+  if (!next || next.id === currentId) return null;
+  return {
+    exercise: next,
+    replacement: buildSwapReplacementEntry(next, req.entry, usableBands(req.bands)),
+  };
+}

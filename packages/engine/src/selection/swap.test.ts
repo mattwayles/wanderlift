@@ -1,5 +1,5 @@
 import type { Exercise } from '@roamfit/data';
-import { alternativesForSlot, buildSwapReplacementEntry } from './swap';
+import { alternativesForSlot, buildSwapReplacementEntry, nextSwapForSlot } from './swap';
 import type { ExerciseState, SessionEntry, SessionHistoryRecord } from '../types';
 
 let counter = 0;
@@ -436,5 +436,78 @@ describe('alternativesForSlot — one version of a movement per workout', () => 
     expect(offered).not.toContain('bw-row-x');
     expect(offered).not.toContain('banded-row-x');
     expect(offered).toContain('plain-z');
+  });
+});
+
+describe('nextSwapForSlot — repeated swaps loop back to the planned exercise', () => {
+  const planned = ex({ id: 'planned', pattern: 'horizontal_push', difficulty: 'medium' });
+  const a = ex({ id: 'a', pattern: 'horizontal_push', difficulty: 'medium' });
+  const b = ex({ id: 'b', pattern: 'horizontal_push', difficulty: 'medium' });
+  const c = ex({ id: 'c', pattern: 'horizontal_push', difficulty: 'easy' });
+  const elsewhere = ex({ id: 'elsewhere', pattern: 'horizontal_push', difficulty: 'medium' });
+  const library = [planned, a, b, c, elsewhere];
+  const base = {
+    library,
+    plannedExerciseId: 'planned',
+    anchorsAvailable: ['anchor-mid', 'none', 'stance'] as const,
+    limitations: [],
+    disabledExerciseIds: [] as string[],
+    today: '2026-08-31',
+    history: [] as SessionHistoryRecord[],
+    exerciseStates: {},
+  };
+  /** Taps the button `n` times from the planned exercise, the way the screens do: each tap's
+   *  replacement becomes the slot, and the workout list carries whatever is in the slot now. */
+  function walk(n: number, extra: Partial<Parameters<typeof nextSwapForSlot>[0]> = {}): string[] {
+    let slot = entry({ exerciseId: 'planned' });
+    const seen: string[] = [];
+    for (let i = 0; i < n; i++) {
+      const next = nextSwapForSlot({
+        ...base,
+        entry: slot,
+        workoutExerciseIds: [slot.exerciseId, 'elsewhere'],
+        ...extra,
+      });
+      if (!next) break;
+      seen.push(next.exercise.id);
+      slot = next.replacement;
+    }
+    return seen;
+  }
+
+  it('steps through the alternatives in rank order, then returns to the planned exercise', () => {
+    expect(walk(4)).toEqual(['a', 'b', 'c', 'planned']);
+  });
+
+  it('keeps looping the same way on a second lap', () => {
+    expect(walk(8)).toEqual(['a', 'b', 'c', 'planned', 'a', 'b', 'c', 'planned']);
+  });
+
+  it("never offers another entry's exercise", () => {
+    expect(walk(8)).not.toContain('elsewhere');
+  });
+
+  it('two exercises in the slot still swap back and forth', () => {
+    expect(walk(3, { library: [planned, a] })).toEqual(['a', 'planned', 'a']);
+  });
+
+  it('leaves the planned exercise out of the loop once a hard filter rules it out', () => {
+    expect(walk(4, { disabledExerciseIds: ['planned'] })).toEqual(['a', 'b', 'c', 'a']);
+  });
+
+  it('returns null when nothing else fits the slot', () => {
+    expect(
+      nextSwapForSlot({ ...base, library: [planned], entry: entry({ exerciseId: 'planned' }) }),
+    ).toBeNull();
+  });
+
+  it('re-prescribes the planned exercise into the slot when swapping back to it', () => {
+    const fromC = nextSwapForSlot({
+      ...base,
+      entry: buildSwapReplacementEntry(c, entry({ exerciseId: 'planned' })),
+    })!;
+    expect(fromC.exercise.id).toBe('planned');
+    expect(fromC.replacement.exerciseId).toBe('planned');
+    expect(fromC.replacement.sets).toBe(3);
   });
 });

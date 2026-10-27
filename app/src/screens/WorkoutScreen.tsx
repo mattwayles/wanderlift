@@ -21,7 +21,7 @@
  * exists) — also not implemented. Superset "Round N of M" display is simplified to plain
  * "Set N of M" (group/round math not modeled here for lack of a spec'd source of "M rounds").
  *
- * §10.6 mid-workout swap: `alternativesForSlot` (from `@roamfit/engine`) selects and ranks the
+ * §10.6 mid-workout swap: `nextSwapForSlot` (from `@roamfit/engine`) selects and ranks the
  * candidates and this screen takes the top one — a picker sheet used to sit in between, asking
  * the user to choose between options the engine had already ordered. Swapping calls
  * `sessionsRepo.recordSwap` and reloads — no re-approval, no regeneration, and the session clock
@@ -46,7 +46,7 @@ import { useKeepAwake } from 'expo-keep-awake';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { exerciseStateRepo, sessionsRepo, usersRepo } from '@roamfit/store';
 import type { SessionRecord } from '@roamfit/store';
-import { alternativesForSlot, usableBands } from '@roamfit/engine';
+import { nextSwapForSlot, usableBands } from '@roamfit/engine';
 import type { BandId, SingleBandId } from '@roamfit/engine';
 import type { SwapAlternative } from '@roamfit/engine';
 import type { Anchor, AnchorClass, Pattern, ProgressionFamilyId } from '@roamfit/data';
@@ -448,12 +448,13 @@ export default function WorkoutScreen({ navigation, route }: Props): React.JSX.E
   // states) that would otherwise change the hook count between renders (a real bug this track
   // hit while wiring swap: "Rendered more hooks than during the previous render"). Everything
   // that reads `entry`/`exercise` guards internally on them being present instead.
-  const swapAlternatives: SwapAlternative[] = useMemo(() => {
-    if (!entry) return [];
+  const nextSwap: SwapAlternative | null = useMemo(() => {
+    if (!entry) return null;
     const clock = nowEngineClock();
     const profile = usersRepo.buildUserProfile(db, clock.today);
-    return alternativesForSlot({
+    return nextSwapForSlot({
       library: library.exercises,
+      plannedExerciseId: entry.plannedExerciseId,
       entry: {
         exerciseId: entry.exerciseId,
         role: 'main',
@@ -631,12 +632,13 @@ export default function WorkoutScreen({ navigation, route }: Props): React.JSX.E
    * decision they had no more information about than the engine did, mid-set, with a rest timer
    * about to start. Taking the top-ranked candidate is the same answer without the interruption.
    *
-   * `alternativesForSlot` is the same call the sheet was fed by (invariant 2: the engine still
-   * decides), and its results are already sorted best-first — nearest difficulty, then tier.
-   * Tapping again simply swaps again, which is the cheap way to reject a suggestion.
+   * `nextSwapForSlot` walks the same ranking the sheet was fed by (invariant 2: the engine still
+   * decides) — nearest difficulty, then tier — as a loop anchored on the planned exercise.
+   * Tapping again simply swaps again, which is the cheap way to reject a suggestion, and enough
+   * taps bring the planned exercise back.
    */
   const handleSwap = () => {
-    const best = swapAlternatives[0];
+    const best = nextSwap;
     if (!best) {
       setSwapNotice('No alternative fits this slot right now.');
       return;

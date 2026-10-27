@@ -10,9 +10,9 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react-nativ
 import type { AnchorClass, Pattern, ProgressionFamilyId } from '@roamfit/data';
 import { exerciseLibrary, familyLibrary } from '@roamfit/data';
 import {
-  alternativesForSlot,
   buildSwapReplacementEntry,
   createRng,
+  nextSwapForSlot,
   seedFromString,
   type SessionEntry,
   DEFAULT_BAND_SETTINGS,
@@ -44,7 +44,7 @@ function Setup({ onReady }: { onReady: (db: ReturnType<typeof useStore>['db']) =
   return null;
 }
 
-/** The same engine-shaped entry `WorkoutScreen` hands `alternativesForSlot`. */
+/** The same engine-shaped entry `WorkoutScreen` hands `nextSwapForSlot`. */
 function toEngineEntry(entry: sessionsRepo.SessionEntryRecord): SessionEntry {
   return {
     exerciseId: entry.exerciseId,
@@ -100,20 +100,31 @@ describe('§10.6 swap remounts the set hero for the swapped-in exercise', () => 
     const session = sessionsRepo.getSession(db, sessionId)!;
     const first = session.entries.find((e) => e.entryStatus !== 'removed_at_approval')!;
     const profile = usersRepo.buildUserProfile(db, clock.today);
+    const otherIds = session.entries
+      .filter((e) => e.entryStatus !== 'removed_at_approval' && e.id !== first.id)
+      .map((e) => e.exerciseId);
     const topAlternative = (engineEntry: SessionEntry) =>
-      alternativesForSlot({
+      nextSwapForSlot({
         library: exerciseLibrary.exercises,
+        plannedExerciseId: first.plannedExerciseId,
         entry: engineEntry,
+        workoutExerciseIds: [engineEntry.exerciseId, ...otherIds],
+        bands: profile.bands,
         anchorsAvailable: profile.anchorsAvailable,
         limitations: profile.limitations,
         disabledExerciseIds: profile.disabledExerciseIds,
         today: clock.today,
         history: sessionsRepo.getHistoryForGeneration(db),
         exerciseStates: exerciseStateRepo.getAllExerciseStates(db),
-      })[0];
+      });
     const base: SessionEntry = { ...toEngineEntry(first), repTarget: 10, durationSec: undefined };
     const bodyweight = exerciseLibrary.exercises.find((ex) => {
-      if (ex.equipment === 'band' || ex.metric === 'time' || !ex.roles.includes('main')) {
+      if (
+        ex.equipment === 'band' ||
+        ex.metric === 'time' ||
+        !ex.roles.includes('main') ||
+        otherIds.includes(ex.id)
+      ) {
         return false;
       }
       const seeded = buildSwapReplacementEntry(ex, base);

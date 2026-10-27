@@ -20,12 +20,12 @@ import { ActivityIndicator, Animated, ScrollView, StyleSheet, TextInput, View } 
 import { useFocusEffect } from '@react-navigation/native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import {
-  alternativesForSlot,
   applyHardFilters,
   applyTrainingToMainEntry,
   clampToUsableBand,
   usableBands,
   createRng,
+  nextSwapForSlot,
   prescribeAccessory,
   prescribeWarmupCooldown,
   seedFromString,
@@ -350,16 +350,18 @@ export default function ApprovalScreen({ navigation, route }: Props): React.JSX.
    * The picker sheet this replaced asked the user to choose between alternatives the engine had
    * *already ranked* — second-guessing a decision they had no more information about than it did.
    * Taking the top-ranked candidate is the same answer without the detour, and tapping again
-   * simply swaps again, which is the cheap way to reject a suggestion.
+   * simply swaps again, which is the cheap way to reject a suggestion. The taps walk a loop that
+   * comes back round to the planned exercise, so no swap is a one-way door.
    *
-   * The candidates come from `@roamfit/engine`'s `alternativesForSlot` — the same selection and
+   * The next stop comes from `@roamfit/engine`'s `nextSwapForSlot` — the same selection and
    * ranking §10.6's mid-workout swap uses, so the two surfaces cannot drift (invariant 2).
    */
   const handleSwap = (entry: sessionsRepo.SessionEntryRecord) => {
     const clock = nowEngineClock();
     const profile = usersRepo.buildUserProfile(db, clock.today);
-    const [best] = alternativesForSlot({
+    const best = nextSwapForSlot({
       library: library.exercises,
+      plannedExerciseId: entry.plannedExerciseId,
       entry: {
         exerciseId: entry.exerciseId,
         role: 'main',
@@ -388,7 +390,6 @@ export default function ApprovalScreen({ navigation, route }: Props): React.JSX.
       workoutExerciseIds: session.entries
         .filter((e) => e.entryStatus !== 'removed_at_approval')
         .map((e) => e.exerciseId),
-      maxResults: 1,
     });
     if (!best) {
       setSwapNotice('No alternative fits that slot right now.');

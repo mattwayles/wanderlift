@@ -96,8 +96,8 @@ export {
 
 // Wave 4b wiring surface — §10.6 mid-workout swap. `app/` calls this to get 3-5 same-slot,
 // same-level, filter-respecting alternatives; it must never rank/filter candidates itself.
-export { alternativesForSlot, buildSwapReplacementEntry } from './selection/swap';
-export type { SwapSlotRequest, SwapAlternative } from './selection/swap';
+export { alternativesForSlot, buildSwapReplacementEntry, nextSwapForSlot } from './selection/swap';
+export type { SwapSlotRequest, SwapCycleRequest, SwapAlternative } from './selection/swap';
 
 // Wave 4b wiring surface — §10.3 approval-time "add exercise." The store has no prescription
 // logic of its own (invariant 2: "the engine decides"), so adding a user-picked exercise to a

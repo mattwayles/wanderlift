@@ -14,6 +14,11 @@ the record of what was completed and why.
 
 ## Desired Fixes
 
+- **Swapping round the loop counts as rejecting every stop.** Each tap of Swap bumps the outgoing
+  exercise's `swapAwayCount`, and skip + swap-away ≥ 2 suppresses it for 30 days at completion. Now
+  that taps loop back to the planned exercise (`nextSwapForSlot`), a user walking the loop to get
+  the original back penalises the original and every alternative passed on the way. Consider not
+  counting a swap-away for an exercise the slot later returns to, or counting once per session.
 - **Restored user with no completed session** keeps the old phone's motivation notifications until
   Today next schedules (rare; untested).
 - **Demo-video leftovers are now dead weight.** The Demo card, the paste-a-link flow and the

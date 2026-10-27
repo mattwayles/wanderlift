@@ -1284,7 +1284,7 @@
       "contraindications": [
         "elbow"
       ],
-      "setup": "Stand on band with one foot, curl one arm. Slow 3s negative.",
+      "setup": "Stand on band with one foot, curl one arm. Lower slowly.",
       "video_search": "https://www.youtube.com/results?search_query=loop+resistance+band+Single-Arm+Curl+proper+form+tutorial"
     },
     {
@@ -2478,7 +2478,7 @@
       "contraindications": [
         "ankle"
       ],
-      "setup": "Stand mid-band, ends at shoulders or hips. Rise onto toes, pause 1s at the top.",
+      "setup": "Stand mid-band, ends at shoulders or hips. Rise onto toes, pause at the top.",
       "video_search": "https://www.youtube.com/results?search_query=loop+resistance+band+Calf+Raise+proper+form+tutorial"
     },
     {
@@ -2703,7 +2703,7 @@
       "progression_family": null,
       "progression_level_id": null,
       "contraindications": [],
-      "setup": "Half-kneeling side-on to a chest-height or low anchor. Press out and hold 2s. Harder to cheat than standing.",
+      "setup": "Half-kneeling side-on to a chest-height or low anchor. Press out and hold briefly. Harder to cheat than standing.",
       "video_search": "https://www.youtube.com/results?search_query=resistance+band+Half-Kneeling+Pallof+Press+proper+form+tutorial"
     },
     {
@@ -2739,7 +2739,7 @@
       "progression_family": null,
       "progression_level_id": null,
       "contraindications": [],
-      "setup": "Anchor at chest height or low, stand side-on. Press hands straight out from sternum and simply hold. Time-based, 20-40s per side.",
+      "setup": "Anchor at chest height or low, stand side-on. Press hands straight out from sternum and simply hold. Finish one side, then switch.",
       "video_search": "https://www.youtube.com/results?search_query=resistance+band+Anti-Rotation+Hold+proper+form+tutorial"
     },
     {
@@ -3945,7 +3945,7 @@
       "contraindications": [
         "shoulder_overhead"
       ],
-      "setup": "Anchor high, hold band with one hand and step back, hinging to let the lat lengthen. 30s per side.",
+      "setup": "Anchor high, hold band with one hand and step back, hinging to let the lat lengthen. Switch sides.",
       "video_search": "https://www.youtube.com/results?search_query=resistance+band+Lat+Stretch+how+to+stretch"
     },
     {
@@ -3984,7 +3984,7 @@
       "contraindications": [
         "shoulder_overhead"
       ],
-      "setup": "Band around the wrist at chest height, step away and let it gently traction the shoulder. 30s per side.",
+      "setup": "Band around the wrist at chest height, step away and let it gently traction the shoulder. Switch sides.",
       "video_search": "https://www.youtube.com/results?search_query=resistance+band+Shoulder+Distraction+how+to+stretch"
     },
     {
@@ -4022,7 +4022,7 @@
       "contraindications": [
         "shoulder_horizontal"
       ],
-      "setup": "Clasp your hands behind your back, straighten the arms and lift the chest, drawing the shoulder blades together. 30s.",
+      "setup": "Clasp your hands behind your back, straighten the arms and lift the chest, drawing the shoulder blades together.",
       "video_search": "https://www.youtube.com/results?search_query=standing+chest+stretch+hands+behind+back+how+to+stretch"
     },
     {
@@ -4063,7 +4063,7 @@
         "lower_back_extension",
         "lying_supine"
       ],
-      "setup": "Lie on back, band around one foot, draw the straight leg toward you. 30s per side.",
+      "setup": "Lie on back, band around one foot, draw the straight leg toward you. Switch sides.",
       "video_search": "https://www.youtube.com/results?search_query=resistance+band+Hamstring+Stretch+how+to+stretch"
     },
     {
@@ -4104,7 +4104,7 @@
         "hip",
         "knee_flexion_loaded"
       ],
-      "setup": "Half-kneeling, squeeze the down-side glute and shift forward. 30s per side.",
+      "setup": "Half-kneeling, squeeze the down-side glute and shift forward. Switch sides.",
       "video_search": "https://www.youtube.com/results?search_query=Kneeling+Hip+Flexor+Stretch+how+to+stretch"
     },
     {
@@ -4144,7 +4144,7 @@
         "lower_back_extension",
         "lying_supine"
       ],
-      "setup": "On your back, ankle over opposite knee, pull the thigh in. 30s per side.",
+      "setup": "On your back, ankle over opposite knee, pull the thigh in. Switch sides.",
       "video_search": "https://www.youtube.com/results?search_query=Figure-Four+Glute+Stretch+how+to+stretch"
     },
     {
@@ -4222,7 +4222,7 @@
         "lower_back_extension",
         "lying_prone"
       ],
-      "setup": "Prone, press chest up with soft elbows to lengthen the abs. 30s.",
+      "setup": "Prone, press chest up with soft elbows to lengthen the abs.",
       "video_search": "https://www.youtube.com/results?search_query=Cobra+Stretch+how+to+stretch"
     },
     {
@@ -4260,7 +4260,7 @@
       "progression_family": null,
       "progression_level_id": null,
       "contraindications": [],
-      "setup": "Side-lying, knees stacked, open the top arm and follow it with your eyes. 30s per side.",
+      "setup": "Side-lying, knees stacked, open the top arm and follow it with your eyes. Switch sides.",
       "video_search": "https://www.youtube.com/results?search_query=Thoracic+Rotation+how+to+stretch"
     },
     {
@@ -4297,7 +4297,7 @@
       "contraindications": [
         "ankle"
       ],
-      "setup": "Press the ball of one foot against a wall or step with the heel down, knee straight then slightly bent. 30s per side.",
+      "setup": "Press the ball of one foot against a wall or step with the heel down, knee straight then slightly bent. Switch sides.",
       "video_search": "https://www.youtube.com/results?search_query=Calf+Stretch+how+to+stretch"
     },
     {
@@ -4772,7 +4772,7 @@
       "contraindications": [
         "lower_back_flexion"
       ],
-      "setup": "Reach one arm overhead and lean away, breathing into the ribs. 30s per side. No anchor needed.",
+      "setup": "Reach one arm overhead and lean away, breathing into the ribs. Switch sides. No anchor needed.",
       "video_search": "https://www.youtube.com/results?search_query=Standing+Lat+Side+Bend+how+to+stretch"
     },
     {
@@ -4811,7 +4811,7 @@
       "contraindications": [
         "shoulder_overhead"
       ],
-      "setup": "Wide grip on the band, slowly pass it overhead and behind you, pausing where it's tight. 30s.",
+      "setup": "Wide grip on the band, slowly pass it overhead and behind you, pausing where it's tight.",
       "video_search": "https://www.youtube.com/results?search_query=resistance+band+Shoulder+Stretch+how+to+stretch"
     },
     {
@@ -6848,7 +6848,7 @@
         "knee_flexion_loaded",
         "lower_back_extension"
       ],
-      "setup": "Kneel on something soft with your heels hooked under a secure, heavy anchor (or held by a partner). Lower your torso forward as slowly as you can, catch with your hands, push back. Brutal — start with 3 reps.",
+      "setup": "Kneel on something soft with your heels hooked under a secure, heavy anchor (or held by a partner). Lower your torso forward as slowly as you can, catch with your hands, push back.",
       "video_search": "https://www.youtube.com/results?search_query=Nordic+Hamstring+Curl+proper+form+tutorial"
     },
     {
@@ -8076,7 +8076,7 @@
       "contraindications": [
         "knee_flexion_loaded"
       ],
-      "setup": "Bodyweight squat taking three slow seconds to descend, then stand normally. Chest up, knees tracking over the toes.",
+      "setup": "Bodyweight squat with a slow, controlled descent, then stand normally. Chest up, knees tracking over the toes.",
       "video_search": "https://www.youtube.com/results?search_query=Tempo+Bodyweight+Squat+proper+form+tutorial"
     },
     {
@@ -8148,7 +8148,7 @@
       "contraindications": [
         "knee_flexion_loaded"
       ],
-      "setup": "Stand mid-band, hands at chest. Squat down, hold the bottom for two seconds without relaxing, then stand.",
+      "setup": "Stand mid-band, hands at chest. Squat down, hold the bottom without relaxing, then stand.",
       "video_search": "https://www.youtube.com/results?search_query=loop+resistance+band+Banded+Pause+Squat+proper+form+tutorial"
     },
     {
@@ -10500,7 +10500,7 @@
         "shoulder_horizontal",
         "wrist_extension"
       ],
-      "setup": "Start at the top of a push-up. Lower your chest to the floor as slowly as you can, about four seconds, then drop to your knees to push back up. Builds the strength for full push-ups.",
+      "setup": "Start at the top of a push-up. Lower your chest to the floor as slowly as you can, then drop to your knees to push back up. Builds the strength for full push-ups.",
       "video_search": "https://www.youtube.com/results?search_query=Negative+Push-Up+proper+form+tutorial"
     },
     {
@@ -10796,7 +10796,7 @@
         "elbow",
         "shoulder_overhead"
       ],
-      "setup": "Step or jump up to the top of a chin-up, chin over the bar, palms facing you. Lower yourself as slowly as you can, about five seconds, to a full hang.",
+      "setup": "Step or jump up to the top of a chin-up, chin over the bar, palms facing you. Lower yourself as slowly as you can to a full hang.",
       "video_search": "https://www.youtube.com/results?search_query=Negative+Chin-Up+proper+form+tutorial"
     },
     {
@@ -12020,7 +12020,7 @@
       "contraindications": [
         "knee_flexion_loaded"
       ],
-      "setup": "Feet shoulder width. Squat down, hold the bottom for two seconds with your chest up and knees tracking over your toes, then stand.",
+      "setup": "Feet shoulder width. Squat down, hold the bottom with your chest up and knees tracking over your toes, then stand.",
       "video_search": "https://www.youtube.com/results?search_query=Pause+Squat+proper+form+tutorial"
     },
     {
@@ -12739,7 +12739,7 @@
         "shoulder_overhead",
         "wrist_extension"
       ],
-      "setup": "Kick up into a handstand against a wall, chest facing the wall, hands shoulder-width. Lower your head toward a folded towel as slowly as you can, about four seconds, then come down off the wall and kick back up. Only the lowering is trained; skip it without a wall and a clear head-landing zone.",
+      "setup": "Kick up into a handstand against a wall, chest facing the wall, hands shoulder-width. Lower your head toward a folded towel as slowly as you can, then come down off the wall and kick back up. Only the lowering is trained; skip it without a wall and a clear head-landing zone.",
       "video_search": "https://www.youtube.com/results?search_query=Wall+Handstand+Push-Up+Negative+proper+form+tutorial"
     },
     {
@@ -12776,7 +12776,7 @@
         "elbow",
         "shoulder_overhead"
       ],
-      "setup": "Step or jump up to the top of a pull-up, chin over the bar, palms facing away. Lower yourself as slowly as you can, about five seconds, to a full hang.",
+      "setup": "Step or jump up to the top of a pull-up, chin over the bar, palms facing away. Lower yourself as slowly as you can to a full hang.",
       "video_search": "https://www.youtube.com/results?search_query=Negative+Pull-Up+proper+form+tutorial"
     },
     {
@@ -14426,7 +14426,7 @@
       "progression_family": null,
       "progression_level_id": null,
       "contraindications": [],
-      "setup": "Stand tall holding a wall or chair. Bend one knee and hold that ankle behind you, knees together, and press the hip forward until you feel the front of the thigh. 30s per side.",
+      "setup": "Stand tall holding a wall or chair. Bend one knee and hold that ankle behind you, knees together, and press the hip forward until you feel the front of the thigh. Switch sides.",
       "video_search": "https://www.youtube.com/results?search_query=Standing+Quad+Stretch+how+to+stretch"
     },
     {
@@ -14461,7 +14461,7 @@
       "progression_family": null,
       "progression_level_id": null,
       "contraindications": [],
-      "setup": "Rest one heel on a low step, leg straight and toes up. Hinge forward from the hips with a flat back until you feel the back of the thigh. 30s per side.",
+      "setup": "Rest one heel on a low step, leg straight and toes up. Hinge forward from the hips with a flat back until you feel the back of the thigh. Switch sides.",
       "video_search": "https://www.youtube.com/results?search_query=Standing+Hamstring+Stretch+how+to+stretch"
     },
     {
@@ -14497,7 +14497,7 @@
       "contraindications": [
         "hip"
       ],
-      "setup": "Sit tall with the soles of your feet together and knees falling out. Hold your ankles and hinge forward slightly from the hips, letting the knees relax down. 30s.",
+      "setup": "Sit tall with the soles of your feet together and knees falling out. Hold your ankles and hinge forward slightly from the hips, letting the knees relax down.",
       "video_search": "https://www.youtube.com/results?search_query=Butterfly+Stretch+how+to+stretch"
     },
     {
@@ -14533,7 +14533,7 @@
       "contraindications": [
         "shoulder_horizontal"
       ],
-      "setup": "Bring one straight arm across your chest and hug it in with the other forearm just above the elbow. Keep the shoulder down, away from the ear. 30s per side.",
+      "setup": "Bring one straight arm across your chest and hug it in with the other forearm just above the elbow. Keep the shoulder down, away from the ear. Switch sides.",
       "video_search": "https://www.youtube.com/results?search_query=Cross-Body+Shoulder+Stretch+how+to+stretch"
     },
     {
@@ -14569,7 +14569,7 @@
       "contraindications": [
         "shoulder_overhead"
       ],
-      "setup": "Reach one arm overhead, bend the elbow to drop the hand behind your head, and gently press the elbow back with the other hand. 30s per side.",
+      "setup": "Reach one arm overhead, bend the elbow to drop the hand behind your head, and gently press the elbow back with the other hand. Switch sides.",
       "video_search": "https://www.youtube.com/results?search_query=Overhead+Triceps+Stretch+how+to+stretch"
     },
     {
@@ -14609,7 +14609,7 @@
       "contraindications": [
         "lying_supine"
       ],
-      "setup": "Lie on your back, arms out wide. Draw one knee across your body toward the floor while both shoulders stay down, and breathe into it. 30s per side.",
+      "setup": "Lie on your back, arms out wide. Draw one knee across your body toward the floor while both shoulders stay down, and breathe into it. Switch sides.",
       "video_search": "https://www.youtube.com/results?search_query=Supine+Spinal+Twist+how+to+stretch"
     },
     {
@@ -14650,7 +14650,7 @@
         "shoulder_overhead",
         "wrist_extension"
       ],
-      "setup": "From hands and knees, tuck the toes and lift the hips up and back into an upside-down V. Press the chest toward the thighs and the heels toward the floor, knees soft if needed. 30s.",
+      "setup": "From hands and knees, tuck the toes and lift the hips up and back into an upside-down V. Press the chest toward the thighs and the heels toward the floor, knees soft if needed.",
       "video_search": "https://www.youtube.com/results?search_query=Downward+Dog+how+to+stretch"
     },
     {

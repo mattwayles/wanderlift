@@ -212,3 +212,40 @@ describe('movementKey — banded and bodyweight versions of one movement', () =>
     }
   });
 });
+
+describe('how-to copy never prescribes a time or rep amount', () => {
+  // The prescription decides how long and how many; a number in the how-to contradicts it (a
+  // "30s per side" stretch the cooldown prescribed at 45s). Saying what a rep *is* ("one slide
+  // each way is one rep") is fine — only an amount is banned.
+  const NUMBER = String.raw`(\d+(\.\d+)?|a few|one|two|three|four|five|six|seven|eight|nine|ten|fifteen|twenty|thirty|forty|sixty)`;
+  const AMOUNT = new RegExp(
+    String.raw`\b${NUMBER}(\s*[-–]\s*\d+)?\s*-?\s*(s|secs?|seconds?|mins?|minutes?|breaths?|counts?|beats?|times)\b` +
+      String.raw`|\b${NUMBER}\s+\w+\s+(seconds?|minutes?)\b` + // "three slow seconds"
+      String.raw`|(?<!is )\b${NUMBER}\s+reps?\b`,
+    'i',
+  );
+
+  it('catches the shapes it bans and leaves rep definitions alone', () => {
+    for (const bad of [
+      'Slow 3s negative.',
+      'Time-based, 20-40s per side.',
+      'hold for two seconds',
+      'taking three slow seconds to descend',
+      'start with 3 reps',
+    ])
+      expect(bad).toMatch(AMOUNT);
+    for (const ok of [
+      'One slide each way is one rep.',
+      'Finish all reps on one side, then switch.',
+      'Elbows ~45 deg from torso.',
+    ])
+      expect(ok).not.toMatch(AMOUNT);
+  });
+
+  it('holds for every exercise in the bundled library', () => {
+    const offenders = exerciseLibrary.exercises
+      .filter((e) => AMOUNT.test(e.setup))
+      .map((e) => `${e.id}: ${e.setup}`);
+    expect(offenders).toEqual([]);
+  });
+});

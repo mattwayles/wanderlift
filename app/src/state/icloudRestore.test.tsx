@@ -80,11 +80,10 @@ async function launch() {
   );
 }
 
-async function openAdvanced() {
+async function openSettings() {
   await ready('open-settings');
   await fireEvent.press(screen.getByTestId('open-settings'));
   await ready('settings-screen');
-  await fireEvent.press(screen.getByTestId('settings-advanced-toggle'));
 }
 
 const user = () => usersRepo.getUser(getDb())!;
@@ -248,8 +247,8 @@ describe('Settings', () => {
 
   it('shows the restore row only when a backup exists, with its date', async () => {
     await launch();
-    await openAdvanced();
-    await ready('load-diagnostics');
+    await openSettings();
+    await ready('toggle-icloud-backup');
     expect(screen.queryByTestId('restore-icloud')).toBeNull();
   });
 
@@ -257,15 +256,15 @@ describe('Settings', () => {
     publishBackup();
     mock.__setAvailable(false);
     await launch();
-    await openAdvanced();
-    await ready('load-diagnostics');
+    await openSettings();
+    await ready('toggle-icloud-backup');
     expect(screen.queryByTestId('restore-icloud')).toBeNull();
   });
 
   it('confirms, then restores and remounts on the restored data', async () => {
     publishBackup();
     await launch();
-    await openAdvanced();
+    await openSettings();
     await ready('restore-icloud');
     expect(screen.getByTestId('restore-icloud-value')).toHaveTextContent('Oct 12 at 6:30 PM');
     await fireEvent.press(screen.getByTestId('restore-icloud'));
@@ -286,7 +285,7 @@ describe('Settings', () => {
   it('keeping this phone in the confirm restores nothing', async () => {
     publishBackup();
     await launch();
-    await openAdvanced();
+    await openSettings();
     await ready('restore-icloud');
     await fireEvent.press(screen.getByTestId('restore-icloud'));
     await ready('restore-sheet');
@@ -298,7 +297,7 @@ describe('Settings', () => {
   it('a backup from a failed download leaves the phone alone and says so calmly', async () => {
     publishBackup();
     await launch();
-    await openAdvanced();
+    await openSettings();
     await ready('restore-icloud');
     jest.spyOn(ICloudMock, 'download').mockRejectedValue(new Error('offline'));
     await fireEvent.press(screen.getByTestId('restore-icloud'));
@@ -322,7 +321,7 @@ describe('Settings', () => {
     await fireEvent.press(screen.getByTestId('open-settings'));
     await ready('keep-this-phone');
     expect(
-      screen.getByText(/Restore it from Advanced below, or keep this phone's data here\./),
+      screen.getByText(/Restore it, or keep this phone's data here\./),
     ).toBeTruthy();
     await fireEvent.press(screen.getByTestId('keep-this-phone'));
     await ready('keep-phone-sheet');

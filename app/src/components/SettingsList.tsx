@@ -79,13 +79,15 @@ export function IconTile({ icon, tone }: { icon: IconName; tone: AccentName }): 
   );
 }
 
-/** One switch row: tile, `h3` label, `Switch`. The row is the toggle (`testID`); the switch inside
- *  is a visual twin (hidden from VoiceOver, which already has the row) with its own id. */
+/** One switch row: tile, `h3` label (with an optional one-line description under it), `Switch`.
+ *  The row is the toggle (`testID`); the switch inside is a visual twin (hidden from VoiceOver,
+ *  which already has the row) with its own id. */
 export function SwitchRow({
   testID,
   icon,
   tone,
   label,
+  description,
   value,
   onValueChange,
 }: {
@@ -93,6 +95,7 @@ export function SwitchRow({
   icon: IconName;
   tone: AccentName;
   label: string;
+  description?: string;
   value: boolean;
   onValueChange: (next: boolean) => void;
 }): React.JSX.Element {
@@ -102,6 +105,7 @@ export function SwitchRow({
       testID={testID}
       accessibilityRole="switch"
       accessibilityLabel={label}
+      accessibilityHint={description}
       accessibilityState={{ checked: value }}
       onPress={() => {
         haptics.selection();
@@ -110,9 +114,14 @@ export function SwitchRow({
       style={({ pressed }) => [styles.row, pressed && styles.rowPressed]}
     >
       <IconTile icon={icon} tone={tone} />
-      <Txt variant="h3" style={styles.rowLabel}>
-        {label}
-      </Txt>
+      <View style={styles.rowText}>
+        <Txt variant="h3">{label}</Txt>
+        {description ? (
+          <Txt variant="caption" color="text3">
+            {description}
+          </Txt>
+        ) : null}
+      </View>
       <View importantForAccessibility="no-hide-descendants" accessibilityElementsHidden>
         <Switch testID={`${testID}-switch`} value={value} onValueChange={onValueChange} />
       </View>
@@ -246,7 +255,6 @@ const useStyles = makeStyles((tk) =>
     },
     rowPressed: { backgroundColor: tk.colors.surface2 },
     rowDisabled: { opacity: 0.4 },
-    rowLabel: { flex: 1, flexShrink: 1, marginHorizontal: space.md },
     rowText: { flex: 1, flexShrink: 1, marginHorizontal: space.md, gap: 2 },
     checkText: { flex: 1, flexShrink: 1, marginRight: space.md, gap: 2 },
     tile: {

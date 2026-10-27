@@ -59,6 +59,10 @@ the record of what was completed and why.
   vertical_push l7 (wall HSPU); vertical_pull l7 (chin-up). Track 53 left them alone on purpose:
   there is no established movement of the same difficulty that isn't already on a neighbouring
   rung. Lower-rung recall softens it.
+- **Settings regrouping and band palette — device pass owed.** Jest-verified only. On a small phone,
+  in Midnight and Daybreak: the Music app drop-down row (label, chosen app, chevron) doesn't crowd
+  with "YouTube Music"; the 24-colour band palette wraps cleanly and the light swatches (White,
+  Silver, Mint, Lavender) still read against the surface.
 - **Show the app version in Settings' footer.** `expo-constants` is hoisted in by `expo` but not declared in
   `app/package.json`; add it (`npx expo install expo-constants`) and read `Constants.expoConfig?.version`.
 

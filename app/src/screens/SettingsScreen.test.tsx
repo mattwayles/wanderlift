@@ -88,24 +88,17 @@ describe('appearance', () => {
 });
 
 describe('settings', () => {
-  it('lays the groups out in order: Appearance, Your body, Training, Music, Motivation, Travel & privacy, Apple Health, iCloud backup, Your data, Learn, Feedback, Legal, disclaimer, Advanced', async () => {
+  it('lays the groups out in order: Appearance, Training, Extras, Data management, Help & legal, disclaimer, Advanced', async () => {
     await openSettings();
     const order = screen
       .getAllByTestId(/^settings-section-/)
       .map((node) => (node.props.testID as string).replace('settings-section-', ''));
     expect(order).toEqual([
       'Appearance',
-      'Your body',
       'Training',
-      'Music',
-      'Motivation',
-      'Travel & privacy',
-      'Apple Health',
-      'iCloud backup',
-      'Your data',
-      'Learn',
-      'Feedback',
-      'Legal',
+      'Extras',
+      'Data management',
+      'Help & legal',
       'Medical disclaimer',
       'Advanced',
     ]);
@@ -177,7 +170,7 @@ describe('settings', () => {
     expect(screen.getByTestId('motivation-time-add')).toBeTruthy();
   });
 
-  it('puts the one-line explanations directly under the Motivation and iCloud backup labels', async () => {
+  it('puts the one-line explanations under the Daily motivation and iCloud backup rows', async () => {
     await openSettings();
     expect(screen.getByText('Push notifications to help get you going')).toBeTruthy();
     expect(
@@ -471,7 +464,7 @@ describe('iCloud backup', () => {
     );
   });
 
-  it('points to Advanced when a backup from another phone is waiting', async () => {
+  it('says so when a backup from another phone is waiting', async () => {
     usersRepo.updateUser(getDb(), { backupDecisionPending: true }, nowUtcInstant());
     await openSettings();
     expect(screen.getByText(/^A backup from another phone was found\./)).toBeTruthy();
@@ -482,18 +475,29 @@ describe('music app', () => {
   const selected = (id: string) =>
     screen.getByTestId(id).props.accessibilityState.checked as boolean;
 
-  it('lists the supported apps plus None, shows the default selected, and stores a pick', async () => {
+  it('is a drop-down: shows the choice, lists the apps plus None, and stores a pick', async () => {
     usersRepo.updateUser(getDb(), { musicApp: null }, nowUtcInstant());
     jest.spyOn(Linking, 'canOpenURL').mockResolvedValue(true);
     await openSettings();
+    await waitFor(
+      () => expect(screen.getByTestId('settings-music-app-value')).toHaveTextContent('Spotify'),
+      WAIT,
+    );
+    expect(screen.queryByTestId('music-app-spotify')).toBeNull();
+
+    await fireEvent.press(screen.getByTestId('settings-music-app'));
     await waitFor(() => expect(selected('music-app-spotify')).toBe(true), WAIT);
     for (const id of ['apple_music', 'youtube_music', 'amazon_music', 'none']) {
       expect(selected(`music-app-${id}`)).toBe(false);
     }
 
     await fireEvent.press(screen.getByTestId('music-app-youtube_music'));
-    await waitFor(() => expect(selected('music-app-youtube_music')).toBe(true), WAIT);
-    expect(selected('music-app-spotify')).toBe(false);
+    await waitFor(
+      () =>
+        expect(screen.getByTestId('settings-music-app-value')).toHaveTextContent('YouTube Music'),
+      WAIT,
+    );
+    expect(screen.queryByTestId('music-app-spotify')).toBeNull();
     expect(usersRepo.getUser(getDb())?.musicApp).toBe('youtube_music');
   });
 });

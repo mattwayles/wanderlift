@@ -1,6 +1,7 @@
 /**
  * §13.3/§13.5 Settings — a grouped, iOS-style list on `bg` (DESIGN.md §5.10), most-changed first:
- * Appearance, Training, Music, Motivation, Travel & privacy, Apple Health, iCloud backup, the Medical disclaimer card, and the rare
+ * Appearance, Training, Extras (music app, motivation, passport), Data management (iCloud backup and
+ * restore, Apple Health, export, delete), Help & legal, the Medical disclaimer card, and the rare
  * stuff (diagnostics, reset) tucked behind an Advanced disclosure. It is the permanent home for:
  *
  *  - §13.3's medical disclaimer, permanently available (not just the first-launch prompt).
@@ -131,6 +132,7 @@ export default function SettingsScreen(): React.JSX.Element {
     null,
   );
   const [advancedOpen, setAdvancedOpen] = useState(false);
+  const [musicOpen, setMusicOpen] = useState(false);
   const [resetOpen, setResetOpen] = useState(false);
 
   const [backupStatus, setBackupStatus] = useState<BackupStatus | null>(null);
@@ -310,6 +312,8 @@ export default function SettingsScreen(): React.JSX.Element {
   }, [db, families, library]);
 
   const motivationEnabled = user.notificationPrefs.motivationEnabled ?? true;
+  const musicAppLabel =
+    musicApp === 'none' ? 'None' : (MUSIC_APP_INFO.find((a) => a.id === musicApp)?.label ?? '');
 
   const diagnosticsLines = useMemo(() => {
     if (!snapshot) return [];
@@ -333,7 +337,7 @@ export default function SettingsScreen(): React.JSX.Element {
         : 'Not backed up yet'));
   // The one-line explanation lives under the label; this only speaks up when something needs saying.
   const backupCaption = user.backupDecisionPending
-    ? "A backup from another phone was found. Restore it from Advanced below, or keep this phone's data here."
+    ? "A backup from another phone was found. Restore it, or keep this phone's data here."
     : backupStatus && !backupStatus.available
       ? "iCloud isn't available on this phone right now. Your data is safe here."
       : undefined;
@@ -353,7 +357,7 @@ export default function SettingsScreen(): React.JSX.Element {
       </Enter>
 
       <Enter index={2}>
-        <Group title="Your body">
+        <Group title="Training">
           <NavRow
             testID="settings-limitations"
             icon="shield"
@@ -363,11 +367,6 @@ export default function SettingsScreen(): React.JSX.Element {
             hint="Opens the list of body areas and conditions to work around"
             onPress={() => navigation.navigate('Limitations')}
           />
-        </Group>
-      </Enter>
-
-      <Enter index={3}>
-        <Group title="Training">
           <NavRow
             testID="settings-training-preferences"
             icon="barbell"
@@ -409,36 +408,57 @@ export default function SettingsScreen(): React.JSX.Element {
         </Group>
       </Enter>
 
-      <Enter index={4}>
-        <Group title="Music" subtitle="The app the music button on your workout opens">
-          {MUSIC_APP_INFO.map((a) => (
-            <CheckRow
-              key={a.id}
-              testID={`music-app-${a.id}`}
-              label={a.label}
-              single
-              checked={musicApp === a.id}
-              onPress={() => setMusicApp(a.id)}
-            />
-          ))}
-          <CheckRow
-            testID="music-app-none"
-            label="None"
-            description="Hide the music button"
-            single
-            checked={musicApp === 'none'}
-            onPress={() => setMusicApp('none')}
-          />
-        </Group>
-      </Enter>
-
-      <Enter index={5}>
-        <Group title="Motivation" subtitle="Push notifications to help get you going">
+      <Enter index={3}>
+        <Group title="Extras">
+          {/* The music app is a drop-down: one row showing the choice, opening the list in place. */}
+          <Pressable
+            testID="settings-music-app"
+            accessibilityRole="button"
+            accessibilityLabel={`Music app, ${musicAppLabel}`}
+            accessibilityHint="Choose the app the music button on your workout opens"
+            accessibilityState={{ expanded: musicOpen }}
+            onPress={() => {
+              haptics.selection();
+              setMusicOpen((open) => !open);
+            }}
+            style={({ pressed }) => [styles.row, pressed && styles.rowPressed]}
+          >
+            <IconTile icon="music" tone="summit" />
+            <Txt variant="h3" style={styles.rowLabel}>
+              Music app
+            </Txt>
+            <Txt
+              variant="body"
+              color="text2"
+              style={styles.rowValue}
+              testID="settings-music-app-value"
+            >
+              {musicAppLabel}
+            </Txt>
+            <Icon name={musicOpen ? 'chevronUp' : 'chevronDown'} size={18} color="text3" />
+          </Pressable>
+          {musicOpen
+            ? [...MUSIC_APP_INFO, { id: 'none' as const, label: 'None' }].map((a) => (
+                <CheckRow
+                  key={a.id}
+                  testID={`music-app-${a.id}`}
+                  label={a.label}
+                  description={a.id === 'none' ? 'Hide the music button' : undefined}
+                  single
+                  checked={musicApp === a.id}
+                  onPress={() => {
+                    setMusicApp(a.id);
+                    setMusicOpen(false);
+                  }}
+                />
+              ))
+            : null}
           <SwitchRow
             testID="toggle-motivation"
             icon="sparkles"
             tone="teal"
             label="Daily motivation"
+            description="Push notifications to help get you going"
             value={motivationEnabled}
             onValueChange={toggleMotivation}
           />
@@ -486,11 +506,6 @@ export default function SettingsScreen(): React.JSX.Element {
               )}
             </View>
           ) : null}
-        </Group>
-      </Enter>
-
-      <Enter index={6}>
-        <Group title="Travel & privacy">
           <SwitchRow
             testID="toggle-passport"
             icon="airplane"
@@ -502,30 +517,14 @@ export default function SettingsScreen(): React.JSX.Element {
         </Group>
       </Enter>
 
-      <Enter index={7}>
-        <Group title="Apple Health">
-          <SwitchRow
-            testID="toggle-healthkit-write"
-            icon="heart"
-            tone="fern"
-            label="Write workouts to Apple Health"
-            value={user.healthWriteEnabled}
-            onValueChange={toggleHealthWrite}
-          />
-        </Group>
-      </Enter>
-
-      <Enter index={8}>
-        <Group
-          title="iCloud backup"
-          subtitle="Your workouts and progress are saved to iCloud when connected to the internet"
-          caption={backupCaption}
-        >
+      <Enter index={4}>
+        <Group title="Data management" caption={dataNote ?? backupCaption}>
           <SwitchRow
             testID="toggle-icloud-backup"
             icon="cloud"
             tone="summit"
             label="Back up to iCloud"
+            description="Your workouts and progress are saved to iCloud when connected to the internet"
             value={user.icloudBackupEnabled}
             onValueChange={toggleBackup}
           />
@@ -550,11 +549,34 @@ export default function SettingsScreen(): React.JSX.Element {
               onPress={() => setKeepOpen(true)}
             />
           ) : null}
-        </Group>
-      </Enter>
-
-      <Enter index={9}>
-        <Group title="Your data" caption={dataNote ?? undefined}>
+          {backupStatus?.available && backupStatus.lastBackedUpAt != null ? (
+            <NavRow
+              testID="restore-icloud"
+              icon="refresh"
+              tone="summit"
+              label="Restore from iCloud backup"
+              value={restoring ? 'Restoring…' : formatBackupTime(backupStatus.lastBackedUpAt)}
+              hint="Replaces the data on this phone with your iCloud backup"
+              onPress={() => {
+                if (!restoring) setRestoreOpen(true);
+              }}
+            />
+          ) : null}
+          {restoreMessage ? (
+            <View style={styles.note}>
+              <Txt variant="small" color="text2" testID="restore-message">
+                {restoreMessage}
+              </Txt>
+            </View>
+          ) : null}
+          <SwitchRow
+            testID="toggle-healthkit-write"
+            icon="heart"
+            tone="fern"
+            label="Write workouts to Apple Health"
+            value={user.healthWriteEnabled}
+            onValueChange={toggleHealthWrite}
+          />
           <NavRow
             testID="settings-export-data"
             icon="external"
@@ -574,8 +596,8 @@ export default function SettingsScreen(): React.JSX.Element {
         </Group>
       </Enter>
 
-      <Enter index={10}>
-        <Group title="Learn">
+      <Enter index={5}>
+        <Group title="Help & legal" caption={legalNote ?? undefined}>
           <NavRow
             testID="settings-anchor-safety"
             icon="anchor"
@@ -592,11 +614,6 @@ export default function SettingsScreen(): React.JSX.Element {
             hint="Opens plain-language definitions of the terms the app uses"
             onPress={() => navigation.navigate('Glossary')}
           />
-        </Group>
-      </Enter>
-
-      <Enter index={11}>
-        <Group title="Feedback">
           <NavRow
             testID="settings-feedback"
             icon="mail"
@@ -606,11 +623,6 @@ export default function SettingsScreen(): React.JSX.Element {
             hint="Opens an email to the developers"
             onPress={() => void sendFeedback()}
           />
-        </Group>
-      </Enter>
-
-      <Enter index={12}>
-        <Group title="Legal" caption={legalNote ?? undefined}>
           <NavRow
             testID="settings-privacy"
             icon="shield"
@@ -630,7 +642,7 @@ export default function SettingsScreen(): React.JSX.Element {
         </Group>
       </Enter>
 
-      <Enter index={13}>
+      <Enter index={6}>
         <Card padding="md" style={styles.disclaimer} testID="settings-section-Medical disclaimer">
           <IconBadge icon="shield" tone="gold" size={40} />
           <View style={styles.disclaimerBody}>
@@ -644,7 +656,7 @@ export default function SettingsScreen(): React.JSX.Element {
         </Card>
       </Enter>
 
-      <Enter index={14}>
+      <Enter index={7}>
         <Group title="Advanced">
           <Pressable
             testID="settings-advanced-toggle"
@@ -663,26 +675,6 @@ export default function SettingsScreen(): React.JSX.Element {
             </Txt>
             <Icon name={advancedOpen ? 'chevronUp' : 'chevronDown'} size={18} color="text3" />
           </Pressable>
-          {advancedOpen && backupStatus?.available && backupStatus.lastBackedUpAt != null ? (
-            <NavRow
-              testID="restore-icloud"
-              icon="refresh"
-              tone="summit"
-              label="Restore from iCloud backup"
-              value={restoring ? 'Restoring…' : formatBackupTime(backupStatus.lastBackedUpAt)}
-              hint="Replaces the data on this phone with your iCloud backup"
-              onPress={() => {
-                if (!restoring) setRestoreOpen(true);
-              }}
-            />
-          ) : null}
-          {advancedOpen && restoreMessage ? (
-            <View style={styles.advancedBlock}>
-              <Txt variant="small" color="text2" testID="restore-message">
-                {restoreMessage}
-              </Txt>
-            </View>
-          ) : null}
           {advancedOpen ? (
             <View style={styles.advancedBlock}>
               <Txt variant="h3">Diagnostics</Txt>
@@ -857,6 +849,8 @@ const useStyles = makeStyles((tk) =>
     },
     rowPressed: { backgroundColor: tk.colors.surface2 },
     rowLabel: { flex: 1, flexShrink: 1, marginHorizontal: space.md },
+    rowValue: { marginRight: space.xs },
+    note: { padding: ROW_PAD },
     times: {
       gap: space.sm,
       paddingHorizontal: ROW_PAD,

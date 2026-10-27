@@ -1640,6 +1640,7 @@ function RepsExercise({
               label={repBasisText}
               size="lg"
               tone={repBasisText === 'per side' ? 'teal' : 'gold'}
+              style={styles.repBasisChip}
               testID="rep-basis"
             />
           )}
@@ -2740,6 +2741,8 @@ const useStyles = makeStyles((t) =>
     // -- reps: the counter is the centerpiece
     counter: { alignItems: 'center', gap: space.xs, paddingVertical: space.sm },
     counterLabel: { fontSize: 18, lineHeight: 22 },
+    // Centred under the "Reps" eyebrow (Chip defaults to flex-start) with a taller pill than lg's.
+    repBasisChip: { alignSelf: 'center', paddingVertical: space.sm + 4, minHeight: 46 },
     targetNote: { fontSize: 17, lineHeight: 22 },
     counterRow: {
       flexDirection: 'row',

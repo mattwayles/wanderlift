@@ -308,6 +308,10 @@ export const BADGES: readonly BadgeDefinition[] = [
       },
       { target: 10, name: 'Thorough', description: 'Do a clean sweep 10 times.' },
       { target: 25, name: 'Every Last Rep', description: 'Do a clean sweep 25 times.' },
+      { target: 50, name: 'Meticulous', description: 'Do a clean sweep 50 times.' },
+      { target: 100, name: 'Hundred Sweeps', description: 'Do a clean sweep 100 times.' },
+      { target: 250, name: 'Spotless', description: 'Do a clean sweep 250 times.' },
+      { target: 500, name: 'Flawless', description: 'Do a clean sweep 500 times.' },
     ],
   }),
   ...series({
@@ -322,6 +326,7 @@ export const BADGES: readonly BadgeDefinition[] = [
       { target: 10000, name: 'Ten Thousand', description: 'Complete 10,000 reps.' },
       { target: 25000, name: 'Rep Machine', description: 'Complete 25,000 reps.' },
       { target: 50000, name: 'Fifty Thousand', description: 'Complete 50,000 reps.' },
+      { target: 100000, name: 'Hundred Thousand', description: 'Complete 100,000 reps.' },
     ],
   }),
   ...series({
@@ -332,7 +337,9 @@ export const BADGES: readonly BadgeDefinition[] = [
     measure: (f) => f.lifetimeHoldSeconds,
     tiers: [
       { target: 600, name: 'Steady', description: 'Hold for 10 minutes in total.' },
+      { target: 1800, name: 'Holding Firm', description: 'Hold for 30 minutes in total.' },
       { target: 3600, name: 'Rock Solid', description: 'Hold for an hour in total.' },
+      { target: 7200, name: 'Stone Still', description: 'Hold for 2 hours in total.' },
       { target: 10800, name: 'Immovable', description: 'Hold for 3 hours in total.' },
     ],
   }),
@@ -345,6 +352,8 @@ export const BADGES: readonly BadgeDefinition[] = [
     tiers: [
       { target: 45, name: 'Long Haul', description: 'Finish a 45-minute workout.' },
       { target: 60, name: 'Full Hour', description: 'Finish a 60-minute workout.' },
+      { target: 90, name: 'Hour and a Half', description: 'Finish a 90-minute workout.' },
+      { target: 120, name: 'Two-Hour Trek', description: 'Finish a 120-minute workout.' },
     ],
   }),
 
@@ -373,6 +382,10 @@ export const BADGES: readonly BadgeDefinition[] = [
       { target: 3, name: 'Three Stops', description: 'Work out in 3 different cities.' },
       { target: 10, name: 'Well Travelled', description: 'Work out in 10 different cities.' },
       { target: 25, name: 'Globetrotter', description: 'Work out in 25 different cities.' },
+      { target: 50, name: 'Frequent Flyer', description: 'Work out in 50 different cities.' },
+      { target: 100, name: 'Hundred Cities', description: 'Work out in 100 different cities.' },
+      { target: 500, name: 'Atlas', description: 'Work out in 500 different cities.' },
+      { target: 1000, name: 'Thousand Places', description: 'Work out in 1,000 different cities.' },
     ],
   }),
   ...series({
@@ -385,6 +398,17 @@ export const BADGES: readonly BadgeDefinition[] = [
     tiers: [
       { target: 2, name: 'Border Crossing', description: 'Work out in 2 different countries.' },
       { target: 5, name: 'World Wanderer', description: 'Work out in 5 different countries.' },
+      {
+        target: 10,
+        name: 'Seasoned Traveller',
+        description: 'Work out in 10 different countries.',
+      },
+      { target: 20, name: 'Continental', description: 'Work out in 20 different countries.' },
+      {
+        target: 50,
+        name: 'Citizen of the World',
+        description: 'Work out in 50 different countries.',
+      },
     ],
   }),
 ];

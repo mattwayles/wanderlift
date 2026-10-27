@@ -199,16 +199,25 @@ describe('badge catalog', () => {
         "clean_sweep_1",
         "clean_sweep_10",
         "clean_sweep_25",
+        "clean_sweep_50",
+        "clean_sweep_100",
+        "clean_sweep_250",
+        "clean_sweep_500",
         "reps_1000",
         "reps_5000",
         "reps_10000",
         "reps_25000",
         "reps_50000",
+        "reps_100000",
         "hold_time_600",
+        "hold_time_1800",
         "hold_time_3600",
+        "hold_time_7200",
         "hold_time_10800",
         "long_haul_45",
         "long_haul_60",
+        "long_haul_90",
+        "long_haul_120",
         "exercises_tried_10",
         "exercises_tried_25",
         "exercises_tried_50",
@@ -216,8 +225,15 @@ describe('badge catalog', () => {
         "cities_3",
         "cities_10",
         "cities_25",
+        "cities_50",
+        "cities_100",
+        "cities_500",
+        "cities_1000",
         "countries_2",
         "countries_5",
+        "countries_10",
+        "countries_20",
+        "countries_50",
       ]
     `);
   });
@@ -296,10 +312,10 @@ describe('evaluateBadges', () => {
     const on = { ...off, passportEnabled: true };
     expect(evaluateBadges(on, NONE).map((b) => b.id)).toEqual([
       'cities_3',
-      'countries_2',
       'cities_10',
-      'cities_25',
+      'countries_2',
       'countries_5',
+      'cities_25',
     ]);
   });
 

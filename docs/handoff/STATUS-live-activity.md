@@ -2,30 +2,35 @@
 Last updated: 2026-10-27
 ### Done
 - [x] Step 1: local Expo module `app/modules/workout-live-activity/` (Swift start/update/end,
-  optional native lookup, Jest fake) + controller `app/src/lib/workoutLiveActivity.ts` with tests
-  (see commit "Live Activity: native module and controller")
+  optional native lookup, Jest fake) + controller `app/src/lib/workoutLiveActivity.ts` (724dde6)
+- [x] Step 2: widget extension `app/targets/workout-activity/` via `@bacons/apple-targets` 5.0.0
+  (new dependency): compact / minimal / expanded Island + Lock Screen banner;
+  `NSSupportsLiveActivities` in `app.json`. Prebuild + Simulator build of the whole app verified
+  (BUILD SUCCEEDED, `WorkoutActivity.appex` embedded). Commit "Live Activity: widget target".
+- [x] Step 3: wired. WorkoutScreen effect → `showWorkout`; RestPhase → `setRestWindow` (mount,
+  ±15s, Skip, unmount); `endWorkoutActivity` on Summary finish and both abandons;
+  `useLiveActivityReconcile` in App on launch/foreground. Commit "Live Activity: wired".
 ### In progress
-1. Widget extension `app/targets/workout-activity/` via `@bacons/apple-targets` (new dependency),
-   SwiftUI views for compact / minimal / expanded Island and the Lock Screen banner;
-   `NSSupportsLiveActivities` in `app.json`.
+- (none — track complete pending the device pass)
 ### Next
-2. Wire it: WorkoutScreen pushes the base state (exercise, set, elapsed, pause); RestView reports
-   the rest end instant at the same points it schedules the rest notification; end on Summary's
-   completeSession and both abandon paths; root reconcile on launch/foreground ends activities
-   whose session is no longer active.
-3. BACKLOG: device pass owed.
+- Device pass: see the BACKLOG item "Workout Live Activity — device pass owed".
 ### Decisions / gotchas
 - Display only: no buttons in the Island (no LiveActivityIntent). Fully local updates, no push
   token, no APNs (no backend — CLAUDE.md).
 - The clocks run system-side: `Text(timerInterval:)` for elapsed and rest. The app only sends an
   update when something changes (set, phase, pause, swap, rest ±15s), never per second.
-- Elapsed clock anchor = now − activeElapsedSec (absorbs pausedTotalSec). Paused → a frozen
-  number, no ticking timer.
+- Elapsed anchor = startedAt + pausedTotalSec, read from the row and never from now, so an
+  unchanged render dedupes to nothing. Paused → frozen number, no ticking timer.
 - Rest end instant lives only in RestView's local countdown (±15s isn't persisted), so RestView
-  reports it; the session row only says *whether* we are resting.
-- Rest keeps counting during a workout pause (existing behaviour) — the Island mirrors that.
+  reports it. Rest keeps counting during a workout pause (existing behaviour); the Island mirrors it.
 - The ActivityAttributes struct is duplicated in the module and the widget target (ActivityKit
-  matches by type); a Jest test keeps the two copies identical.
-- Every native call is best-effort and never throws into the workout (same rule as
-  workoutNotifications.ts). Live Activities off / unsupported → silent no-op.
-- iOS deployment target is 16.4, so ActivityContent (16.2) needs no availability guards.
+  matches by type); `liveActivityAttributes.test.ts` keeps the copies identical and the JS state
+  fields in step with the Swift record.
+- The native module is looked up with `requireOptionalNativeModule`: an old dev client without it
+  runs the workout with every call a no-op.
+- `endWorkoutActivity(sessionId)` remembers the session so a late render of the abandoned screen
+  can't re-show it.
+- SourceKit flags the Swift files standalone (macOS availability, missing types) — spurious; the
+  real Xcode build is clean.
+- Full `npm run check` while xcodebuild runs can time out two slow screen suites (goHome,
+  Journey pastMonths); both pass without the contention.

@@ -68,6 +68,7 @@ import { buildSessionCompletionStats } from '../lib/sessionStats';
 import { badgeShareText, completionBadges, type ShelfBadge } from '../lib/badges';
 import { lookupNewStamp, type NewStamp } from '../lib/newStamp';
 import { runBackup } from '../lib/icloudBackup';
+import { endWorkoutActivity } from '../lib/workoutLiveActivity';
 import {
   cueLevelUp,
   cueStampImpact,
@@ -907,6 +908,7 @@ export default function SummaryScreen({ navigation, route }: Props): React.JSX.E
       { sessionId, library, families, retrospective: retrospective || undefined },
       nowUtcInstant(),
     );
+    endWorkoutActivity(sessionId);
     // Passport on: ask for the place right now, in the background of the whole celebration, so a
     // new stamp can slam down as its finale instead of landing silently on Journey later.
     const passportOn = usersRepo.getUser(db)?.passportEnabled === true;

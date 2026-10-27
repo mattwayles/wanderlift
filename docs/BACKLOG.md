@@ -68,6 +68,17 @@ the record of what was completed and why.
   in Midnight and Daybreak: the Music app drop-down row (label, chosen app, chevron) doesn't crowd
   with "YouTube Music"; the 24-colour band palette wraps cleanly and the light swatches (White,
   Silver, Mint, Lavender) still read against the surface.
+- **Workout Live Activity (Dynamic Island / Lock Screen) — device pass owed.** Track live-activity
+  (`docs/handoff/STATUS-live-activity.md`); Jest proves what is sent, not how it draws. Needs a
+  dev-client rebuild (new widget target + native module). On an iPhone 14 Pro or later: the
+  compact pill (icon + clock fits, a 1:00:00+ clock not clipped), the minimal view beside another
+  app's activity, long-press expanded, and the Lock Screen banner on a non-Island phone. Check the
+  rest countdown and bar after +15s / Skip, the frozen number while paused, the activity ending on
+  finish and on abandon, and a force-quit mid-workout cleaned up on the next launch. Then an EAS
+  build: the new `.workoutactivity` extension needs its own provisioning profile. Not built: the
+  idle auto-pause only runs while the app is awake, so a workout left with the phone locked keeps
+  ticking on the Island until the app reopens and back-dates the pause; and buttons in the Island
+  (Skip rest, Set done) would need `LiveActivityIntent` writing to SQLite from native code.
 - **Show the app version in Settings' footer.** `expo-constants` is hoisted in by `expo` but not declared in
   `app/package.json`; add it (`npx expo install expo-constants`) and read `Constants.expoConfig?.version`.
 

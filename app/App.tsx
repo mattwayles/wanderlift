@@ -7,6 +7,7 @@ import AppErrorBoundary from './src/components/AppErrorBoundary';
 import RootNavigator from './src/navigation/RootNavigator';
 import { StoreProvider } from './src/state/StoreContext';
 import { useBackupOnBackground } from './src/state/useBackupOnBackground';
+import { useLiveActivityReconcile } from './src/state/useLiveActivityReconcile';
 import { ThemeProvider } from './src/state/ThemeProvider';
 import { fontAssets, themeFor, useTheme } from './src/theme';
 
@@ -40,10 +41,12 @@ export default function App() {
 }
 
 /** Everything that takes its chrome from the theme: navigation colors and the status bar. Also
- *  mounts the iCloud background-backup trigger once, under the store. */
+ *  mounts the iCloud background-backup trigger and the Live Activity clean-up once, under the
+ *  store. */
 function ThemedShell() {
   const theme = useTheme();
   useBackupOnBackground();
+  useLiveActivityReconcile();
   return (
     <>
       <NavigationContainer theme={theme.navTheme}>

@@ -133,9 +133,18 @@ describe('controller', () => {
 
   it('ends the activity when the workout is over', async () => {
     showWorkout(onDeckFor(session(), 'Band row', 1, 3));
-    endWorkoutActivity();
+    endWorkoutActivity('s1');
     await __flushLiveActivityQueue();
     expect(mock.__current()).toBeNull();
+  });
+
+  it('a late render of the ended session does not bring it back', async () => {
+    showWorkout(onDeckFor(session(), 'Band row', 1, 3));
+    endWorkoutActivity('s1');
+    showWorkout(onDeckFor(session(), 'Band row', 2, 3));
+    await __flushLiveActivityQueue();
+    expect(mock.__current()).toBeNull();
+    expect(mock.__calls().map((c) => c.fn)).toEqual(['start', 'end']);
   });
 
   it('with Live Activities off, asks again on the next change rather than updating nothing', async () => {

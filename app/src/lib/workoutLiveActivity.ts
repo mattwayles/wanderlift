@@ -98,6 +98,9 @@ let rest: RestWindow | null = null;
 /** The session whose activity this app launch has started (or adopted), and what it last sent. */
 let shownSessionId: string | null = null;
 let lastSent: string | null = null;
+/** Sessions this launch has ended. A render of the Workout screen landing between the abandon and
+ *  the screen going away still holds the old session object; this keeps it from re-showing. */
+const endedSessionIds = new Set<string>();
 /** Native calls run one after another, so an end can never overtake the update before it. */
 let queue: Promise<void> = Promise.resolve();
 
@@ -133,6 +136,7 @@ function flush(): void {
 /** The Workout screen's half: call whenever the set on deck, the pause or the progress may have
  *  changed. Cheap to call on every render — unchanged state sends nothing. */
 export function showWorkout(next: WorkoutOnDeck): void {
+  if (endedSessionIds.has(next.sessionId)) return;
   if (onDeck && onDeck.sessionId !== next.sessionId) rest = null;
   onDeck = next;
   flush();
@@ -144,8 +148,10 @@ export function setRestWindow(next: RestWindow | null): void {
   flush();
 }
 
-/** The workout is over (completed or abandoned): take it off the Island and the Lock Screen. */
-export function endWorkoutActivity(): void {
+/** The workout is over (completed or abandoned): take it off the Island and the Lock Screen. Ends
+ *  every workout activity, not only this session's — none can be worth keeping once it is over. */
+export function endWorkoutActivity(sessionId: string): void {
+  endedSessionIds.add(sessionId);
   onDeck = null;
   rest = null;
   shownSessionId = null;
@@ -187,5 +193,6 @@ export function __resetLiveActivity(): void {
   rest = null;
   shownSessionId = null;
   lastSent = null;
+  endedSessionIds.clear();
   queue = Promise.resolve();
 }

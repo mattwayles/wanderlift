@@ -123,6 +123,12 @@ import {
   ensureNotificationPermission,
   scheduleRestZeroNotification,
 } from '../lib/workoutNotifications';
+import {
+  endWorkoutActivity,
+  onDeckFor,
+  setRestWindow,
+  showWorkout,
+} from '../lib/workoutLiveActivity';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Workout'>;
 
@@ -355,6 +361,20 @@ export default function WorkoutScreen({ navigation, route }: Props): React.JSX.E
           : null));
   const entry = current?.entry;
   const exercise = entry ? library.exercises.find((e) => e.id === entry.exerciseId) : undefined;
+
+  // The Live Activity (Dynamic Island and Lock Screen) mirrors the set on deck, the pause and the
+  // progress. No deps array: it re-checks every render, and `showWorkout` sends nothing unless one
+  // of those changed. The rest countdown is the rest page's to report (`RestPhase`). The final
+  // rest has no exercise up next, so it says what the rest page's Up-next card says.
+  const liveActivityName = isFinalRest
+    ? 'Workout complete'
+    : entry
+      ? (exercise?.name ?? entry.exerciseId)
+      : null;
+  useEffect(() => {
+    if (session?.status !== 'active' || !current || liveActivityName == null) return;
+    showWorkout(onDeckFor(session, liveActivityName, current.setIndex, current.entry.sets));
+  });
 
   // Whether `jumpTo` actually names a slot still in the plan — the entry could since have been
   // swapped or removed. Computed once here rather than inline in each effect below, since both
@@ -623,6 +643,7 @@ export default function WorkoutScreen({ navigation, route }: Props): React.JSX.E
       { abandonedEntryId: entry.id, abandonedSetIndex: setIndex },
       nowUtcInstant(),
     );
+    endWorkoutActivity(sessionId);
     navigation.reset(homeReset());
   };
 
@@ -1231,6 +1252,7 @@ export default function WorkoutScreen({ navigation, route }: Props): React.JSX.E
             <RestPhase
               key={`rest-${entry.id}-${entry.exerciseId}-${setIndex}`}
               restSec={restSecRemaining}
+              restStartedAt={session.restingStartedAt}
               // `isFinalRest` means this is the last set of the whole plan — `entry`/`exercise` here
               // are only the just-finished one (see the `current` fallback above), not a real
               // upcoming exercise, so there is nothing to preview.
@@ -2301,6 +2323,7 @@ function TimedExercise({
 
 function RestPhase({
   restSec,
+  restStartedAt,
   nextLabel,
   nextName,
   nextSetText,
@@ -2321,6 +2344,9 @@ function RestPhase({
   onExtend,
 }: {
   restSec: number;
+  /** When this rest began (`session.restingStartedAt`), so a restored rest's bar on the Lock
+   *  Screen picks up part-drained rather than full. Null falls back to the page opening. */
+  restStartedAt: string | null;
   /** The whole "up next" line — exercise, set — as the rest-complete notification says it. */
   nextLabel: string;
   /** The same, split for the Up-next card: the exercise (or "Workout complete") ... */
@@ -2369,6 +2395,8 @@ function RestPhase({
   // on unmount/Next/Skip so a stale "rest complete" never fires after the user's moved on.
   const notificationIdRef = useRef<string | null>(null);
   const lastCueSecondRef = useRef<number | null>(null);
+  /** Where the Live Activity's rest bar starts; fixed for the life of this rest. */
+  const restStartedAtMsRef = useRef(0);
 
   useEffect(() => {
     countdown.controller.start();
@@ -2378,9 +2406,18 @@ function RestPhase({
     void scheduleRestZeroNotification(restSec, nextLabel).then((id) => {
       if (!cancelled) notificationIdRef.current = id;
     });
+    // The Live Activity's rest countdown, from the same remaining time the notification is set for.
+    const openedAtMs = Date.now();
+    const startedAtMs = restStartedAt ? Date.parse(restStartedAt) : openedAtMs;
+    restStartedAtMsRef.current = Math.min(startedAtMs, openedAtMs);
+    setRestWindow({
+      startedAtMs: restStartedAtMsRef.current,
+      endsAtMs: openedAtMs + restSec * 1000,
+    });
     return () => {
       cancelled = true;
       void cancelRestNotification(notificationIdRef.current);
+      setRestWindow(null);
     };
   }, []);
 
@@ -2409,6 +2446,10 @@ function RestPhase({
   const handleExtend = async (deltaMs: number) => {
     countdown.controller.addMs(deltaMs);
     if (deltaMs > 0) onExtend(); // fatigue signal — +15s only, never −15s
+    setRestWindow({
+      startedAtMs: restStartedAtMsRef.current,
+      endsAtMs: Date.now() + Math.max(0, countdown.controller.remainingMs()),
+    });
     await cancelRestNotification(notificationIdRef.current);
     const remainingSeconds = Math.max(0, Math.ceil(countdown.controller.remainingMs() / 1000));
     notificationIdRef.current = await scheduleRestZeroNotification(remainingSeconds, nextLabel);
@@ -2416,6 +2457,7 @@ function RestPhase({
 
   const handleSkip = async () => {
     countdown.controller.addMs(-countdown.remainingMs);
+    setRestWindow({ startedAtMs: restStartedAtMsRef.current, endsAtMs: Date.now() });
     await cancelRestNotification(notificationIdRef.current);
     notificationIdRef.current = null;
   };

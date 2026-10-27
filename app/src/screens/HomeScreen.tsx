@@ -59,6 +59,7 @@ import {
 import { DayCell } from '../components/DayCell';
 import { BadgeEmblem } from '../components/BadgeEmblem';
 import { progressText } from '../lib/badges';
+import { endWorkoutActivity } from '../lib/workoutLiveActivity';
 import { IconBadge } from '../components/IconBadge';
 
 type Props = TabScreenProps<'Home'>;
@@ -182,6 +183,7 @@ export default function HomeScreen({ navigation }: Props): React.JSX.Element {
       { abandonedEntryId: current?.entry.id, abandonedSetIndex: current?.setIndex },
       nowUtcInstant(),
     );
+    endWorkoutActivity(data.pending.id);
     navigation.navigate('Generate');
   }, [data, db, navigation]);
 

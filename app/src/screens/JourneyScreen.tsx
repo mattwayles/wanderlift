@@ -707,7 +707,7 @@ export default function JourneyScreen({ navigation, route }: Props): React.JSX.E
                               label="Too hard — level down"
                               variant="secondary"
                               size="md"
-                              icon="arrowLeft"
+                              icon="trendingDown"
                               fullWidth
                               accessibilityLabel={`${entry.exerciseName} is too hard — move down a level`}
                               onPress={() => setConfirmingLevelDown(entry.familyId)}

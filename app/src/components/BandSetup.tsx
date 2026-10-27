@@ -3,8 +3,8 @@
  * and whether they stack two for more tension than their heaviest. Shared by Settings → Your bands
  * and onboarding's bands step. Every change saves at once through the caller.
  *
- * Colour is the band's identity mid-set (see `BandChip`), so each band offers a short palette of
- * common loop-band colours rather than a free colour picker; the label is free text, so a band can
+ * Colour is the band's identity mid-set (see `BandChip`), so each band offers a palette of
+ * loop-band colours rather than a free colour picker; the label is free text, so a band can
  * be named whatever is printed on it.
  */
 import React, { useState } from 'react';
@@ -17,28 +17,36 @@ import { Icon, Txt, haptics } from '../ui';
 import { textToneOn } from './BandChip';
 import { CheckRow, Group, SwitchRow } from './SettingsList';
 
-/** Common loop-band colours, lightest-feeling to darkest. */
+/** Loop-band colours, grouped by hue, then the neutrals. The original nine keep their hex values:
+ *  a stored band colour is matched against this list to show it as selected. */
 export const BAND_PALETTE: readonly { name: string; color: string }[] = [
   { name: 'Yellow', color: '#facc15' },
+  { name: 'Gold', color: '#ca8a04' },
   { name: 'Orange', color: '#f97316' },
+  { name: 'Coral', color: '#fb7185' },
   { name: 'Red', color: '#dc2626' },
+  { name: 'Maroon', color: '#881337' },
   { name: 'Pink', color: '#ec4899' },
+  { name: 'Magenta', color: '#c026d3' },
+  { name: 'Lavender', color: '#c4b5fd' },
   { name: 'Purple', color: '#7c3aed' },
+  { name: 'Light blue', color: '#7dd3fc' },
+  { name: 'Teal', color: '#0d9488' },
   { name: 'Blue', color: '#2563eb' },
+  { name: 'Navy', color: '#1e3a8a' },
+  { name: 'Lime', color: '#84cc16' },
+  { name: 'Mint', color: '#6ee7b7' },
   { name: 'Green', color: '#16a34a' },
+  { name: 'Olive', color: '#4d5a1e' },
+  { name: 'Tan', color: '#d6b98c' },
+  { name: 'Brown', color: '#78350f' },
+  { name: 'White', color: '#f8fafc' },
+  { name: 'Silver', color: '#cbd5e1' },
   { name: 'Grey', color: '#9ca3af' },
   { name: 'Black', color: '#1f2937' },
 ];
 
 const LIGHTEST_TO_HEAVIEST = ['lightest', 'light', 'medium', 'heavy', 'heaviest'];
-
-export const BANDS_CAPTION =
-  'B1 is your lightest band and B5 your heaviest. Untick any you do not have and Wanderlift will ' +
-  'only ever hand you bands you own.';
-
-export const STACKING_CAPTION =
-  'Once your heaviest band is no longer enough, use it together with a lighter one for more ' +
-  'tension. Hold or anchor both bands side by side, so they stretch as one.';
 
 export function BandSetup({
   settings,
@@ -64,13 +72,12 @@ export function BandSetup({
 
   return (
     <>
-      <Group title="Bands you own" caption={BANDS_CAPTION}>
+      <Group title="Bands you own" subtitle="Tap the colour to rename or recolour">
         {SINGLE_BANDS.map((band, i) => (
           <View key={band}>
             <CheckRow
               testID={`band-owned-${band}`}
               label={`${band} · ${tensions[band].label === band ? LIGHTEST_TO_HEAVIEST[i] : tensions[band].label}`}
-              description={editing === band ? undefined : 'Tap the colour to rename or recolour'}
               checked={settings.owned.includes(band)}
               onPress={() => toggleOwned(band)}
             />
@@ -89,7 +96,7 @@ export function BandSetup({
           No bands? No problem: every workout will use bodyweight exercises only.
         </Txt>
       ) : null}
-      <Group title="Stacking" caption={STACKING_CAPTION}>
+      <Group title="Stacking">
         <SwitchRow
           testID="toggle-band-stacking"
           icon="trendingUp"

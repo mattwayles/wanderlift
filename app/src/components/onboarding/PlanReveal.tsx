@@ -2,30 +2,19 @@
  * Track 51b — "Your first week", shown at the end of setup. Props-driven: the caller supplies each
  * ladder's starting move and decides what Start / Look around do. The entrance is the app's own
  * `Enter` motion (native driver, instant under Reduce Motion). Rest days are drawn as rest, not
- * as gaps (invariant 4). Motivating, not demanding: a hero opener, an icon week strip with today
- * ringed, and each trail's starting move with its own glyph.
+ * as gaps (invariant 4). Motivating, not demanding: a hero opener, a week strip with today ringed,
+ * and each trail's starting move. No decorative glyphs: the words carry the meaning.
  */
 import React, { useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { nowEngineClock } from '../../lib/localClock';
 import { makeStyles, radius, space } from '../../theme';
-import { Button, Card, Enter, Icon, Screen, Txt, type IconName } from '../../ui';
+import { Button, Card, Enter, Screen, Txt } from '../../ui';
 import { firstWeek } from './weekDays';
 
 export interface PlanRevealTrail {
   trailName: string;
   exerciseName: string;
-}
-
-/** A glyph for a trail by name; the names come from the ladders, so match loosely. */
-export function trailIcon(trailName: string): IconName {
-  const n = trailName.toLowerCase();
-  if (n.includes('push')) return 'push';
-  if (n.includes('pull')) return 'pull';
-  if (n.includes('squat') || n.includes('lunge') || n.includes('leg') || n.includes('hinge'))
-    return 'walk';
-  if (n.includes('core') || n.includes('abs')) return 'core';
-  return 'flag';
 }
 
 export interface PlanRevealProps {
@@ -87,13 +76,10 @@ export function PlanReveal({
 
       <Enter index={1}>
         <Card>
-          <View style={styles.cardHead}>
-            <Icon name="sparkles" size={18} color="gold" />
-            <Txt variant="bodyStrong" style={styles.flex}>
-              {sessions === 1 ? 'One session' : `${sessions} sessions`} this week, with rest in
-              between.
-            </Txt>
-          </View>
+          <Txt variant="bodyStrong">
+            {sessions === 1 ? 'One session' : `${sessions} sessions`} this week, with rest in
+            between.
+          </Txt>
           <View style={styles.strip} testID="plan-week">
             {week.map((d) => (
               <View
@@ -112,11 +98,6 @@ export function PlanReveal({
                 <Txt variant="caption" color={d.isTraining ? 'ink' : 'text3'}>
                   {d.weekday}
                 </Txt>
-                <Icon
-                  name={d.isTraining ? 'bolt' : 'moon'}
-                  size={18}
-                  color={d.isTraining ? 'ink' : 'text3'}
-                />
                 <Txt variant="small" color={d.isTraining ? 'ink' : 'text2'}>
                   {d.isTraining ? 'Go' : 'Rest'}
                 </Txt>
@@ -137,17 +118,10 @@ export function PlanReveal({
       {trails.map((t, i) => (
         <Enter key={t.trailName} index={3 + i}>
           <Card padding="md" testID={`plan-trail-${t.trailName}`}>
-            <View style={styles.trail}>
-              <View style={styles.trailBadge}>
-                <Icon name={trailIcon(t.trailName)} size={20} color="ink" />
-              </View>
-              <View style={styles.flex}>
-                <Txt variant="small" color="text3">
-                  {t.trailName}
-                </Txt>
-                <Txt variant="bodyStrong">{t.exerciseName}</Txt>
-              </View>
-            </View>
+            <Txt variant="small" color="text3">
+              {t.trailName}
+            </Txt>
+            <Txt variant="bodyStrong">{t.exerciseName}</Txt>
           </Card>
         </Enter>
       ))}
@@ -165,9 +139,7 @@ const useStyles = makeStyles((t) =>
   StyleSheet.create({
     content: { gap: space.lg, paddingTop: space.xl },
     footer: { gap: space.sm },
-    flex: { flex: 1 },
     hero: { gap: space.sm, minHeight: 190, justifyContent: 'flex-end' },
-    cardHead: { flexDirection: 'row', alignItems: 'center', gap: space.sm },
     strip: { flexDirection: 'row', gap: space.xs, marginVertical: space.sm },
     day: {
       flex: 1,
@@ -181,15 +153,6 @@ const useStyles = makeStyles((t) =>
     },
     dayTraining: { backgroundColor: t.colors.teal },
     dayToday: { borderColor: t.colors.gold },
-    trail: { flexDirection: 'row', alignItems: 'center', gap: space.md },
-    trailBadge: {
-      width: 40,
-      height: 40,
-      borderRadius: radius.pill,
-      alignItems: 'center',
-      justifyContent: 'center',
-      backgroundColor: t.colors.teal,
-    },
     closer: { textAlign: 'center', paddingHorizontal: space.md },
   }),
 );

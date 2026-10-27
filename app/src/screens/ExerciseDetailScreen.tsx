@@ -202,11 +202,6 @@ export default function ExerciseDetailScreen({ route, navigation }: Props): Reac
           <Txt variant="bodyStrong" color={ink}>
             {primaryMuscleLabel(exercise)} · {formatToken(exercise.pattern)}
           </Txt>
-          {exercise.aliases.length > 0 && (
-            <Txt variant="small" color={ink} style={styles.aliases}>
-              Also called {exercise.aliases.join(', ')}
-            </Txt>
-          )}
         </View>
       </View>
 
@@ -575,7 +570,6 @@ const useStyles = makeStyles((t) =>
     },
     heroBar: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: space.xl },
     heroText: { gap: space.xs },
-    aliases: { opacity: 0.8 },
     body: { paddingHorizontal: gutter, paddingTop: space.xl, gap: space.lg },
     statRow: { flexDirection: 'row', gap: space.md },
     stat: { flex: 1, minWidth: 0 },

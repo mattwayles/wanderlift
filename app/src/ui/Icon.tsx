@@ -49,6 +49,7 @@ export const iconMap = {
   time: 'time',
   timer: 'stopwatch',
   trendingUp: 'trending-up',
+  trendingDown: 'trending-down',
   trophy: 'trophy',
   location: 'location',
   globe: 'globe',

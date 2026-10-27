@@ -61,3 +61,11 @@ export const REFERENCE_SET_HOLD_SEC = 30;
 export const SET_WEIGHT_PER_BAND_STEP = 1.25;
 /** One set never counts for more than this, so a mis-typed 100 reps can't decide a week. */
 export const MAX_SET_WEIGHT = 3;
+
+/** Core balance: in an abs session, whichever of these two has fewer picks so far gets
+ *  CORE_BALANCE_BONUS, so the session splits between them instead of piling onto one. */
+export const CORE_BALANCE_MUSCLES = ['abs', 'obliques'] as const;
+/** Beats novelty + difficulty preference together (900), so a flexion slot picks a crunch over a
+ *  bicycle crunch when obliques are already ahead; below the week's lightest muscle (950) and the
+ *  recency tier gap (1000), so the target muscle and cooldowns still win. */
+export const CORE_BALANCE_BONUS = 925;

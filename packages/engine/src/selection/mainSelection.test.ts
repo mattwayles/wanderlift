@@ -219,6 +219,53 @@ describe('§5.2 selection rules', () => {
     expect(result.picks.some((p) => p.exercise.id === 'novel')).toBe(true);
   });
 
+  it('core balance — an abs session splits picks between abs and obliques', () => {
+    // Each flexion slot offers an oblique-led and an abs-led option; the oblique ones are novel
+    // and match the requested difficulty, so without the balance nudge every slot goes oblique.
+    const pool = [
+      ex({ id: 'twist', pattern: 'anti_rotation', primary: ['obliques'], focus: ['abs'] }),
+      ...[1, 2, 3].flatMap((i) => [
+        ex({ id: `bicycle-${i}`, pattern: 'flexion', primary: ['obliques'], focus: ['abs'] }),
+        ex({
+          id: `crunch-${i}`,
+          pattern: 'flexion',
+          primary: ['abs'],
+          focus: ['abs'],
+          difficulty: 'easy',
+        }),
+      ]),
+    ];
+    const performedCrunches = Object.fromEntries(
+      [1, 2, 3].map((i) => [
+        `crunch-${i}`,
+        state({ exerciseId: `crunch-${i}`, sessionsPerformed: 3 }),
+      ]),
+    );
+    const run = (focus: 'abs' | 'full') =>
+      selectMain({
+        slots: [
+          slot('s1', 'anti_rotation'),
+          slot('s2', 'flexion'),
+          slot('s3', 'flexion'),
+          slot('s4', 'flexion'),
+        ],
+        pool,
+        poolIgnoringEquipment: pool,
+        userState: userState({ exerciseStates: performedCrunches }),
+        today: TODAY,
+        rng: rng(),
+        focus,
+        equipmentPreference: 'any',
+        requestedDifficulty: 'medium',
+      }).picks.map((p) => p.exercise.primary[0]);
+
+    const abs = run('abs');
+    expect(abs.filter((m) => m === 'abs')).toHaveLength(2);
+    expect(abs.filter((m) => m === 'obliques')).toHaveLength(2);
+    // Scoped to the abs focus: the same pool in any other focus is untouched.
+    expect(run('full').filter((m) => m === 'obliques')).toHaveLength(4);
+  });
+
   it('OVER-WORKED muscle — never programmed as a primary mover (chest over-worked, arm still fine)', () => {
     const chestEx = ex({ id: 'chest-move', pattern: 'horizontal_push', primary: ['chest'] });
     const armEx = ex({ id: 'arm-move', pattern: 'horizontal_push', primary: ['triceps'] });

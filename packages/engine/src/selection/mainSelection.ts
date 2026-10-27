@@ -41,6 +41,8 @@ import { buildCandidates, sessionsAgo, recencyTier } from './candidates';
 import { overWorkedMuscles, recentHardMuscles } from './volume';
 import {
   BAND_MIN_RATIO,
+  CORE_BALANCE_BONUS,
+  CORE_BALANCE_MUSCLES,
   DIFFICULTY_PREFERENCE_BONUS,
   LIGHT_MUSCLE_BONUS,
   PREFERRED_MIN_RATIO,
@@ -137,6 +139,8 @@ interface ScoreState {
   targetCovered: boolean;
   /** 0..1 below-average-ness per muscle (see `muscleDeficits`). */
   muscleDeficits: ReadonlyMap<string, number>;
+  /** Abs sessions only: picks so far whose primary is each `CORE_BALANCE_MUSCLES` member. */
+  coreBalance: Map<string, number> | null;
 }
 
 function score(c: Candidate, st: ScoreState, rng: Rng): number {
@@ -165,12 +169,28 @@ function score(c: Candidate, st: ScoreState, rng: Rng): number {
   let deficit = 0;
   for (const m of c.exercise.primary) deficit = Math.max(deficit, st.muscleDeficits.get(m) ?? 0);
   s += LIGHT_MUSCLE_BONUS * deficit;
+  // User-reported: a 60-minute core session came out almost all obliques. Lean each pick toward
+  // whichever of abs/obliques the session has trained less so far.
+  if (st.coreBalance) {
+    const [a, b] = CORE_BALANCE_MUSCLES;
+    const na = st.coreBalance.get(a) ?? 0;
+    const nb = st.coreBalance.get(b) ?? 0;
+    const behind = na < nb ? a : nb < na ? b : null;
+    if (behind !== null && c.exercise.primary.includes(behind)) s += CORE_BALANCE_BONUS;
+  }
   const touchesRecovery = overlaps(c.exercise.primary, st.recoveryMuscles);
   if (touchesRecovery) {
     s -= st.recoveryUsed ? 3000 : 30; // one is tolerated, a second is heavily discouraged
   }
   s += rng.next() * 3; // deterministic jitter, tie-break only
   return s;
+}
+
+function countCoreBalance(st: ScoreState, exercise: Exercise): void {
+  if (!st.coreBalance) return;
+  for (const m of CORE_BALANCE_MUSCLES) {
+    if (exercise.primary.includes(m)) st.coreBalance.set(m, (st.coreBalance.get(m) ?? 0) + 1);
+  }
 }
 
 function pickBest(candidates: readonly Candidate[], st: ScoreState, rng: Rng): Candidate {
@@ -260,6 +280,7 @@ export function selectMain(input: SelectMainInput): MainSelectionResult {
     targetMuscle: input.lightMuscles?.target ?? null,
     targetCovered: false,
     muscleDeficits: input.lightMuscles?.deficits ?? new Map(),
+    coreBalance: focus === 'abs' ? new Map() : null,
   };
 
   for (const slot of slots) {
@@ -293,6 +314,7 @@ export function selectMain(input: SelectMainInput): MainSelectionResult {
           if (chosen.isNovel) st.noveltyUsed = true;
           if (st.targetMuscle && chosen.exercise.primary.includes(st.targetMuscle))
             st.targetCovered = true;
+          countCoreBalance(st, chosen.exercise);
           if (overlaps(chosen.exercise.primary, recoveryMuscles)) st.recoveryUsed = true;
           picks.push({
             slotId: slot.id,
@@ -319,6 +341,7 @@ export function selectMain(input: SelectMainInput): MainSelectionResult {
     if (chosen.isNovel) st.noveltyUsed = true;
     if (st.targetMuscle && chosen.exercise.primary.includes(st.targetMuscle))
       st.targetCovered = true;
+    countCoreBalance(st, chosen.exercise);
     const touchesRecovery = overlaps(chosen.exercise.primary, recoveryMuscles);
     if (touchesRecovery) st.recoveryUsed = true;
     picks.push({

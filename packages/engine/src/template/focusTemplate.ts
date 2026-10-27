@@ -173,7 +173,10 @@ function cardioSlots(): TemplateSlot[] {
 const ACCESSORY_PATTERNS_BY_FOCUS: Record<Focus, Pattern[]> = {
   upper: UPPER_ISOLATION,
   legs: ['abduction', 'hip_extension', 'knee_flexion', 'knee_extension', 'calf', 'adduction'],
-  abs: ['anti_rotation', 'flexion', 'lateral_flexion'],
+  // Every anti_rotation and lateral_flexion exercise is oblique-led; flexion is the only
+  // non-laddered pattern with abs-led work (crunch, leg raise, scissors). So flexion comes up
+  // every other slot — cycling the three evenly made a long core session two-thirds obliques.
+  abs: ['flexion', 'anti_rotation', 'flexion', 'lateral_flexion'],
   full: [
     ...UPPER_ISOLATION,
     'abduction',

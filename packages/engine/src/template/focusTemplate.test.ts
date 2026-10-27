@@ -161,6 +161,22 @@ describe('§5.5 focus templates', () => {
     expect(expanded.slots.filter((s) => s.required)).toHaveLength(3);
   });
 
+  it('abs extra slots alternate flexion with the oblique patterns, not two-thirds oblique', () => {
+    const base = buildFocusTemplate({
+      focus: 'abs',
+      targetMinutes: 60,
+      difficulty: 'medium',
+      library: lib,
+      history: noHistory,
+    });
+    const extras = expandOptionalSlots(base, 'abs', base.slots.length + 4, 0)
+      .slots.slice(base.slots.length)
+      .map((s) => s.patterns[0]);
+    // Flexion is the only non-laddered pattern with abs-led exercises; the other two are
+    // oblique-led, so it has to come up every other slot for the session to split evenly.
+    expect(extras).toEqual(['flexion', 'anti_rotation', 'flexion', 'lateral_flexion']);
+  });
+
   it('Quick Session template has at most 3 slots (§9.5)', () => {
     const { slots } = buildQuickSessionTemplate({
       focus: 'full',

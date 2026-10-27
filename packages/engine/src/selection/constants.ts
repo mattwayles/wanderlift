@@ -69,3 +69,7 @@ export const CORE_BALANCE_MUSCLES = ['abs', 'obliques'] as const;
  *  bicycle crunch when obliques are already ahead; below the week's lightest muscle (950) and the
  *  recency tier gap (1000), so the target muscle and cooldowns still win. */
 export const CORE_BALANCE_BONUS = 925;
+
+/** OVER-WORKED in an upper/legs/abs session, for that focus's own muscles: a light score penalty
+ *  instead of exclusion. Loses a tie and the difficulty preference (500), never a slot. */
+export const OWN_FOCUS_OVER_WORKED_PENALTY = 200;

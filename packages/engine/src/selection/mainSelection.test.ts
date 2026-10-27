@@ -266,7 +266,7 @@ describe('§5.2 selection rules', () => {
     expect(run('full').filter((m) => m === 'obliques')).toHaveLength(4);
   });
 
-  it('OVER-WORKED muscle — never programmed as a primary mover (chest over-worked, arm still fine)', () => {
+  it('OVER-WORKED muscle — never programmed as a primary mover in a full-body session (chest over-worked, arm still fine)', () => {
     const chestEx = ex({ id: 'chest-move', pattern: 'horizontal_push', primary: ['chest'] });
     const armEx = ex({ id: 'arm-move', pattern: 'horizontal_push', primary: ['triceps'] });
     // 7-day trailing volume: chest trained heavily (6 credits), triceps lightly (1 credit) ->
@@ -306,11 +306,80 @@ describe('§5.2 selection rules', () => {
       userState: userState({ history }),
       today: TODAY,
       rng: rng(),
-      focus: 'upper',
+      focus: 'full',
       equipmentPreference: 'any',
       requestedDifficulty: 'medium',
     });
     expect(result.picks[0]?.exercise.id).toBe('arm-move');
+  });
+
+  describe('OVER-WORKED in a single-area focus — its own muscles are penalized, not excluded', () => {
+    // Obliques trained heavily this week (6 credits) against chest lightly (1): mean 3.5, obliques
+    // (6 > 5.25) over-worked. Obliques lead abs-focus exercises, so the abs focus owns them.
+    const obliquesHistory = [1, 2].map((i) =>
+      ex({
+        id: `obl-history-${i}`,
+        pattern: 'anti_rotation',
+        primary: ['obliques'],
+        focus: ['abs'],
+      }),
+    );
+    const chestHistory = ex({ id: 'chest-history', primary: ['chest'], focus: ['upper'] });
+    const history: SessionHistoryRecord[] = [
+      {
+        localDate: '2026-08-28',
+        focus: 'abs',
+        difficulty: 'medium',
+        status: 'completed',
+        entries: [
+          { exerciseId: 'obl-history-1', role: 'main', difficulty: 'medium', sets: 3 },
+          { exerciseId: 'obl-history-2', role: 'main', difficulty: 'medium', sets: 3 },
+          { exerciseId: 'chest-history', role: 'main', difficulty: 'medium', sets: 1 },
+        ],
+      },
+    ];
+    const twist = ex({
+      id: 'twist',
+      pattern: 'anti_rotation',
+      primary: ['obliques'],
+      focus: ['abs'],
+    });
+    const plankUpDown = ex({
+      id: 'plank-up-down',
+      pattern: 'anti_rotation',
+      primary: ['abs'],
+      focus: ['abs'],
+    });
+    const run = (focus: 'abs' | 'full' | 'upper', extra: Exercise[] = []) => {
+      const pool = [twist, ...extra, ...obliquesHistory, chestHistory];
+      return selectMain({
+        slots: [slot('s1', 'anti_rotation')],
+        pool,
+        poolIgnoringEquipment: pool,
+        userState: userState({ history }),
+        today: TODAY,
+        rng: rng(),
+        focus,
+        equipmentPreference: 'any',
+        requestedDifficulty: 'medium',
+      }).picks.map((p) => p.exercise.id);
+    };
+
+    it('an abs session still fills an obliques-only slot (the second core session of a week)', () => {
+      expect(run('abs')).toEqual(['twist']);
+    });
+
+    it('the penalty is a tie-breaker: an equal non-over-worked option wins', () => {
+      expect(run('abs', [plankUpDown])).toEqual(['plank-up-down']);
+    });
+
+    it('a full-body session still excludes the muscle outright', () => {
+      expect(run('full')).toEqual([]);
+    });
+
+    it("another focus doesn't own it — an upper session still excludes obliques", () => {
+      expect(run('upper')).toEqual([]);
+    });
   });
 
   it('48h recovery — a second exercise on a recently-hard muscle is avoided when an alternative exists', () => {

@@ -3,7 +3,8 @@
  * priority order, then re-checks as whole-session aggregates:
  *
  *   BLOCKED (never) → suppressed/REPEATEDLY-SKIPPED (never, while active) → OVER-WORKED muscles
- *   never as primary mover, ≤1 exercise touching one at all → 48h recovery muscles ≤1 exercise →
+ *   never as primary mover (except the session focus's own muscles in upper/legs/abs, which are
+ *   only lightly penalized), ≤1 exercise touching one at all → 48h recovery muscles ≤1 exercise →
  *   UNTRAINED/LOW prioritized → novelty preferred → PATTERN GAP handling for an unfillable
  *   required slot → aggregate passes: ≥1 novelty, ≥70% PREFERRED, ≥50% band.
  *
@@ -45,6 +46,7 @@ import {
   CORE_BALANCE_MUSCLES,
   DIFFICULTY_PREFERENCE_BONUS,
   LIGHT_MUSCLE_BONUS,
+  OWN_FOCUS_OVER_WORKED_PENALTY,
   PREFERRED_MIN_RATIO,
   TARGET_MUSCLE_BONUS,
 } from './constants';
@@ -130,6 +132,8 @@ function eligibleForSlot(
 
 interface ScoreState {
   overWorked: ReadonlySet<string>;
+  /** Over-worked muscles this focus trains — penalized, not excluded (see `selectMain`). */
+  overWorkedOwnFocus: ReadonlySet<string>;
   recoveryMuscles: ReadonlySet<string>;
   recoveryUsed: boolean;
   noveltyUsed: boolean;
@@ -156,6 +160,7 @@ function score(c: Candidate, st: ScoreState, rng: Rng): number {
   ) {
     s -= 50;
   }
+  if (overlaps(c.exercise.primary, st.overWorkedOwnFocus)) s -= OWN_FOCUS_OVER_WORKED_PENALTY;
   // Lesser-worked muscles: lean on the week's lightest muscle until something trains it, and give
   // a graded nudge to any other muscle sitting below the mean. Only reorders already-eligible
   // candidates — OVER-WORKED / BLOCKED / recovery above and below are untouched.
@@ -184,6 +189,33 @@ function score(c: Candidate, st: ScoreState, rng: Rng): number {
   }
   s += rng.next() * 3; // deterministic jitter, tie-break only
   return s;
+}
+
+const SINGLE_AREA_FOCI: readonly Focus[] = ['upper', 'legs', 'abs'];
+
+/** The muscles `focus` owns: those whose primary-mover exercises sit in this focus more than in
+ *  either other single-area focus. Owning is exclusive, so one upper exercise that leads with the
+ *  obliques doesn't make obliques an upper muscle. Empty for full and cardio. */
+function ownFocusMuscles(focus: Focus, library: readonly Exercise[]): Set<string> {
+  if (!SINGLE_AREA_FOCI.includes(focus)) return new Set();
+  const counts = new Map<string, Map<Focus, number>>();
+  for (const e of library) {
+    if (e.pattern === 'conditioning' || !e.roles.includes('main')) continue;
+    for (const f of e.focus) {
+      if (!SINGLE_AREA_FOCI.includes(f)) continue;
+      for (const m of e.primary) {
+        const byFocus = counts.get(m) ?? new Map<Focus, number>();
+        byFocus.set(f, (byFocus.get(f) ?? 0) + 1);
+        counts.set(m, byFocus);
+      }
+    }
+  }
+  const owned = new Set<string>();
+  for (const [m, byFocus] of counts) {
+    const mine = byFocus.get(focus) ?? 0;
+    if (mine > 0 && [...byFocus].every(([f, n]) => f === focus || n < mine)) owned.add(m);
+  }
+  return owned;
 }
 
 function countCoreBalance(st: ScoreState, exercise: Exercise): void {
@@ -250,7 +282,14 @@ export function selectMain(input: SelectMainInput): MainSelectionResult {
   // OVER-WORKED / recovery are about which muscles the pool can train, not about difficulty, so
   // they read the full (difficulty-unfiltered), UNscoped pool — see `volumePool`'s doc comment.
   const volumePool = input.volumePool ?? pool;
-  const overWorked = overWorkedMuscles(history, volumePool, today);
+  const overWorkedAll = overWorkedMuscles(history, volumePool, today);
+  // User-reported: a second core session in a week came out all obliques, or one exercise long.
+  // A focus session trains its own few muscles hard, so excluding them once over-worked emptied
+  // the next session of that focus. In upper/legs/abs those muscles are only penalized, lightly;
+  // everything else, and every muscle in a full-body session, is still excluded.
+  const ownFocus = ownFocusMuscles(focus, volumePool);
+  const overWorkedOwnFocus = new Set([...overWorkedAll].filter((m) => ownFocus.has(m)));
+  const overWorked = new Set([...overWorkedAll].filter((m) => !ownFocus.has(m)));
   const recoveryMuscles = recentHardMuscles(
     history,
     volumePool,
@@ -272,7 +311,8 @@ export function selectMain(input: SelectMainInput): MainSelectionResult {
   const patternGaps: PatternGapNote[] = [];
 
   const st: ScoreState = {
-    overWorked,
+    overWorked: overWorkedAll,
+    overWorkedOwnFocus,
     recoveryMuscles,
     recoveryUsed: false,
     noveltyUsed: false,
@@ -467,5 +507,5 @@ function applyAggregatePass(
   }
 }
 
-export { overlaps, eligibleForSlot, sessionsAgo, recencyTier };
+export { overlaps, eligibleForSlot, ownFocusMuscles, sessionsAgo, recencyTier };
 export type { SessionHistoryRecord };

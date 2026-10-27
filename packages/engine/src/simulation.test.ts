@@ -15,6 +15,7 @@ import { defaultMicroForExercise } from './progression/micro';
 import { applySessionResult } from './progression/rules';
 import { FIXED_POINT_ANCHORS } from './filters/hardFilters';
 import { overWorkedMuscles } from './selection/volume';
+import { ownFocusMuscles } from './selection/mainSelection';
 import type { ExerciseState, ProgressionState, SessionHistoryRecord, UserState } from './types';
 
 const library = exerciseLibrary.exercises;
@@ -120,10 +121,12 @@ describe('multi-session simulation', () => {
       );
 
       // OVER-WORKED, checked precisely: no accessory entry's PRIMARY muscle is one that was
-      // already over-worked going into this session.
+      // already over-worked going into this session — unless this focus owns it, where an
+      // over-worked muscle is only penalized so a second core/upper/legs session isn't emptied.
+      const owned = ownFocusMuscles(focus, library);
       for (const entry of accessoryEntries) {
         const ex = library.find((e) => e.id === entry.exerciseId);
-        if (ex?.primary.some((m) => preGenerationOverWorked.has(m))) {
+        if (ex?.primary.some((m) => preGenerationOverWorked.has(m) && !owned.has(m))) {
           overWorkedNeverPrimaryAccessoryMover = false;
         }
       }

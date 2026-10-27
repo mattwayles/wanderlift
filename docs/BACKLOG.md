@@ -14,14 +14,6 @@ the record of what was completed and why.
 
 ## Desired Fixes
 
-- **OVER-WORKED guts a focus session that trains its own muscles too often.** A muscle above 1.5x
-  the 7-day mean is excluded outright as a primary mover. A core session pushes abs and obliques
-  over that line, so the next core session within the week loses one or both: abs over-worked gives
-  a 7-of-8 oblique session (the abs/obliques balance can't help, the abs pool is empty); both
-  over-worked leaves a 60-minute core session with one exercise (the anti_extension ladder pick).
-  Reproduced by a probe rotating upper/legs/abs/full one per day. Options: in a focus session,
-  demote the focus's own muscles from exclusion to a score penalty, or count a focus session's
-  volume against a per-focus mean. Needs a decision before building.
 - **Restored user with no completed session** keeps the old phone's motivation notifications until
   Today next schedules (rare; untested).
 - **Demo-video leftovers are now dead weight.** The Demo card, the paste-a-link flow and the

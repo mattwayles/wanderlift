@@ -255,7 +255,13 @@ function EmblemBody({
           pointerEvents="none"
         >
           {mystery ? (
-            <Txt variant="h2" color="text3" style={{ fontSize: Math.round(size * 0.4) }}>
+            // The line height scales with the glyph too: h2's own 26pt clipped the top and bottom
+            // of the "?" once it outgrew h2's size, as it does on the 120pt badge sheet.
+            <Txt
+              variant="h2"
+              color="text3"
+              style={{ fontSize: Math.round(size * 0.4), lineHeight: Math.round(size * 0.48) }}
+            >
               ?
             </Txt>
           ) : (

@@ -1,4 +1,5 @@
 import React from 'react';
+import { StyleSheet } from 'react-native';
 import { render, screen } from '@testing-library/react-native';
 import { BADGES } from '@roamfit/engine';
 import { buildBadgeShelf } from '../lib/badges';
@@ -35,6 +36,13 @@ describe('BadgeEmblem', () => {
     await ready('e');
     expect(screen.getByTestId('e').props.accessibilityLabel).toBe('Hidden badge, locked');
     expect(screen.getByText('?')).toBeTruthy();
+  });
+
+  it('gives the ? a line height that grows with it, so the badge sheet does not clip it', async () => {
+    render(<BadgeEmblem badge={pick('early_bird_1')} size={120} testID="e" />);
+    await ready('e');
+    const style = StyleSheet.flatten(screen.getByText('?').props.style);
+    expect(style.lineHeight).toBeGreaterThan(style.fontSize);
   });
 
   it('draws every catalog badge in every shape, size and theme without throwing', async () => {

@@ -22,7 +22,8 @@
         "UIBackgroundModes": ["audio"],
         "LSApplicationQueriesSchemes": ["spotify"],
         "NSLocationWhenInUseUsageDescription": "Wanderlift uses your location once, at the end of a workout, to pin the city and country on your Passport. It's never tracked in the background.",
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSSupportsLiveActivities": true
       },
       "entitlements": {
         "com.apple.developer.icloud-container-identifiers": ["iCloud.com.mattwayles.wanderlift"],
@@ -32,6 +33,7 @@
     },
     "plugins": [
       "expo-dev-client",
+      "@bacons/apple-targets",
       "expo-audio",
       "expo-notifications",
       "expo-location",

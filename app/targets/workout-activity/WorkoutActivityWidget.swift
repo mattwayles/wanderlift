@@ -191,12 +191,18 @@ struct WorkoutLiveActivity: Widget {
             .padding(.leading, 4)
         }
         DynamicIslandExpandedRegion(.trailing) {
+          // A cap alone let the region shrink the clock until it wrapped a digit per line; the
+          // fixed width holds "1:02:05" on one line, and it may drop below the camera if needed.
           PhaseClock(state: state)
             .font(.system(.title2, design: .rounded).weight(.semibold))
             .monospacedDigit()
             .foregroundColor(Palette.text)
             .multilineTextAlignment(.trailing)
-            .frame(maxWidth: 96, alignment: .trailing)
+            .lineLimit(1)
+            .minimumScaleFactor(0.7)
+            .frame(width: 104, alignment: .trailing)
+            .padding(.trailing, 4)
+            .dynamicIsland(verticalPlacement: .belowIfTooWide)
         }
         DynamicIslandExpandedRegion(.center) {
           Headline(state: state)

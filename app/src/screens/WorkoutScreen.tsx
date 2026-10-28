@@ -61,7 +61,6 @@ import {
   type AccentName,
   withAlpha,
 } from '../theme';
-import { useOptionalThemePreference } from '../state/ThemeProvider';
 import {
   Button,
   Card,
@@ -165,7 +164,6 @@ function levelBadge(
 export default function WorkoutScreen({ navigation, route }: Props): React.JSX.Element {
   const styles = useStyles();
   const theme = useTheme();
-  const themePreference = useOptionalThemePreference();
   // §10.8 — "Keep-awake for the whole active session; released on completion or abandonment."
   // `useKeepAwake` activates on mount and deactivates automatically on unmount, which covers
   // both cases: navigating to Summary on completion, or navigating away (Home/back) on
@@ -1030,24 +1028,9 @@ export default function WorkoutScreen({ navigation, route }: Props): React.JSX.E
                 navigation.navigate('Tabs', { screen: 'Home' });
               }}
             />
-            {/* §8.5 — one tap to the other light, mid-session: the courtyard case. Sits on the left
-                beside Home so the right group (pause/stop) and the centered clock keep their width.
-                Sets an explicit, persisted preference. The icon names the destination, not the state. */}
-            {themePreference && (
-              <IconButton
-                testID="theme-toggle"
-                size="sm"
-                icon={themePreference.scheme === 'dark' ? 'sun' : 'moon'}
-                accessibilityLabel={
-                  themePreference.scheme === 'dark' ? 'Switch to Daybreak' : 'Switch to Midnight'
-                }
-                onPress={() =>
-                  themePreference.setPreference(
-                    themePreference.scheme === 'dark' ? 'light' : 'dark',
-                  )
-                }
-              />
-            )}
+            {/* The music app, one tap from any phase: the top bar stays put while the set, rest and
+                timed views scroll beneath it. Renders nothing when Settings' choice is "None". */}
+            <MusicButton />
           </View>
           <Txt
             variant="hero"
@@ -1098,7 +1081,6 @@ export default function WorkoutScreen({ navigation, route }: Props): React.JSX.E
             <Chip label={SECTION_LABEL[sessionSection] ?? entry.section} tone={sectionTone} />
             {paused && <PausedChip />}
             <View style={styles.metaSpacer} />
-            <MusicButton />
             {/* §14.1's real-time progress view — a persistent way to check completed/skipped sets
                 and where you currently are, from any phase of the active workout. "Done" replaces
                 it once reviewing from Summary (before FINISH): that mode has no front edge for the

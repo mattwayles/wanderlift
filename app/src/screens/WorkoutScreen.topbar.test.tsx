@@ -1,16 +1,15 @@
 /**
- * Active Workout theme toggle (DESIGN.md §8.5): a sun/moon IconButton in the top bar flips the
- * explicit light/dark preference live and persists it, plus the screen rendering real Daybreak
- * values. Runs inside the real ThemeProvider (no mock), unlike the other WorkoutScreen suites.
+ * The Active Workout top bar's music button, plus the screen rendering real Daybreak values. Runs
+ * inside the real ThemeProvider (no mock), unlike the other WorkoutScreen suites.
  */
 import React from 'react';
-import { StyleSheet } from 'react-native';
-import { act, fireEvent, render, screen, waitFor } from '@testing-library/react-native';
+import { Linking, StyleSheet } from 'react-native';
+import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react-native';
 import { sessionsRepo, usersRepo } from '@roamfit/store';
 import WorkoutScreen from './WorkoutScreen';
 import { StoreProvider, useStore } from '../state/StoreContext';
 import { ThemeProvider } from '../state/ThemeProvider';
-import { daybreak, midnight } from '../theme';
+import { daybreak } from '../theme';
 import { inDaybreak } from '../ui/test-utils';
 import { setUpTimedEntry } from './timedTestHelpers';
 
@@ -45,7 +44,7 @@ async function setUpSession(): Promise<{
     </StoreProvider>,
   );
   await waitFor(() => expect(db).toBeDefined(), WAIT_OPTS);
-  const { sessionId } = await setUpTimedEntry(db, 'theme-toggle-seed', {
+  const { sessionId } = await setUpTimedEntry(db, 'music-button-seed', {
     durationSec: 30,
     unilateral: false,
   });
@@ -55,9 +54,11 @@ async function setUpSession(): Promise<{
 const route = (sessionId: string) =>
   ({ key: 'Workout', name: 'Workout', params: { sessionId } }) as never;
 
-describe('Workout theme toggle', () => {
-  it('flips Midnight -> Daybreak -> Midnight live, relabels, and persists the preference', async () => {
+describe('Workout music button', () => {
+  it('sits in the top bar, outside the scrolling content, and opens the chosen app', async () => {
     const { db, sessionId } = await setUpSession();
+    usersRepo.updateUser(db, { musicApp: 'spotify' }, new Date().toISOString());
+    const openURL = jest.spyOn(Linking, 'openURL').mockResolvedValue(true);
     render(
       <StoreProvider>
         <ThemeProvider initialPreference="dark">
@@ -65,41 +66,33 @@ describe('Workout theme toggle', () => {
         </ThemeProvider>
       </StoreProvider>,
     );
-    await waitFor(() => expect(screen.getByTestId('theme-toggle')).toBeTruthy(), WAIT_OPTS);
+    await waitFor(() => expect(screen.getByTestId('open-music')).toBeTruthy(), WAIT_OPTS);
 
-    // Midnight: offers Daybreak.
-    expect(screen.getByTestId('theme-toggle').props.accessibilityLabel).toBe('Switch to Daybreak');
-    expect(
-      StyleSheet.flatten(screen.getByTestId('workout-screen').props.style)?.backgroundColor,
-    ).toBe(midnight.bg);
-
-    await act(async () => {
-      fireEvent.press(screen.getByTestId('theme-toggle'));
-    });
-    await waitFor(
-      () =>
-        expect(screen.getByTestId('theme-toggle').props.accessibilityLabel).toBe(
-          'Switch to Midnight',
-        ),
-      WAIT_OPTS,
-    );
-    expect(usersRepo.getUser(db)?.themePreference).toBe('light');
-    // The whole screen re-rendered in Daybreak, not just the button.
-    expect(
-      StyleSheet.flatten(screen.getByTestId('workout-screen').props.style)?.backgroundColor,
-    ).toBe(daybreak.bg);
+    // One button, and not in the scroll view (where the Progress chip lives), so scrolling the
+    // set or rest away never takes it with it. The theme toggle it replaced is gone.
+    expect(screen.getAllByTestId('open-music')).toHaveLength(1);
+    expect(within(screen.getByTestId('workout-scroll')).queryByTestId('open-music')).toBeNull();
+    expect(screen.queryByTestId('theme-toggle')).toBeNull();
 
     await act(async () => {
-      fireEvent.press(screen.getByTestId('theme-toggle'));
+      fireEvent.press(screen.getByTestId('open-music'));
     });
-    await waitFor(
-      () =>
-        expect(screen.getByTestId('theme-toggle').props.accessibilityLabel).toBe(
-          'Switch to Daybreak',
-        ),
-      WAIT_OPTS,
+    expect(openURL).toHaveBeenCalledWith('spotify://');
+    openURL.mockRestore();
+  }, 20000);
+
+  it('is absent when the music app is None', async () => {
+    const { db, sessionId } = await setUpSession();
+    usersRepo.updateUser(db, { musicApp: 'none' }, new Date().toISOString());
+    render(
+      <StoreProvider>
+        <ThemeProvider initialPreference="dark">
+          <WorkoutScreen navigation={mockNavigation() as never} route={route(sessionId)} />
+        </ThemeProvider>
+      </StoreProvider>,
     );
-    expect(usersRepo.getUser(db)?.themePreference).toBe('dark');
+    await waitFor(() => expect(screen.getByTestId('workout-home')).toBeTruthy(), WAIT_OPTS);
+    expect(screen.queryByTestId('open-music')).toBeNull();
   }, 20000);
 });
 

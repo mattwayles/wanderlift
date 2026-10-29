@@ -45,6 +45,25 @@ export interface WatchFeedback {
   neverAgainDone: boolean;
 }
 
+/** The phone's hold timer for a timed set, so the watch can show it and tap along. The phone owns
+ *  the clock and its 3-2-1 beeps (it is the thing wired to the user's headphones); the watch
+ *  starts it, sets its length with the crown, and adds the taps. */
+export interface WatchHold {
+  /** The set this belongs to, as `WatchSet.setKey`. */
+  setKey: string;
+  /** `ready`: not started, the length can still be changed. `getReady`: the 3s count-in. `side`: a
+   *  side being held. `switch`: the gap between a one-sided hold's two sides. */
+  phase: 'ready' | 'getReady' | 'side' | 'switch';
+  /** 1, or 2 for a one-sided hold's second side. */
+  side: number;
+  /** Seconds per side, as adjusted. */
+  durationSec: number;
+  /** When the phase ends; null while `ready` or frozen (paused). */
+  endsAtMs: number | null;
+  /** Seconds left while frozen (paused), else null. */
+  remainingSec: number | null;
+}
+
 export interface WatchActive {
   sessionId: string;
   /** "Upper · Medium". */
@@ -59,6 +78,8 @@ export interface WatchActive {
   set: WatchSet | null;
   /** Present between sets. */
   rest: WatchRest | null;
+  /** Present while a timed set is on deck. */
+  hold: WatchHold | null;
   feedback: WatchFeedback | null;
   /** True on the closing rest: the only way on is to stop. */
   closing: boolean;
@@ -88,6 +109,10 @@ export type WatchCommandBody =
   | { type: 'start'; sessionId: string }
   | { type: 'completeSet'; sessionId: string; setKey: string; reps?: number; seconds?: number }
   | { type: 'skipSet'; sessionId: string; setKey: string }
+  /** Start the phone's hold timer (its 3s count-in, then the hold). */
+  | { type: 'startHold'; sessionId: string; setKey: string }
+  /** Lengthen or shorten the hold by `deltaSec` (the crown, 5s a step); only before it starts. */
+  | { type: 'adjustHold'; sessionId: string; setKey: string; deltaSec: number }
   | { type: 'pause'; sessionId: string }
   | { type: 'resume'; sessionId: string }
   | { type: 'skipRest'; sessionId: string }

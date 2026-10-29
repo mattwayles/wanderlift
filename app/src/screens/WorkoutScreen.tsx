@@ -82,8 +82,8 @@ import { useInsets } from '../ui/useInsets';
 import MusicButton from '../components/MusicButton';
 import WatchBridge from '../components/WatchBridge';
 import { targetQuestion } from '../lib/targetQuestion';
-import type { WatchCommand } from '../lib/watchProtocol';
-import { watchSetFor, type WatchActiveInput } from '../lib/workoutWatch';
+import type { WatchCommand, WatchHold } from '../lib/watchProtocol';
+import { setWatchHold, watchSetFor, type WatchActiveInput } from '../lib/workoutWatch';
 import { exerciseComplete, lastSet, pick, rest as restLines, setComplete } from '../lib/hypeCopy';
 import type { RootStackParamList } from '../navigation/types';
 import { homeReset } from '../navigation/routes';
@@ -143,6 +143,12 @@ interface RestControls {
   extend: (deltaMs: number) => Promise<void>;
 }
 
+/** What the timed set lets the screen do to its hold from outside (an Apple Watch command). */
+interface HoldControls {
+  start: () => void;
+  adjust: (deltaSec: number) => void;
+}
+
 /** Exactly the arguments `finishSetAndRest` was called with, parked while the paused-timer nudge
  *  is on screen so that answering it either way logs the same set. */
 interface PendingCompletion {
@@ -200,6 +206,7 @@ export default function WorkoutScreen({ navigation, route }: Props): React.JSX.E
   /** The rest page's own skip and ±15s, filled in by `RestPhase` while it is mounted, so a command
    *  from the Apple Watch moves the same countdown (and its notification) the buttons do. */
   const restControlsRef = useRef<RestControls | null>(null);
+  const holdControlsRef = useRef<HoldControls | null>(null);
   const insets = useInsets();
   /** The coach line that rises after a completed set. Lives here rather than in the set view: a
    *  completed set swaps straight to the rest page, so anything owned by the set view would unmount
@@ -991,6 +998,16 @@ export default function WorkoutScreen({ navigation, route }: Props): React.JSX.E
         if (phase !== 'exercise' || command.setKey !== onDeckKey) return;
         handleForward();
         return;
+      case 'startHold':
+      case 'adjustHold':
+        if (phase !== 'exercise' || command.setKey !== onDeckKey) return;
+        if (command.type === 'startHold') {
+          if (paused) sessionsRepo.resumeSession(db, sessionId, nowUtcInstant());
+          holdControlsRef.current?.start();
+        } else {
+          holdControlsRef.current?.adjust(command.deltaSec);
+        }
+        return;
       case 'pause':
         if (!paused) handlePause();
         return;
@@ -1309,6 +1326,7 @@ export default function WorkoutScreen({ navigation, route }: Props): React.JSX.E
                 onSwap={handleSwap}
                 onRewind={previousPosition ? handleRewind : null}
                 forwardIsSkip={atFrontier}
+                controlsRef={holdControlsRef}
               />
             ) : (
               <RepsExercise
@@ -1850,7 +1868,10 @@ function TimedExercise({
   onSwap,
   onRewind,
   forwardIsSkip,
+  controlsRef,
 }: {
+  /** Filled with this set's start and ±5s while it is mounted (see `HoldControls`). */
+  controlsRef: React.MutableRefObject<HoldControls | null>;
   entry: sessionsRepo.SessionEntryRecord;
   exerciseName: string;
   /** "Lvl 3/7 · Horizontal push" for the level chip, or null when the entry has no ladder. */
@@ -1969,6 +1990,8 @@ function TimedExercise({
   const switchCueFiredRef = useRef(false);
 
   const handleStart = () => {
+    // A second Start (the watch's and the ring's) must not restart the count-in.
+    if (started) return;
     setStarted(true);
     getReadyCountdown.controller.start();
   };
@@ -2159,6 +2182,59 @@ function TimedExercise({
       cueCompletion();
     }
   });
+
+  // The Apple Watch's view of this hold, and its start and ±5s. The clock is wall-clock, so the
+  // end instant is `now + remaining`; it is published only when the phase moves or the end moves
+  // by more than render jitter (a pause, a resume), or the watch would be sent a state every 100ms.
+  const watchHoldRef = useRef<WatchHold | null>(null);
+  useEffect(() => {
+    controlsRef.current = { start: handleStart, adjust: adjustDuration };
+  });
+  useEffect(() => {
+    const phase = !started ? 'ready' : inGetReady ? 'getReady' : switching ? 'switch' : 'side';
+    const sideStarted = sideIndex === 0 ? side1StartedRef.current : side2StartedRef.current;
+    const remainingMs =
+      phase === 'ready'
+        ? null
+        : phase === 'getReady'
+          ? getReadyMs
+          : phase === 'switch'
+            ? switchCountdown.remainingMs
+            : sideStarted
+              ? activeCountdown.remainingMs
+              : durationSec * 1000;
+    const frozen =
+      remainingMs != null &&
+      (paused || (phase === 'side' && activeCountdown.controller.isPaused()));
+    let endsAtMs = remainingMs != null && !frozen ? Date.now() + remainingMs : null;
+    const prev = watchHoldRef.current;
+    if (
+      endsAtMs != null &&
+      prev?.endsAtMs != null &&
+      prev.phase === phase &&
+      Math.abs(endsAtMs - prev.endsAtMs) < 600
+    ) {
+      endsAtMs = prev.endsAtMs;
+    }
+    const next: WatchHold = {
+      setKey: `${entry.id}:${setIndex}`,
+      phase,
+      side: sideIndex + 1,
+      durationSec,
+      endsAtMs,
+      remainingSec: frozen && remainingMs != null ? Math.ceil(remainingMs / 1000) : null,
+    };
+    if (prev && JSON.stringify(prev) === JSON.stringify(next)) return;
+    watchHoldRef.current = next;
+    setWatchHold(next);
+  });
+  useEffect(
+    () => () => {
+      controlsRef.current = null;
+      setWatchHold(null);
+    },
+    [controlsRef],
+  );
 
   const handleTogglePause = () => {
     if (!started || inGetReady || switching) return;

@@ -28,12 +28,17 @@ function swiftFields(name: string): string[] {
 }
 
 describe('the TypeScript and Swift protocols agree', () => {
-  it.each(['WatchSet', 'WatchRest', 'WatchFeedback', 'WatchActive', 'WatchReady', 'WatchState'])(
-    '%s has the same fields',
-    (name) => {
-      expect(swiftFields(name)).toEqual(tsFields(name));
-    },
-  );
+  it.each([
+    'WatchSet',
+    'WatchRest',
+    'WatchHold',
+    'WatchFeedback',
+    'WatchActive',
+    'WatchReady',
+    'WatchState',
+  ])('%s has the same fields', (name) => {
+    expect(swiftFields(name)).toEqual(tsFields(name));
+  });
 
   it('WatchCommand has every field any command body carries, plus the envelope', () => {
     const body = ts

@@ -30,6 +30,20 @@ struct WatchRest: Codable, Equatable {
   }
 }
 
+/// The phone's hold timer for a timed set. The phone owns the clock; the watch shows it.
+struct WatchHold: Codable, Equatable {
+  var setKey: String
+  /// "ready", "getReady", "side" or "switch".
+  var phase: String
+  var side: Int
+  var durationSec: Int
+  var endsAtMs: Double?
+  /// Seconds left while paused, else nil.
+  var remainingSec: Int?
+
+  var endsAt: Date? { endsAtMs.map { Date(timeIntervalSince1970: $0 / 1000) } }
+}
+
 struct WatchFeedback: Codable, Equatable {
   var question: String
   /// "too_easy", "just_right", "too_hard" or nil.
@@ -46,6 +60,7 @@ struct WatchActive: Codable, Equatable {
   var progress: Double
   var set: WatchSet?
   var rest: WatchRest?
+  var hold: WatchHold?
   var feedback: WatchFeedback?
   var closing: Bool
 }

@@ -205,7 +205,10 @@ it('shows the workout on the watch and applies what the watch asks for', async (
 
   // Skip records nothing and leaves the answer already given alone.
   await fromWatch({ type: 'skipFeedback', sessionId });
-  expect(lastState().active?.feedback).toMatchObject({ current: 'too_hard', neverAgainDone: false });
+  expect(lastState().active?.feedback).toMatchObject({
+    current: 'too_hard',
+    neverAgainDone: false,
+  });
 
   // "Never again" disables the exercise just finished, the same switch as the Field Guide's.
   expect(exerciseStateRepo.getDisabledExerciseIds(db)).not.toContain(repsEntry.exerciseId);

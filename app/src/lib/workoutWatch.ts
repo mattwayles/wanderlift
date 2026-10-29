@@ -23,16 +23,18 @@ import {
   type WatchReady,
   type WatchSet,
   type WatchRest,
+  type WatchHold,
   type WatchState,
 } from './watchProtocol';
 
 // ---- state to the watch ----
 
 /** What the Workout screen knows; the rest window is merged in from the rest page. */
-export type WatchActiveInput = Omit<WatchActive, 'rest'>;
+export type WatchActiveInput = Omit<WatchActive, 'rest' | 'hold'>;
 
 let active: WatchActiveInput | null = null;
 let rest: WatchRest | null = null;
+let hold: WatchHold | null = null;
 let ready: WatchReady | null = null;
 let lastSent: string | null = null;
 let rev = 0;
@@ -44,13 +46,14 @@ export function composeWatchState(
   input: WatchActiveInput | null,
   restWindow: WatchRest | null,
   readySession: WatchReady | null,
+  holdTimer: WatchHold | null = null,
 ): Omit<WatchState, 'rev'> {
   if (input) {
     return {
       v: WATCH_PROTOCOL_VERSION,
       mode: 'active',
       ready: null,
-      active: { ...input, rest: restWindow },
+      active: { ...input, rest: restWindow, hold: holdTimer },
     };
   }
   if (readySession) {
@@ -60,7 +63,7 @@ export function composeWatchState(
 }
 
 function flush(): void {
-  const body = composeWatchState(active, rest, ready);
+  const body = composeWatchState(active, rest, ready, hold);
   const key = JSON.stringify(body);
   if (key === lastSent) return;
   lastSent = key;
@@ -77,7 +80,10 @@ function flush(): void {
  *  call on every render — unchanged state sends nothing. */
 export function publishActive(next: WatchActiveInput): void {
   if (endedSessionIds.has(next.sessionId)) return;
-  if (active && active.sessionId !== next.sessionId) rest = null;
+  if (active && active.sessionId !== next.sessionId) {
+    rest = null;
+    hold = null;
+  }
   active = next;
   flush();
 }
@@ -85,6 +91,12 @@ export function publishActive(next: WatchActiveInput): void {
 /** The rest page's half: the window when a rest starts or its end moves, null when it is over. */
 export function setWatchRest(next: WatchRest | null): void {
   rest = next;
+  flush();
+}
+
+/** The timed set's half: the hold timer's phase and clock, null when no hold is on deck. */
+export function setWatchHold(next: WatchHold | null): void {
+  hold = next;
   flush();
 }
 
@@ -100,6 +112,7 @@ export function clearWatchActive(sessionId: string, ended: boolean): void {
   if (active?.sessionId !== sessionId) return;
   active = null;
   rest = null;
+  hold = null;
   flush();
 }
 
@@ -156,6 +169,7 @@ export function rememberWatchSavedHealth(sessionId: string): void {
 export function __resetWorkoutWatch(): void {
   active = null;
   rest = null;
+  hold = null;
   ready = null;
   lastSent = null;
   rev = 0;

@@ -60,7 +60,7 @@ struct SetView: View {
         .lineLimit(2).minimumScaleFactor(0.7).multilineTextAlignment(.center)
       Text(caption).font(.caption2).foregroundStyle(Palette.text2)
       if set.isHold {
-        HoldSetView(set: set).id(set.setKey)
+        HoldSetView(set: set, hold: active.hold).id(set.setKey)
       } else {
         RepsSetView(set: set).id(set.setKey)
       }
@@ -105,49 +105,87 @@ struct RepsSetView: View {
   }
 }
 
-/// A hold: the watch runs the countdown (a side at a time for a one-sided hold) and ends the set
-/// itself, with a buzz.
+/// A hold. The phone runs the clock (and its 3-2-1 beeps, which are what reach the user's
+/// headphones); the watch shows it. Before it starts the crown sets the length in 5s steps and Start
+/// asks the phone to begin. The taps for the last seconds and the end are `WatchCues`.
 struct HoldSetView: View {
   @EnvironmentObject var model: WatchWorkoutModel
   let set: WatchSet
-  @State private var side = 1
-  @State private var endsAt: Date?
+  let hold: WatchHold?
+  @State private var seconds: Double
+  /// The length the phone was last told, so each crown step sends only what changed.
+  @State private var sent: Int
+  @State private var lastTurn = Date.distantPast
+
+  init(set: WatchSet, hold: WatchHold?) {
+    self.set = set
+    self.hold = hold
+    let start = hold?.durationSec ?? set.target
+    _seconds = State(initialValue: Double(start))
+    _sent = State(initialValue: start)
+  }
+
+  private var phase: String { hold?.phase ?? "ready" }
 
   var body: some View {
     VStack(spacing: 4) {
-      if let endsAt {
-        Text(timerInterval: Date.now...max(Date.now, endsAt), countsDown: true)
-          .font(.system(size: 44, weight: .bold, design: .rounded).monospacedDigit())
-          .foregroundStyle(Palette.text)
-      } else {
-        Text("\(set.target)s")
-          .font(.system(size: 44, weight: .bold, design: .rounded))
-          .foregroundStyle(Palette.text)
-      }
+      clock
       if set.unilateral {
-        Text("Side \(side) of 2").font(.caption2).foregroundStyle(Palette.text2)
+        Text(sideLine).font(.caption2).foregroundStyle(Palette.text2)
       }
-      if endsAt == nil {
+      if phase == "ready" {
         Button {
-          WKInterfaceDevice.current().play(.start)
-          endsAt = Date.now.addingTimeInterval(TimeInterval(set.target))
+          model.startHold(set: set)
         } label: {
-          Text(side == 2 ? "Start side 2" : "Start").font(.headline).frame(maxWidth: .infinity)
+          Text("Start").font(.headline)
         }
         .buttonStyle(.primaryTeal)
       }
     }
-    .task(id: endsAt) {
-      guard let endsAt else { return }
-      let wait = endsAt.timeIntervalSinceNow
-      if wait > 0 { try? await Task.sleep(nanoseconds: UInt64(wait * 1_000_000_000)) }
-      guard !Task.isCancelled else { return }
-      WKInterfaceDevice.current().play(.notification)
-      if set.unilateral && side == 1 {
-        side = 2
-        self.endsAt = nil
-      } else {
-        model.complete(set: set, seconds: set.target * (set.unilateral ? 2 : 1))
+  }
+
+  private var sideLine: String {
+    switch phase {
+    case "switch": return "Switch sides"
+    case "ready": return "per side"
+    default: return "Side \(hold?.side ?? 1) of 2"
+    }
+  }
+
+  @ViewBuilder private var clock: some View {
+    if phase == "ready" {
+      Text("\(Int(seconds))s")
+        .font(.system(size: 44, weight: .bold, design: .rounded))
+        .foregroundStyle(Palette.text)
+        .focusable()
+        .digitalCrownRotation($seconds, from: 5, through: 900, by: 5, sensitivity: .medium)
+        .onChange(of: seconds) { _, new in
+          lastTurn = Date()
+          let step = Int(new) - sent
+          guard step != 0 else { return }
+          sent = Int(new)
+          model.adjustHold(set: set, by: step)
+        }
+        // The phone's own ±5s buttons move the length too; take its value once the crown has been
+        // still for a moment, so a late echo of an earlier step does not pull the number back.
+        .onChange(of: hold?.durationSec) { _, new in
+          guard let new, Date().timeIntervalSince(lastTurn) > 1.5, new != Int(seconds) else { return }
+          seconds = Double(new)
+          sent = new
+        }
+    } else if let frozen = hold?.remainingSec {
+      Label("\(frozen)", systemImage: "pause.fill")
+        .labelStyle(.titleAndIcon)
+        .font(.system(size: 44, weight: .bold, design: .rounded).monospacedDigit())
+        .foregroundStyle(Palette.text)
+    } else if let endsAt = hold?.endsAt {
+      VStack(spacing: 0) {
+        if phase == "getReady" {
+          Text("Get ready").font(.caption).foregroundStyle(Palette.text2)
+        }
+        Text(timerInterval: Date.now...max(Date.now, endsAt), countsDown: true)
+          .font(.system(size: 44, weight: .bold, design: .rounded).monospacedDigit())
+          .foregroundStyle(phase == "getReady" ? Palette.teal : Palette.text)
       }
     }
   }

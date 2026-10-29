@@ -19,11 +19,11 @@ Dynamic Island going stale while the watch drives a locked phone is accepted.
   Verified: prebuild; `Watch` target builds for the watchOS Simulator SDK; the phone pod builds.
 ### In progress
 Follow-up round 2026-10-29 (user feedback, three increments, commit each):
-1. Rest feedback: `skipFeedback` + `neverAgain` commands (phone handlers already exist:
+1. [done] Rest feedback: `skipFeedback` + `neverAgain` commands (phone handlers already exist:
    `handleFeedbackPromptAnswer(null)`, `handleNeverAgain`); `WatchFeedback.neverAgainDone`; watch
    buttons Skip / Never again; button text colours fixed (Palette.onAccent was near-black on
    dark tints; use white-ish on the dark fills).
-2. Holds: the PHONE runs the hold timer (so its 3-2-1 beeps reach the user's headphones, same as a
+2. [done] Holds: the PHONE runs the hold timer (so its 3-2-1 beeps reach the user's headphones, same as a
    phone-driven workout); watch mirrors it (`WatchActive.hold`) and sends `startHold` /
    `adjustHold` (crown, 5s steps, only before start). Replaces the watch-run countdown.
 3. Watch cues: 3-2-1 + end taps scheduled as local notifications (fire with the display off) and

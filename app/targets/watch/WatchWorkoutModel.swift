@@ -100,6 +100,19 @@ final class WatchWorkoutModel: ObservableObject {
     send("skipSet") { $0.setKey = set.setKey }
   }
 
+  func startHold(set: WatchSet) {
+    WKInterfaceDevice.current().play(.start)
+    send("startHold") { $0.setKey = set.setKey }
+  }
+
+  /// One crown step (5s) of the hold's length, before it starts.
+  func adjustHold(set: WatchSet, by seconds: Int) {
+    send("adjustHold") {
+      $0.setKey = set.setKey
+      $0.deltaSec = seconds
+    }
+  }
+
   func setPaused(_ paused: Bool) { send(paused ? "pause" : "resume") }
   func skipRest() { send("skipRest") }
   func extendRest(by seconds: Int) { send("extendRest") { $0.deltaSec = seconds } }

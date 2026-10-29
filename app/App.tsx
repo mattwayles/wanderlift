@@ -1,13 +1,15 @@
 import { Appearance, View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { useFonts } from 'expo-font';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, useNavigationContainerRef } from '@react-navigation/native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import AppErrorBoundary from './src/components/AppErrorBoundary';
 import RootNavigator from './src/navigation/RootNavigator';
 import { StoreProvider } from './src/state/StoreContext';
 import { useBackupOnBackground } from './src/state/useBackupOnBackground';
 import { useLiveActivityReconcile } from './src/state/useLiveActivityReconcile';
+import { useWatchHost } from './src/state/useWatchHost';
+import type { RootStackParamList } from './src/navigation/types';
 import { ThemeProvider } from './src/state/ThemeProvider';
 import { fontAssets, themeFor, useTheme } from './src/theme';
 
@@ -41,15 +43,17 @@ export default function App() {
 }
 
 /** Everything that takes its chrome from the theme: navigation colors and the status bar. Also
- *  mounts the iCloud background-backup trigger and the Live Activity clean-up once, under the
- *  store. */
+ *  mounts the iCloud background-backup trigger, the Live Activity clean-up and the Apple Watch host
+ *  once, under the store. */
 function ThemedShell() {
   const theme = useTheme();
   useBackupOnBackground();
   useLiveActivityReconcile();
+  const navRef = useNavigationContainerRef<RootStackParamList>();
+  useWatchHost(navRef);
   return (
     <>
-      <NavigationContainer theme={theme.navTheme}>
+      <NavigationContainer ref={navRef} theme={theme.navTheme}>
         <RootNavigator />
       </NavigationContainer>
       <StatusBar style={theme.statusBar} />

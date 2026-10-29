@@ -80,7 +80,10 @@ import {
 } from '../ui';
 import { useInsets } from '../ui/useInsets';
 import MusicButton from '../components/MusicButton';
+import WatchBridge from '../components/WatchBridge';
 import { targetQuestion } from '../lib/targetQuestion';
+import type { WatchCommand } from '../lib/watchProtocol';
+import { watchSetFor, type WatchActiveInput } from '../lib/workoutWatch';
 import { exerciseComplete, lastSet, pick, rest as restLines, setComplete } from '../lib/hypeCopy';
 import type { RootStackParamList } from '../navigation/types';
 import { homeReset } from '../navigation/routes';
@@ -133,6 +136,12 @@ import {
 type Props = NativeStackScreenProps<RootStackParamList, 'Workout'>;
 
 type Phase = 'exercise' | 'resting';
+
+/** What the rest page lets the screen do to its countdown from outside (an Apple Watch command). */
+interface RestControls {
+  skip: () => Promise<void>;
+  extend: (deltaMs: number) => Promise<void>;
+}
 
 /** Exactly the arguments `finishSetAndRest` was called with, parked while the paused-timer nudge
  *  is on screen so that answering it either way logs the same set. */
@@ -188,6 +197,9 @@ export default function WorkoutScreen({ navigation, route }: Props): React.JSX.E
   // Same reasoning, for the §10.7 "+15s recorded as a fatigue signal" write: the set just
   // completed, not whatever `current`'s post-reload setIndex points at during the rest phase.
   const [restingSetIndex, setRestingSetIndex] = useState<number | null>(null);
+  /** The rest page's own skip and ±15s, filled in by `RestPhase` while it is mounted, so a command
+   *  from the Apple Watch moves the same countdown (and its notification) the buttons do. */
+  const restControlsRef = useRef<RestControls | null>(null);
   const insets = useInsets();
   /** The coach line that rises after a completed set. Lives here rather than in the set view: a
    *  completed set swaps straight to the rest page, so anything owned by the set view would unmount
@@ -950,6 +962,63 @@ export default function WorkoutScreen({ navigation, route }: Props): React.JSX.E
     if (after && !findCurrent(after)) navigation.replace('Summary', { sessionId });
   };
 
+  /**
+   * A command from the Apple Watch, applied by the same handlers the buttons on this screen use —
+   * there is one implementation of completing a set. A command names the set it was about (the
+   * set key), so one that arrives after the phone has moved on, or twice, changes nothing.
+   *
+   * Pausing is not an obstacle: a set completed from the wrist is the user training, so a paused
+   * clock is resumed rather than asked about (the nudge is for a phone left paused by mistake).
+   * Abandon is deliberately not a command; it discards a workout and stays on the phone.
+   */
+  const handleWatchCommand = (command: WatchCommand) => {
+    const onDeckKey = `${entry.id}:${setIndex}`;
+    switch (command.type) {
+      case 'completeSet': {
+        if (phase !== 'exercise' || command.setKey !== onDeckKey) return;
+        if (paused) sessionsRepo.resumeSession(db, sessionId, nowUtcInstant());
+        const timed = entry.repTarget == null;
+        commitSetAndRest(
+          'completed',
+          timed ? undefined : (command.reps ?? entry.repTarget ?? undefined),
+          timed
+            ? (command.seconds ?? (entry.durationSec ?? 0) * (entry.unilateral ? 2 : 1))
+            : undefined,
+        );
+        return;
+      }
+      case 'skipSet':
+        if (phase !== 'exercise' || command.setKey !== onDeckKey) return;
+        handleForward();
+        return;
+      case 'pause':
+        if (!paused) handlePause();
+        return;
+      case 'resume':
+        if (paused) handleResume();
+        return;
+      case 'skipRest':
+        if (phase === 'resting') void restControlsRef.current?.skip();
+        return;
+      case 'extendRest':
+        if (phase === 'resting') void restControlsRef.current?.extend(command.deltaSec * 1000);
+        return;
+      case 'rate':
+        if (phase === 'resting' && feedbackQuestion != null) {
+          handleFeedbackPromptAnswer(command.difficulty);
+        }
+        return;
+      case 'end':
+        // Stopping from the wrist is the same as the last NEXT, or Progress mid-workout: on to
+        // Summary, where FINISH (the one completeSession call) stays the user's tap on the phone.
+        if (isFinalRest) handleNextAfterRest();
+        else navigation.replace('Summary', { sessionId });
+        return;
+      default:
+        return;
+    }
+  };
+
   const handlePinnedNoteChange = (note: string) => {
     const localToday = localDateFromDate(new Date());
     exerciseStateRepo.setPinnedNote(
@@ -1001,9 +1070,32 @@ export default function WorkoutScreen({ navigation, route }: Props): React.JSX.E
   );
   const activeSegment = entries.findIndex((e) => e.id === entry.id);
 
+  // What the Apple Watch shows: the set on deck (or up next while resting), the clock, the rest
+  // window (merged in from the rest page) and the difficulty question when the phone is asking it.
+  const watchDeck = onDeckFor(session, exercise?.name ?? entry.exerciseId, setIndex, entry.sets);
+  const watchState: WatchActiveInput = {
+    sessionId,
+    title: watchDeck.title,
+    paused,
+    elapsedAnchorMs: watchDeck.elapsedAnchorMs,
+    pausedElapsedSec: watchDeck.pausedElapsedSec,
+    progress: watchDeck.progress,
+    set: isFinalRest
+      ? null
+      : watchSetFor(entry, setIndex, exercise?.name ?? entry.exerciseId, bandForSet),
+    feedback:
+      phase === 'resting' && feedbackQuestion != null
+        ? { question: feedbackQuestion, current: difficulty }
+        : null,
+    closing: isFinalRest,
+  };
+
   return (
     <BandOptionsProvider value={bandOptions}>
       <Screen edges={['top', 'left', 'right']} padded={false} testID="workout-screen">
+        {session.status === 'active' && (
+          <WatchBridge sessionId={sessionId} state={watchState} onCommand={handleWatchCommand} />
+        )}
         {/* The top bar is one row, and the elapsed clock is the biggest type in it: it is what a user
             mid-set, at arm's length, glances at most often, so it gets the top line and `hero`
             numerals rather than sharing space with a label. Home rides the left, pause/stop the
@@ -1283,6 +1375,7 @@ export default function WorkoutScreen({ navigation, route }: Props): React.JSX.E
               neverAgainDone={neverAgainId === noteExerciseId}
               onNeverAgain={handleNeverAgain}
               feedbackQuestion={feedbackDue && !feedbackAsModal ? feedbackQuestion : null}
+              controlsRef={restControlsRef}
               holdAutoAdvance={feedbackPromptOpen && feedbackDue}
               onNext={handleNextAfterRest}
               onExtend={handleRestExtend}
@@ -2324,6 +2417,7 @@ function RestPhase({
   holdAutoAdvance,
   onNext,
   onExtend,
+  controlsRef,
 }: {
   restSec: number;
   /** When this rest began (`session.restingStartedAt`), so a restored rest's bar on the Lock
@@ -2367,6 +2461,8 @@ function RestPhase({
   onNext: () => void;
   /** §10.7 — "+15s taps are recorded as a fatigue signal." Called only for +15 (never −15/Skip). */
   onExtend: () => void;
+  /** Filled with this page's skip and ±15s while it is mounted (see `RestControls`). */
+  controlsRef: React.MutableRefObject<RestControls | null>;
 }): React.JSX.Element {
   const styles = useStyles();
   const theme = useTheme();
@@ -2443,6 +2539,17 @@ function RestPhase({
     await cancelRestNotification(notificationIdRef.current);
     notificationIdRef.current = null;
   };
+
+  // Always the latest closure, and gone with the page.
+  useEffect(() => {
+    controlsRef.current = { skip: handleSkip, extend: handleExtend };
+  });
+  useEffect(
+    () => () => {
+      controlsRef.current = null;
+    },
+    [controlsRef],
+  );
 
   const handleNext = () => {
     // Fire-and-forget, deliberately not awaited: this is best-effort background-notification

@@ -79,6 +79,7 @@ import {
 } from '../lib/workoutAudio';
 import { FOCUS_LABELS } from '../lib/focusLabels';
 import { targetQuestion } from '../lib/targetQuestion';
+import { watchSavedHealth } from '../lib/workoutWatch';
 import ConfettiBurst, { type ConfettiVariant } from '../components/ConfettiBurst';
 import CelebrationBackdrop, { Sunburst } from '../components/CelebrationBackdrop';
 import HypeHeadline from '../components/HypeHeadline';
@@ -906,7 +907,14 @@ export default function SummaryScreen({ navigation, route }: Props): React.JSX.E
   const handleFinish = () => {
     const completion = completeSession(
       db,
-      { sessionId, library, families, retrospective: retrospective || undefined },
+      {
+        sessionId,
+        library,
+        families,
+        retrospective: retrospective || undefined,
+        // The watch saved this workout to Health itself, with real heart rate; don't write it twice.
+        healthSavedByWatch: watchSavedHealth(sessionId),
+      },
       nowUtcInstant(),
     );
     endWorkoutActivity(sessionId);

@@ -31,6 +31,7 @@ function runSession(
   actualBonus: number,
   opts: {
     recoveryWeek?: boolean;
+    healthSavedByWatch?: boolean;
     bonusFor?: (section: string) => number;
     afterStart?: (entries: { section: string; exerciseId: string }[]) => void;
   } = {},
@@ -76,7 +77,11 @@ function runSession(
       );
     }
   }
-  completeSession(db, { sessionId, library, families }, utcInstantFor(localDate, 10));
+  completeSession(
+    db,
+    { sessionId, library, families, healthSavedByWatch: opts.healthSavedByWatch },
+    utcInstantFor(localDate, 10),
+  );
   return { sessionId, plan: session };
 }
 
@@ -184,6 +189,28 @@ describe('completion — best-set PR and milestones', () => {
       expect(deferred.some((d) => d.kind === 'healthkit_write' && d.sessionId === sessionId)).toBe(
         true,
       );
+      expect(deferred.some((d) => d.kind === 'passport_geocode' && d.sessionId === sessionId)).toBe(
+        true,
+      );
+    } finally {
+      close();
+    }
+  });
+});
+
+describe('a workout the Apple Watch already saved to Health', () => {
+  it('is not written to Health again by the phone, but still queues its Passport lookup', () => {
+    const { db, close } = createTestDb();
+    try {
+      ensureUser(db, utcInstantFor('2026-04-01'));
+      updateUser(
+        db,
+        { healthWriteEnabled: true, passportEnabled: true },
+        utcInstantFor('2026-04-01'),
+      );
+      const { sessionId } = runSession(db, '2026-04-01', 1, 1, { healthSavedByWatch: true });
+      const deferred = getPendingDeferredWork(db);
+      expect(deferred.some((d) => d.kind === 'healthkit_write')).toBe(false);
       expect(deferred.some((d) => d.kind === 'passport_geocode' && d.sessionId === sessionId)).toBe(
         true,
       );

@@ -54,6 +54,9 @@ export interface CompleteSessionInput {
   library: ExerciseLibrary;
   families: FamilyLibrary;
   retrospective?: string;
+  /** The Apple Watch ran this workout and saved it to Health itself (with real heart rate and
+   *  energy), so the phone's own estimated write is skipped rather than showing the workout twice. */
+  healthSavedByWatch?: boolean;
 }
 
 export interface CompleteSessionResult {
@@ -521,7 +524,7 @@ export function completeSession(
     if (!user.hasEverCompletedSession) markHasEverCompletedSession(txDb, now);
 
     // §11.3 — enqueue, never await.
-    if (user.healthWriteEnabled) {
+    if (user.healthWriteEnabled && !input.healthSavedByWatch) {
       enqueueDeferredWork(txDb, 'healthkit_write', session.id, { actualMinutes }, now);
     }
     if (user.passportEnabled) {

@@ -4,10 +4,16 @@ Plan: BACKLOG "Apple Watch companion app". Decisions from the user: heart rate o
 with the phone out of range is NOT required (a later phase); Quick Session stays phone-only; the
 Dynamic Island going stale while the watch drives a locked phone is accepted.
 ### Done
-- (nothing yet)
+- [x] Steps 1-4 on the phone: protocol (`app/src/lib/watchProtocol.ts`), native module
+  `app/modules/watch-connectivity` (WCSession pipe, disk queue, flags), controller
+  `app/src/lib/workoutWatch.ts`, `WatchBridge` in WorkoutScreen (state out, commands in through the
+  screen's own handlers), `useWatchHost` in App (ready state, Start, drain), `completeSession`
+  `healthSavedByWatch`. Jest drives the whole flow against the native fake. Commit "Watch app: the
+  phone side".
 ### In progress
-- Step 1: protocol contract (`app/src/lib/watchProtocol.ts` + the Swift copy in the watch target)
+- Step 5: the watch target `app/targets/watch` (SwiftUI) and the Swift copy of the protocol
 ### Next
+(2-4 are done, kept for reference)
 2. Native module `app/modules/watch-connectivity` (generic WCSession pipe: JSON strings in/out,
    native disk queue for commands that arrive while JS is not listening, de-dupe by command id).
 3. `app/src/lib/workoutWatch.ts` controller (state to the watch, deduped) + `useWatchCommands` in

@@ -21,6 +21,7 @@ import * as LiveActivity from '../../modules/workout-live-activity';
 import type { WorkoutActivityState } from '../../modules/workout-live-activity';
 import { DIFFICULTY_LABELS, FOCUS_LABELS } from './focusLabels';
 import { sessionCompletionFraction } from './sessionProgress';
+import { clearWatchActive, setWatchRest } from './workoutWatch';
 
 /** Everything the activity shows except the rest window. */
 export interface WorkoutOnDeck {
@@ -145,12 +146,15 @@ export function showWorkout(next: WorkoutOnDeck): void {
 /** The rest page's half: the window when a rest starts or its end moves, null when it is over. */
 export function setRestWindow(next: RestWindow | null): void {
   rest = next;
+  // The watch shows the same window, so the one report feeds both.
+  setWatchRest(next);
   flush();
 }
 
 /** The workout is over (completed or abandoned): take it off the Island and the Lock Screen. Ends
  *  every workout activity, not only this session's — none can be worth keeping once it is over. */
 export function endWorkoutActivity(sessionId: string): void {
+  clearWatchActive(sessionId, true);
   endedSessionIds.add(sessionId);
   onDeck = null;
   rest = null;

@@ -10,3 +10,5 @@ globalThis.IS_REACT_ACT_ENVIRONMENT = true;
 jest.mock('./modules/icloud-backup/src/ICloudBackupModule');
 // Native Live Activity module: same arrangement (modules/workout-live-activity/src/__mocks__).
 jest.mock('./modules/workout-live-activity/src/WorkoutLiveActivityModule');
+// Native watch link: same arrangement (modules/watch-connectivity/src/__mocks__).
+jest.mock('./modules/watch-connectivity/src/WatchConnectivityModule');

@@ -13,6 +13,9 @@ module.exports = {
   frameworks: ['SwiftUI', 'WatchConnectivity', 'HealthKit', 'WatchKit'],
   deploymentTarget: '10.0',
   bundleIdentifier: '.watchkitapp',
+  // App Store Connect rejects a watch app with no icon (ITMS-90391/90713); the phone's icon, which
+  // the plugin writes into the target's asset catalog as its AppIcon.
+  icon: '../../assets/icon.png',
   entitlements: {
     'com.apple.developer.healthkit': true,
     'com.apple.developer.healthkit.access': [],

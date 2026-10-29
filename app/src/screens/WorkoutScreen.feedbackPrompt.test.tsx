@@ -153,7 +153,8 @@ describe('"How did that set feel?" modal over the rest screen, driven through Wo
 
   it('does not move on at zero while the modal is open, and does once it is dismissed', async () => {
     await restAfterFirstRepsSet(true);
-    await fireEvent.press(screen.getByTestId('rest-skip'));
+    // Run the clock out with -15s (NEXT would move on, which is not what is being tested).
+    for (let i = 0; i < 12; i++) await fireEvent.press(screen.getByTestId('rest-minus-15'));
     await waitFor(
       () => expect(Number(screen.getByTestId('rest-remaining').props.children)).toBe(0),
       WAIT_OPTS,
@@ -186,8 +187,8 @@ describe('"How did that set feel?" modal over the rest screen, driven through Wo
     expect(screen.queryByTestId('feedback-prompt')).toBeNull();
     expect(screen.queryByTestId('difficulty-segment')).toBeNull();
 
-    // The rest runs out and the next set starts by itself.
-    await fireEvent.press(screen.getByTestId('rest-skip'));
+    // NEXT starts the next set.
+    await fireEvent.press(screen.getByTestId('rest-next'));
     await waitFor(() => expect(screen.getByTestId('complete-set')).toBeTruthy(), WAIT_OPTS);
     await fireEvent.press(screen.getByTestId('complete-set'));
 

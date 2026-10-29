@@ -2619,6 +2619,7 @@ function RestPhase({
     notificationIdRef.current = await scheduleRestZeroNotification(remainingSeconds, nextLabel);
   };
 
+  // No button on the phone (NEXT does the same); the Apple Watch's Skip rest comes through here.
   const handleSkip = async () => {
     countdown.controller.addMs(-countdown.remainingMs);
     setRestWindow({ startedAtMs: restStartedAtMsRef.current, endsAtMs: Date.now() });
@@ -2752,12 +2753,6 @@ function RestPhase({
               accessibilityLabel="Add 15 seconds to the rest"
               onPress={() => handleExtend(15_000)}
             />
-            <PillButton
-              testID="rest-skip"
-              label="Skip"
-              accessibilityLabel="Skip the rest"
-              onPress={handleSkip}
-            />
           </View>
 
           {feedbackQuestion != null && (
@@ -2839,7 +2834,7 @@ function RestPhase({
   );
 }
 
-/** −15s / +15s / Skip: a secondary pill with its label kept in natural case ("+15s", not "+15S"). */
+/** −15s / +15s: a secondary pill with its label kept in natural case ("+15s", not "+15S"). */
 function PillButton({
   testID,
   label,

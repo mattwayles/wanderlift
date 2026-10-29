@@ -40,6 +40,7 @@ import {
   DEFAULT_SETS,
   DEFAULT_TEMPO_SEC,
 } from './constants';
+import { verdict } from './rules';
 
 export interface AccessoryProgressionState {
   micro: ProgressionMicroState;
@@ -206,12 +207,11 @@ export function applyAccessorySessionResult(
   const micro = adoptFinalBand(input.micro, exercise, perf);
   const misses = input.consecutiveMisses;
 
-  const shouldAdvance = perf.allSetsMetTarget && perf.difficultyFeedback !== 'too_hard';
-  const shouldRegress =
-    perf.anySetBelowTarget && (misses >= 1 || perf.difficultyFeedback === 'too_hard');
+  // The rating is about the target, and wins over the logged sets (see `verdict`).
+  const { shouldAdvance, shouldRegress, rated } = verdict(perf, misses);
 
   const hits = input.consecutiveHits ?? 0;
-  if (shouldAdvance && sessionsPerStep > 1 && hits + 1 < sessionsPerStep) {
+  if (shouldAdvance && !rated && sessionsPerStep > 1 && hits + 1 < sessionsPerStep) {
     return {
       state: { micro, consecutiveMisses: 0, consecutiveHits: hits + 1 },
       event: { kind: 'hold' },

@@ -80,6 +80,7 @@ import {
 } from '../ui';
 import { useInsets } from '../ui/useInsets';
 import MusicButton from '../components/MusicButton';
+import { targetQuestion } from '../lib/targetQuestion';
 import { exerciseComplete, lastSet, pick, rest as restLines, setComplete } from '../lib/hypeCopy';
 import type { RootStackParamList } from '../navigation/types';
 import { homeReset } from '../navigation/routes';
@@ -341,15 +342,14 @@ export default function WorkoutScreen({ navigation, route }: Props): React.JSX.E
       const log = restingEntry.setLogs.find((l) => l.setIndex === i);
       return log != null && log.status !== 'not_reached';
     });
-  const feedbackSetCount =
-    restingEntry?.setLogs.filter((l) => l.status === 'completed').length ?? 0;
   const feedbackExerciseName =
     (restingEntry && library.exercises.find((e) => e.id === restingEntry.exerciseId)?.name) ??
     restingEntry?.exerciseId ??
     'this exercise';
-  const feedbackQuestion = `How did ${
-    feedbackSetCount === 1 ? 'that set' : `those ${feedbackSetCount} sets`
-  } of ${feedbackExerciseName} feel?`;
+  // Asked about the target, not the sets as logged: see `lib/targetQuestion.ts`.
+  const feedbackQuestion = restingEntry
+    ? targetQuestion(restingEntry, feedbackExerciseName)
+    : `How was the target for ${feedbackExerciseName}?`;
   const current =
     rewoundEntry && rewoundTo && rewoundTo.setIndex < rewoundEntry.sets
       ? { entry: rewoundEntry, setIndex: rewoundTo.setIndex }

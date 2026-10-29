@@ -147,24 +147,22 @@ describe('accessory micro-progression, through the store', () => {
     }
   });
 
-  it('too_hard holds; two misses in a row step back down', () => {
+  it('too_hard eases the target even when it was met, and counts toward the next miss', () => {
     const { db, raw, close } = createBandedTestDb();
     try {
+      // The rating is about the 12-rep target, not the 12 logged: it comes back a rep lighter.
       const accessory = runSession(db, '2026-03-01', { feedback: 'too_hard' });
-      const held = getAllExerciseStates(db)[accessory.exerciseId];
-      expect(held.workingBand).toBe(accessory.band);
-      expect(held.accessoryMicro!.repTarget).toBe(12);
-
-      // Two sessions short of target (the second also too_hard): first is tracked, second regresses.
       const id = accessory.exerciseId;
+      const held = getAllExerciseStates(db)[id];
+      expect(held.workingBand).toBe(accessory.band);
+      expect(held.accessoryMicro!.repTarget).toBe(11);
+      expect(held.accessoryMisses).toBe(1);
+
+      // So the next session short of target, unrated, is the second in a row: it steps down.
       const before = held.accessoryMicro!;
       const a = programAccessory(db, raw, '2026-03-03', id);
       performOnly(db, a.sessionId, a.entry, '2026-03-03', { short: 1 });
-      expect(getAllExerciseStates(db)[id].accessoryMisses).toBe(1);
-      const b = programAccessory(db, raw, '2026-03-05', id);
-      performOnly(db, b.sessionId, b.entry, '2026-03-05', { short: 1, feedback: 'too_hard' });
-      const after = getAllExerciseStates(db)[id].accessoryMicro!;
-      expect(after.repTarget).toBeLessThan(before.repTarget);
+      expect(getAllExerciseStates(db)[id].accessoryMicro!.repTarget).toBeLessThan(before.repTarget);
     } finally {
       close();
     }

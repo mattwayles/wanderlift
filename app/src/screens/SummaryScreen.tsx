@@ -78,6 +78,7 @@ import {
   hapticTick,
 } from '../lib/workoutAudio';
 import { FOCUS_LABELS } from '../lib/focusLabels';
+import { targetQuestion } from '../lib/targetQuestion';
 import ConfettiBurst, { type ConfettiVariant } from '../components/ConfettiBurst';
 import CelebrationBackdrop, { Sunburst } from '../components/CelebrationBackdrop';
 import HypeHeadline from '../components/HypeHeadline';
@@ -935,8 +936,6 @@ export default function SummaryScreen({ navigation, route }: Props): React.JSX.E
     setEditingFeedback(entryId);
     setEditorOpen(true);
   };
-  const editingFeedbackSets =
-    editingFeedbackEntry?.setLogs.filter((l) => l.status === 'completed').length ?? 0;
   const editingExerciseName = editingFeedbackEntry
     ? (library.exercises.find((e) => e.id === editingFeedbackEntry.exerciseId)?.name ??
       editingFeedbackEntry.exerciseId)
@@ -1087,7 +1086,7 @@ export default function SummaryScreen({ navigation, route }: Props): React.JSX.E
       >
         <View style={styles.sheetBody}>
           <Txt variant="small" color="text2">
-            {`How did ${editingFeedbackSets === 1 ? 'that set' : `those ${editingFeedbackSets} sets`} feel?`}
+            {editingFeedbackEntry ? targetQuestion(editingFeedbackEntry) : 'How was the target?'}
           </Txt>
           <FeedbackControls
             difficulty={editingFeedbackDifficulty}
@@ -1127,7 +1126,7 @@ function LegendItem({ status, label }: { status: SquareStatus; label: string }):
  * never restricted itself to sets already reached).
  *
  * Feedback is one answer for the exercise (asked after its last set), shown as a chip under the
- * name: the answer when there is one, otherwise a quiet "How did it feel?" prompt — the way back to
+ * name: the answer when there is one, otherwise a quiet "How was the target?" prompt — the way back to
  * a question that was skipped. Either way, tapping it opens the editor. Only an exercise with at
  * least one completed set gets a chip; there is nothing to rate before that.
  */
@@ -1170,7 +1169,7 @@ function EntryRow({
             <Chip
               testID={`summary-feedback-placeholder-${entry.id}`}
               size="sm"
-              label="How did it feel?"
+              label="How was the target?"
               onPress={onEditFeedback}
             />
           ))}

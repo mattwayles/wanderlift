@@ -546,10 +546,7 @@ describe('§10.9/§6.4 Summary completion, driven through SummaryScreen', () => 
     expect(screen.queryByLabelText(/^Set \d felt:/)).toBeNull();
 
     await fireEvent.press(screen.getByTestId(`summary-feedback-difficulty-${mainEntry.id}`));
-    await waitFor(
-      () => expect(screen.getByText('How did those 2 sets feel?')).toBeTruthy(),
-      WAIT_OPTS,
-    );
+    await waitFor(() => expect(screen.getByText(/^How was the target: /)).toBeTruthy(), WAIT_OPTS);
     await fireEvent.press(screen.getByTestId('difficulty-just_right'));
     await fireEvent.press(screen.getByTestId('feedback-edit-done'));
 

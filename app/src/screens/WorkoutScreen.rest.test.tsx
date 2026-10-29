@@ -155,7 +155,9 @@ describe('Rest timer + feedback controls, driven through WorkoutScreen', () => {
     expect(
       within(screen.getByTestId('rest-how-to-block')).getByTestId('how-to-demo-note'),
     ).toBeTruthy();
-    expect(screen.getByText(/^How did (that set|those \d+ sets) of .* feel\?$/)).toBeTruthy();
+    expect(
+      screen.getByText(/^How was the target for .*: (\d+ × )?\d+(s| reps?)( each side)?\?$/),
+    ).toBeTruthy();
     const restDisplay = () => Number(screen.getByTestId('rest-remaining').props.children);
     const initialRemaining = restDisplay();
 

@@ -44,6 +44,38 @@ function currentExercise(
   return level && library.find((e) => e.id === level.anchor_exercise_id);
 }
 
+/**
+ * The session's verdict. The difficulty rating is about the *target* — the reps/hold and band the
+ * session prescribed — not about the logged sets. Logged reps are what the user managed, so judged
+ * against them every set would be "just right"; judged against the target, the rating is the
+ * user's own word on the prescription, and it wins outright:
+ *
+ * - `too_easy`: the next prescription is tougher, whatever was logged.
+ * - `too_hard`: the next prescription is easier, whatever was logged — met targets included.
+ * - `just_right` (or unanswered): the logged sets decide. Meeting the prescription on every working
+ *   set is the whole advance condition — one qualifying session moves the ladder one step (reps +1
+ *   up to the range top, then band/level); exceeding it is the same thing, not a stronger one. Two
+ *   sessions running that fall short regress.
+ *
+ * `rated` is true when the rating, not the logged sets, decided.
+ */
+export function verdict(
+  perf: Pick<SessionPerformance, 'allSetsMetTarget' | 'anySetBelowTarget' | 'difficultyFeedback'>,
+  consecutiveMisses: number,
+): { shouldAdvance: boolean; shouldRegress: boolean; rated: boolean } {
+  if (perf.difficultyFeedback === 'too_easy') {
+    return { shouldAdvance: true, shouldRegress: false, rated: true };
+  }
+  if (perf.difficultyFeedback === 'too_hard') {
+    return { shouldAdvance: false, shouldRegress: true, rated: true };
+  }
+  return {
+    shouldAdvance: perf.allSetsMetTarget,
+    shouldRegress: perf.anySetBelowTarget && consecutiveMisses >= 1,
+    rated: false,
+  };
+}
+
 export interface ApplySessionOptions {
   /** Track 37f — qualifying sessions each ladder step takes (`sessionsPerStepFor(pace)`).
    *  Default 1: one qualifying session moves the ladder one step, the rule as it always was. */
@@ -82,19 +114,19 @@ export function applySessionResult(
   const exercise = currentExercise(family, state.levelId, library);
   if (!exercise) return { state, event: { kind: 'hold' } };
 
-  // Meeting the prescription on every working set is the whole advance condition — one
-  // qualifying session moves the ladder one step (reps +1 up to the range top, then band/level).
-  // Exceeding it is not a stronger version of the same thing; it is the same thing.
-  const shouldAdvance = perf.allSetsMetTarget && perf.difficultyFeedback !== 'too_hard';
-  const shouldRegress =
-    perf.anySetBelowTarget &&
-    (state.consecutiveMisses >= 1 || perf.difficultyFeedback === 'too_hard');
+  const { shouldAdvance, shouldRegress, rated } = verdict(perf, state.consecutiveMisses);
 
   // A "patient" pace banks qualifying sessions until it has enough for one step. `consecutiveHits`
   // counts them; a miss or a level change resets it as before. Pace 1 never takes this branch, so
-  // the default behaviour (and its stored hit counts) is unchanged.
+  // the default behaviour (and its stored hit counts) is unchanged. A "too easy" rating is not
+  // banked: it says the prescription itself is too light, so the next one is tougher now.
   const sessionsPerStep = Math.max(1, options.sessionsPerStep ?? 1);
-  if (shouldAdvance && sessionsPerStep > 1 && state.consecutiveHits + 1 < sessionsPerStep) {
+  if (
+    shouldAdvance &&
+    !rated &&
+    sessionsPerStep > 1 &&
+    state.consecutiveHits + 1 < sessionsPerStep
+  ) {
     return {
       state: { ...state, consecutiveHits: state.consecutiveHits + 1, consecutiveMisses: 0 },
       event: { kind: 'hold' },
@@ -186,7 +218,7 @@ export function applySessionResult(
   }
 
   if (perf.anySetBelowTarget) {
-    // First miss (not yet two consecutive, and not too_hard): track it so the *next* session that
+    // First miss (not yet two consecutive, and not rated): track it so the *next* session that
     // falls short — even without a too_hard rating — triggers the regress above.
     return {
       state: { ...state, consecutiveMisses: state.consecutiveMisses + 1, consecutiveHits: 0 },

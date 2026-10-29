@@ -193,7 +193,15 @@ describe('"How did that set feel?" modal over the rest screen, driven through Wo
 
     const name = exerciseLibrary.exercises.find((e) => e.id === exerciseId)!.name;
     await waitFor(
-      () => expect(screen.getByText(`How did those 2 sets of ${name} feel?`)).toBeTruthy(),
+      // Asked about the target (2 sets of the prescription), not the sets as logged.
+      () =>
+        expect(
+          screen.getByText(
+            new RegExp(
+              `^How was the target for ${name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}: 2 × `,
+            ),
+          ),
+        ).toBeTruthy(),
       WAIT_OPTS,
     );
     await fireEvent.press(screen.getByTestId('difficulty-too_easy'));

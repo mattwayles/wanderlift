@@ -35,7 +35,7 @@ function perf(overrides: Partial<SessionPerformance>): SessionPerformance {
 }
 
 describe('§6.3 advance / regress / drop-a-level', () => {
-  it('advances one micro-step when every set met the prescription and feedback is not too_hard', () => {
+  it('advances one micro-step when every set met the prescription and it was rated just right', () => {
     const result = applySessionResult(
       stateAt('horizontal_push.l3'),
       family,
@@ -46,14 +46,48 @@ describe('§6.3 advance / regress / drop-a-level', () => {
     expect(result.state.micro.repTarget).toBe(PROGRESSION_REP_LOW + 1);
   });
 
-  it('does not advance when top-of-range is hit but feedback was too_hard', () => {
+  // The rating is about the target, not the logged sets: a user who logs what they really did has
+  // "met" whatever they logged, so the rating, not the reps, says whether the target was right.
+  it('too_hard eases the next prescription even when every set met it', () => {
+    const start = stateAt('horizontal_push.l3');
+    const up = applySessionResult(start, family, library, perf({ allSetsMetTarget: true }));
     const result = applySessionResult(
-      stateAt('horizontal_push.l3'),
+      up.state,
       family,
       library,
       perf({ allSetsMetTarget: true, difficultyFeedback: 'too_hard' }),
     );
-    expect(result.event.kind).not.toBe('micro_advance');
+    expect(result.event).toEqual({ kind: 'micro_regress' });
+    expect(result.state.micro.repTarget).toBe(start.micro.repTarget);
+  });
+
+  it('too_easy toughens the next prescription even when a set was logged short', () => {
+    const start = stateAt('horizontal_push.l3', { consecutiveMisses: 1 });
+    const result = applySessionResult(
+      start,
+      family,
+      library,
+      perf({ anySetBelowTarget: true, difficultyFeedback: 'too_easy' }),
+    );
+    expect(result.event).toEqual({ kind: 'micro_advance' });
+    expect(result.state.micro.repTarget).toBe(start.micro.repTarget + 1);
+    expect(result.state.consecutiveMisses).toBe(0);
+  });
+
+  it('too_easy is not banked by a patient pace: it steps now', () => {
+    const start = stateAt('horizontal_push.l3');
+    const banked = applySessionResult(start, family, library, perf({ allSetsMetTarget: true }), {
+      sessionsPerStep: 2,
+    });
+    expect(banked.event).toEqual({ kind: 'hold' });
+    const rated = applySessionResult(
+      start,
+      family,
+      library,
+      perf({ allSetsMetTarget: true, difficultyFeedback: 'too_easy' }),
+      { sessionsPerStep: 2 },
+    );
+    expect(rated.event).toEqual({ kind: 'micro_advance' });
   });
 
   it('regresses after one too_hard combined with missing the bottom of the range', () => {

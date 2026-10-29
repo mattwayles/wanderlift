@@ -174,14 +174,40 @@ describe('accessory micro-progression', () => {
     expect(result.state.micro.repTarget).toBe(35);
   });
 
-  it('too_hard never advances, even with every set met', () => {
+  // The rating is about the target, not the logged sets: it wins over them in both directions.
+  it('too_hard eases the next prescription, even with every set met', () => {
     const micro = seedAccessoryMicro(curl, { ...MEDIUM_CURL, repTarget: 10 });
     const result = applyAccessorySessionResult(state(micro), curl, {
       ...MET,
       difficultyFeedback: 'too_hard',
     });
-    expect(result.event.kind).not.toBe('micro_advance');
-    expect(result.state.micro.repTarget).toBe(10);
+    expect(result.event).toEqual({ kind: 'micro_regress' });
+    expect(result.state.micro.repTarget).toBe(9);
+  });
+
+  it('too_easy toughens the next prescription, even with a set logged short', () => {
+    const micro = seedAccessoryMicro(curl, { ...MEDIUM_CURL, repTarget: 10 });
+    const result = applyAccessorySessionResult(state(micro, 1), curl, {
+      ...MISSED,
+      difficultyFeedback: 'too_easy',
+    });
+    expect(result.event).toEqual({ kind: 'micro_advance' });
+    expect(result.state.micro.repTarget).toBe(11);
+    expect(result.state.consecutiveMisses).toBe(0);
+  });
+
+  it('too_easy is not banked by a patient pace: it steps now', () => {
+    const micro = seedAccessoryMicro(curl, { ...MEDIUM_CURL, repTarget: 10 });
+    const banked = applyAccessorySessionResult(state(micro), curl, MET, 2);
+    expect(banked.event).toEqual({ kind: 'hold' });
+    const rated = applyAccessorySessionResult(
+      state(micro),
+      curl,
+      { ...MET, difficultyFeedback: 'too_easy' },
+      2,
+    );
+    expect(rated.event).toEqual({ kind: 'micro_advance' });
+    expect(rated.state.micro.repTarget).toBe(11);
   });
 
   it('a first miss is tracked, the second regresses a step', () => {

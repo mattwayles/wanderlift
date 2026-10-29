@@ -653,11 +653,11 @@ const ACCESSORIES = [
     primary: ['rear_delts'],
     secondary: ['side_delts', 'front_delts', 'traps'],
     band: 'B1',
-    anchor: 'stance',
+    anchor: 'anchor-mid',
     difficulty: 'medium',
     contraindications: ['shoulder_overhead'],
     setup:
-      'Stand mid-band, hands close. Pull the hands to chest height with elbows high and wide, rotate the forearms up until they point at the ceiling, then press overhead. Reverse each step slowly.',
+      'Anchor the band at chest height and face it, a hand on each side, arms straight. Row the hands to your chest with elbows high and wide, rotate the forearms up until they point at the ceiling, then press up overhead. Reverse each step slowly.',
   },
   {
     id: 'banded-scaption-raise',

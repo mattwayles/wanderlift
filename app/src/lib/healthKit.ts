@@ -4,6 +4,12 @@
  * health data never leaves the device, and this app never calls any `query*`/`get*` function
  * from that library — only `requestAuthorization({ toShare: [...] })` and `saveWorkoutSample`).
  *
+ * **The one exception is not in this file.** The Apple Watch app (`targets/watch/HealthWorkout.swift`)
+ * reads the live heart rate and energy of the workout it is itself recording, to show them on the
+ * wrist, and saves that workout to Health. It queries no history. When it saved the workout the phone
+ * skips its own estimated write (`completeSession`'s `healthSavedByWatch`), so there is one workout
+ * in Health, not two. This file, and the phone app, still never read Health data.
+ *
  * Lazy-loaded exactly like `expo-network` in `networkStatus.ts` and `expo-audio` in
  * `workoutAudio.ts`: the native module isn't registered under Jest, so a static top-level import
  * would throw the moment this file is required by a test.

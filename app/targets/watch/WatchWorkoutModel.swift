@@ -1,0 +1,133 @@
+import Combine
+import Foundation
+import WatchKit
+
+/// What the watch does about the phone's state, and what its taps ask of the phone. The phone is
+/// authoritative: every action is a `WatchCommand`, and the screen changes when the phone's next
+/// state says it has. The one thing the watch owns is the HealthKit workout, which follows the
+/// phone's workout: started when one is running, paused with it, saved when it ends.
+@MainActor
+final class WatchWorkoutModel: ObservableObject {
+  static let shared = WatchWorkoutModel()
+
+  let link = PhoneLink.shared
+  let health = HealthWorkout()
+
+  /// Shown after stopping, until dismissed.
+  @Published var summary: HealthWorkout.Summary?
+  /// Start was tapped and the phone has not answered yet.
+  @Published var starting = false
+
+  /// The session this watch has stopped; its Health workout is saved and must not restart if the
+  /// phone goes back to it.
+  private var finishedSessionId: String?
+  private var leaveTask: Task<Void, Never>?
+  private var cancellables = Set<AnyCancellable>()
+
+  /// How long the phone may leave the workout screen (Summary, Home, a re-render) before the
+  /// watch treats the workout as over.
+  private let leaveGraceSeconds: UInt64 = 20
+
+  private init() {
+    link.$state
+      .receive(on: DispatchQueue.main)
+      .sink { [weak self] state in self?.reconcile(state) }
+      .store(in: &cancellables)
+    health.objectWillChange
+      .receive(on: DispatchQueue.main)
+      .sink { [weak self] _ in self?.objectWillChange.send() }
+      .store(in: &cancellables)
+    link.objectWillChange
+      .receive(on: DispatchQueue.main)
+      .sink { [weak self] _ in self?.objectWillChange.send() }
+      .store(in: &cancellables)
+  }
+
+  var state: WatchState { link.state }
+
+  // MARK: Following the phone
+
+  private func reconcile(_ state: WatchState) {
+    if let active = state.active {
+      starting = false
+      leaveTask?.cancel()
+      leaveTask = nil
+      if health.sessionId == nil, finishedSessionId != active.sessionId {
+        Task { await health.start(sessionId: active.sessionId) }
+      }
+      if health.sessionId == active.sessionId { health.setPaused(active.paused) }
+    } else if let sessionId = health.sessionId, leaveTask == nil {
+      // The phone left the workout screen. Probably a pause to Home or a trip to Summary, so wait
+      // a moment before deciding it is over.
+      leaveTask = Task { [weak self, leaveGraceSeconds] in
+        try? await Task.sleep(nanoseconds: leaveGraceSeconds * 1_000_000_000)
+        guard !Task.isCancelled else { return }
+        await self?.stop(sessionId: sessionId, announce: false)
+      }
+    }
+  }
+
+  // MARK: Commands
+
+  private func send(_ type: String, _ build: (inout WatchCommand) -> Void = { _ in }) {
+    guard let sessionId = state.active?.sessionId ?? state.ready?.sessionId else { return }
+    var command = WatchCommand(type: type, sessionId: sessionId)
+    build(&command)
+    link.send(command)
+  }
+
+  func start() {
+    guard let ready = state.ready else { return }
+    starting = true
+    link.send(WatchCommand(type: "start", sessionId: ready.sessionId))
+    // The phone answers with an active state; if it never does, offer Start again.
+    Task { [weak self] in
+      try? await Task.sleep(nanoseconds: 15 * 1_000_000_000)
+      self?.starting = false
+    }
+  }
+
+  func complete(set: WatchSet, reps: Int? = nil, seconds: Int? = nil) {
+    WKInterfaceDevice.current().play(.success)
+    send("completeSet") {
+      $0.setKey = set.setKey
+      $0.reps = reps
+      $0.seconds = seconds
+    }
+  }
+
+  func skip(set: WatchSet) {
+    send("skipSet") { $0.setKey = set.setKey }
+  }
+
+  func setPaused(_ paused: Bool) { send(paused ? "pause" : "resume") }
+  func skipRest() { send("skipRest") }
+  func extendRest(by seconds: Int) { send("extendRest") { $0.deltaSec = seconds } }
+  func rate(_ difficulty: String) {
+    WKInterfaceDevice.current().play(.click)
+    send("rate") { $0.difficulty = difficulty }
+  }
+
+  /// Stop from the wrist: save the Health workout, tell the phone (which goes to Summary), and show
+  /// how it went. FINISH stays on the phone.
+  func stop() async {
+    guard let sessionId = state.active?.sessionId ?? health.sessionId else { return }
+    await stop(sessionId: sessionId, announce: true)
+  }
+
+  private func stop(sessionId: String, announce: Bool) async {
+    leaveTask?.cancel()
+    leaveTask = nil
+    finishedSessionId = sessionId
+    let result = await health.finish()
+    var command = WatchCommand(type: "end", sessionId: sessionId)
+    command.healthSaved = result?.saved ?? false
+    link.send(command)
+    if announce {
+      WKInterfaceDevice.current().play(.stop)
+      summary = result ?? HealthWorkout.Summary(duration: 0, averageHeartRate: nil, energyKcal: nil, saved: false)
+    }
+  }
+
+  func dismissSummary() { summary = nil }
+}

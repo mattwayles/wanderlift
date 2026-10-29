@@ -100,47 +100,23 @@ _List exercises that you'd like to incldue in the library here. Any exercise you
 
 ## Future Features
 
-- **Apple Watch companion app — planned 2026-10-28, not started.** Start, track and stop a workout
-  from the wrist. Decided with the user: heart rate on screen; training with the phone out of range
-  is a nice-to-have, not a requirement; Quick Session stays phone-only; the Dynamic Island going
-  stale while the watch drives a locked phone is accepted.
-  *Shape:* a remote and mirror, phone authoritative. Generating and approving stay on the phone
-  (the engine is TS and SQLite lives there); the watch starts an already-approved planned session,
-  shows the set or rest, and sends commands. Watch events go through the existing store functions
-  (`startSession`, `pauseSession`, `logSet`, `discardSession`), never a second implementation.
-  Phone-free running (a snapshot plus a Swift state machine and queued logs) is a later phase.
-  *Invariants that bite:* works with zero internet (Bluetooth only); no backend or push; the watch
-  sends instants and the phone derives `local_date`; no streak or guilt copy on the watch.
-  *Work, in order:*
-  1. **Spike, signing first.** A `watch` target via `@bacons/apple-targets` (believed to support
-     it; check), an EAS production build that signs it, and one WatchConnectivity round trip.
-  2. **Message contract.** Versioned: state snapshot (exercise, set x of y, target, band, rest end)
-     and watch events (set done with actual reps or seconds, skip, pause, resume, ±15s, finish,
-     abandon, difficulty rated on the target). Idempotent event ids (delivery can repeat or lag).
-     A drift test like `liveActivityAttributes.test.ts`.
-  3. **Phone native module** wrapping `WCSession`, like `modules/workout-live-activity`. The JS
-     side may not be running when the watch sends, so native queues events to disk and JS drains
-     them on wake and on foreground. The hardest piece.
-  4. **Watch UI (SwiftUI).** Today's approved workout with Start; active set (Digital Crown for
-     reps); rest countdown with ±15s; pause and end; difficulty rating. Long exercise names must
-     not wrap a digit per line (the Live Activity clock bug).
-  5. **`HKWorkoutSession` + `HKLiveWorkoutBuilder`** on the watch: runtime with the wrist down,
-     heart rate on screen, ring credit.
-  6. **Release.** Entitlements and usage strings, Watch Simulator pass, then a real device (the
-     simulators are unreliable for WatchConnectivity); dev client rebuild; note any new dependency
-     in the status file.
-  7. **Tests.** Jest for the phone-side event handler; Swift tests for the watch state machine.
-  *Decisions this forces:*
-  - **HealthKit stance.** `lib/healthKit.ts` is write-only by invariant, and heart rate on screen
-    is a read. Relax that rule for the live workout's own samples only, and say so in its header.
-    Nothing is read from history, and nothing leaves the device.
-  - **One HealthKit workout, not two.** When the watch ran a session, it saves the workout, so the
-    phone's end-of-session write must skip it (dedupe by session id); otherwise it shows twice.
-  - **Live Activity.** Leave it as is; it only updates when the JS side is awake.
-  *Cheaper stepping stone:* watchOS 11 mirrors Live Activities into the Smart Stack with no watch
-  app, so the two logged Live Activity gaps (buttons, idle auto-pause while locked) give glanceable
-  timers and tap-to-skip on the wrist. Neither starts a workout nor shows heart rate.
-
+- **Apple Watch companion app — built, device pass owed.** Track watch-app
+  (`docs/handoff/STATUS-watch-app.md`). Jest proves the phone side against a native fake (the real
+  Workout screen driven by every command); the watch app compiles for the watchOS Simulator SDK;
+  nothing has run on hardware. Needs a dev-client rebuild (new native module + watch target) and an
+  EAS build: the new `com.mattwayles.wanderlift.watchkitapp` target needs its own provisioning
+  profile with HealthKit, and the full app scheme could not be built here (no watchOS platform
+  runtime). On a paired watch: install, open the watch app with a planned workout on the phone and
+  tap Start; each set (crown reps, a hold's countdown and buzz, a one-sided hold's two sides),
+  rest with ±15s and Skip, the rest-end buzz, the difficulty question on the last set, pause and
+  resume from either device, Skip set, End (the phone lands on Summary, FINISH there; Health shows
+  one workout with heart rate, not two), and heart rate on screen. Try the phone locked and in a
+  pocket (does a Complete tap wake the app and reach the screen?), the watch app opened mid-workout,
+  Home on the phone mid-workout (the watch waits 20s, then saves and stops), and a tap made while
+  the phone is out of range (queued, delivered later; the set key drops it if the phone moved on).
+  Not built, by decision: training with the phone out of range (a snapshot plus a Swift state
+  machine and queued logs), Quick Session from the watch, Abandon from the watch, complications or
+  a Smart Stack widget, and a Live Activity that updates while the watch drives a locked phone.
 - **Onboarding rework (Track 51) — device pass owed.** Walk the whole first run on an SE-size and a
   Pro Max phone, both themes, Reduce Motion, largest text: value screen paging, the four starting
   points (check Journey shows the expected rungs), equipment (Bands defaults to all five owned;

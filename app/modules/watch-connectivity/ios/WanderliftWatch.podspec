@@ -1,5 +1,8 @@
+# Named WanderliftWatch, not WatchConnectivity: a pod's module takes its name, and a module called
+# WatchConnectivity hides Apple's own, so `import WatchConnectivity` in the Swift here would find this
+# pod instead of the framework.
 Pod::Spec.new do |s|
-  s.name           = 'WatchConnectivity'
+  s.name           = 'WanderliftWatch'
   s.version        = '1.0.0'
   s.summary        = 'A pipe between the phone app and its Apple Watch companion'
   s.description    = 'Sends the workout state to the watch and hands the watch\'s commands to JS. Bluetooth only: no network, no server.'

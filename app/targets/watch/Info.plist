@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+  <dict>
+    <key>WKApplication</key>
+    <true/>
+    <key>NSHealthShareUsageDescription</key>
+    <string>Wanderlift shows your heart rate during a workout you start from your watch. It reads nothing from your history, and nothing leaves your devices.</string>
+    <key>NSHealthUpdateUsageDescription</key>
+    <string>Wanderlift saves a workout you do with your watch to Health.</string>
+  </dict>
+</plist>

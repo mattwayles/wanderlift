@@ -3,6 +3,12 @@
  * 90 = to right, 180 = to bottom, 135 = to bottom-right — the trail default). `radius` clips the
  * fill to the parent's corners; the clip lives on this wrapper so a parent can keep its own glow
  * (a shadow is clipped by `overflow: hidden`, so parents must not set it).
+ *
+ * The wrapper is also painted with the gradient's first stop. The SVG waits for a measured size and
+ * can fail to paint (a surface that never reports its layout, a native hiccup), and every caller
+ * puts text or glyphs on this that assume a colored backing: `ink` on a primary button is
+ * near-black, invisible on the dark ground. A flat fill under the gradient means that failure costs
+ * the gradient, never the button.
  */
 import React, { useId } from 'react';
 import { StyleSheet, View } from 'react-native';
@@ -44,7 +50,10 @@ export function Gradient({
       testID={testID}
       pointerEvents="none"
       onLayout={onLayout}
-      style={[StyleSheet.absoluteFill, { borderRadius: radius, overflow: 'hidden' }]}
+      style={[
+        StyleSheet.absoluteFill,
+        { borderRadius: radius, overflow: 'hidden', backgroundColor: colors[0] },
+      ]}
     >
       {ready && (
         <Svg width="100%" height="100%">

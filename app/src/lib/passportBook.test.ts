@@ -1,6 +1,6 @@
 import { buildBadgeShelf } from './badges';
 import { emptyBadgeFacts } from './badges.fixtures';
-import { buildPassportSummary } from './dashboard';
+import { PASSPORT_STAMPS_PER_PAGE, buildPassportSummary } from './dashboard';
 import {
   bookPageForCountry,
   bookPageForLabel,
@@ -10,12 +10,15 @@ import {
 } from './passportBook';
 import { manyPlaces, sessionAt } from './passportBook.fixtures';
 
+/** The last city on the first visa page, and the first on the second. */
+const P = PASSPORT_STAMPS_PER_PAGE;
+const city = (n: number) => `City${String(n).padStart(2, '0')}`;
 const shelfOn = () => buildBadgeShelf([], emptyBadgeFacts({ passportEnabled: true }));
 const shelfOff = () => buildBadgeShelf([], emptyBadgeFacts({ passportEnabled: false }));
 
 const twoCountries = () =>
   buildPassportSummary([
-    ...manyPlaces(7, 'Portugal', 'PT'),
+    ...manyPlaces(P + 1, 'Portugal', 'PT'),
     sessionAt('2026-03-01', 'Cusco', 'Peru', 'PE'),
   ]);
 
@@ -31,7 +34,7 @@ describe('buildPassportBook', () => {
       'endorsements',
     ]);
     const visa = pages.filter((p) => p.kind === 'visa');
-    expect(visa.map((p) => (p.kind === 'visa' ? p.entries.length : 0))).toEqual([6, 2]);
+    expect(visa.map((p) => (p.kind === 'visa' ? p.entries.length : 0))).toEqual([P, 2]);
     expect(visa[1]).toMatchObject({ visaIndex: 1, visaCount: 2 });
   });
 
@@ -40,7 +43,7 @@ describe('buildPassportBook', () => {
     expect(bio).toMatchObject({
       kind: 'bio',
       trainingSince: '2026-01-01',
-      placeCount: 8,
+      placeCount: P + 2,
       countryCount: 2,
     });
     if (bio.kind !== 'bio') throw new Error('bio');
@@ -81,8 +84,8 @@ describe('absolute page indexes', () => {
     const s = twoCountries();
     expect(visaPageOffset(s)).toBe(3);
     expect(bookPageForLabel(s, 'City01, PRT')).toBe(3);
-    expect(bookPageForLabel(s, 'City06, PRT')).toBe(3);
-    expect(bookPageForLabel(s, 'City07, PRT')).toBe(4);
+    expect(bookPageForLabel(s, `${city(P)}, PRT`)).toBe(3);
+    expect(bookPageForLabel(s, `${city(P + 1)}, PRT`)).toBe(4);
     expect(bookPageForLabel(s, 'Cusco, PER')).toBe(4);
     expect(bookPageForLabel(s, 'Nowhere')).toBeNull();
   });

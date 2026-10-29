@@ -2,6 +2,8 @@
  * Passport stamp. Shape (circle / rounded rect), tilt (-8..8 deg) and — unless `tone` is given —
  * color are all derived from `seed`, so a given city or milestone always stamps the same way.
  * Double inset border in the ink color, condensed uppercase text, 90% opacity like real ink.
+ * `rotation` and `opacity` override the seeded tilt and the 90% for a caller that places stamps
+ * by hand (the Passport pages).
  */
 import React from 'react';
 import { StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
@@ -33,6 +35,10 @@ export interface StampProps {
   seed: string;
   tone?: AccentName;
   size?: number;
+  /** Degrees; replaces the seeded tilt. */
+  rotation?: number;
+  /** 0..1; replaces the default 0.9. */
+  opacity?: number;
   style?: StyleProp<ViewStyle>;
   testID?: string;
 }
@@ -43,6 +49,8 @@ export function Stamp({
   seed,
   tone,
   size = 112,
+  rotation,
+  opacity = 0.9,
   style,
   testID = 'stamp',
 }: StampProps): React.JSX.Element {
@@ -67,8 +75,8 @@ export function Stamp({
           height,
           borderRadius: outerRadius,
           borderColor: ink,
-          opacity: 0.9,
-          transform: [{ rotate: `${spec.rotation}deg` }],
+          opacity,
+          transform: [{ rotate: `${rotation ?? spec.rotation}deg` }],
         },
         style,
       ]}
@@ -93,7 +101,14 @@ export function Stamp({
             variant="eyebrow"
             align="center"
             numberOfLines={1}
-            style={[styles.sub, { color: ink }]}
+            style={[
+              styles.sub,
+              {
+                color: ink,
+                fontSize: Math.min(11, Math.round(size * 0.105)),
+                letterSpacing: size < 100 ? 0.6 : 1.2,
+              },
+            ]}
           >
             {subtitle}
           </Txt>

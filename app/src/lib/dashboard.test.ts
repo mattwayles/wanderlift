@@ -12,6 +12,7 @@ import {
   buildLifetimeCounters,
   buildMuscleBalanceRows,
   buildPassportSummary,
+  PASSPORT_STAMPS_PER_PAGE,
   passportVisaPages,
   passportPageForLabel,
   buildProgressionBoard,
@@ -272,20 +273,22 @@ describe('Passport book data (Track 39a)', () => {
       sessionCount: 1,
     }));
 
-  it('paginates visa pages at 6 per page', () => {
+  it('paginates visa pages at PASSPORT_STAMPS_PER_PAGE', () => {
+    const P = PASSPORT_STAMPS_PER_PAGE;
     expect(passportVisaPages(fake(0))).toEqual([]);
-    expect(passportVisaPages(fake(6)).map((p) => p.length)).toEqual([6]);
-    expect(passportVisaPages(fake(7)).map((p) => p.length)).toEqual([6, 1]);
-    expect(passportVisaPages(fake(13)).map((p) => p.length)).toEqual([6, 6, 1]);
+    expect(passportVisaPages(fake(P)).map((p) => p.length)).toEqual([P]);
+    expect(passportVisaPages(fake(P + 1)).map((p) => p.length)).toEqual([P, 1]);
+    expect(passportVisaPages(fake(2 * P + 1)).map((p) => p.length)).toEqual([P, P, 1]);
     expect(passportVisaPages(fake(5), 2).map((p) => p.length)).toEqual([2, 2, 1]);
   });
 
   it('maps a label to its visa page index', () => {
-    const entries = fake(13);
+    const P = PASSPORT_STAMPS_PER_PAGE;
+    const entries = fake(2 * P + 1);
     expect(passportPageForLabel(entries, 'P0')).toBe(0);
-    expect(passportPageForLabel(entries, 'P5')).toBe(0);
-    expect(passportPageForLabel(entries, 'P6')).toBe(1);
-    expect(passportPageForLabel(entries, 'P12')).toBe(2);
+    expect(passportPageForLabel(entries, `P${P - 1}`)).toBe(0);
+    expect(passportPageForLabel(entries, `P${P}`)).toBe(1);
+    expect(passportPageForLabel(entries, `P${2 * P}`)).toBe(2);
     expect(passportPageForLabel(entries, 'missing')).toBeNull();
   });
 });

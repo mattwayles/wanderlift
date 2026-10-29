@@ -12,7 +12,7 @@ import { StoreProvider } from '../state/StoreContext';
 import type { RootStackParamList } from '../navigation/types';
 import { buildBadgeShelf } from '../lib/badges';
 import { emptyBadgeFacts } from '../lib/badges.fixtures';
-import { buildPassportSummary } from '../lib/dashboard';
+import { PASSPORT_STAMPS_PER_PAGE, buildPassportSummary } from '../lib/dashboard';
 import { manyPlaces, sessionAt } from '../lib/passportBook.fixtures';
 import { useDashboardData } from '../lib/useDashboardData';
 import { claimsSwipe, decideSwipe, rubberBand } from '../components/PageTurnBook';
@@ -26,7 +26,7 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 
 function setData() {
   const sessions = [
-    ...manyPlaces(7, 'Portugal', 'PT'),
+    ...manyPlaces(PASSPORT_STAMPS_PER_PAGE + 1, 'Portugal', 'PT'),
     sessionAt('2026-03-01', 'Cusco', 'Peru', 'PE'),
   ];
   mockUseDashboardData.mockReturnValue({

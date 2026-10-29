@@ -13,7 +13,7 @@ import { ThemeProvider } from '../state/ThemeProvider';
 import type { RootStackParamList } from '../navigation/types';
 import { buildBadgeShelf } from '../lib/badges';
 import { emptyBadgeFacts } from '../lib/badges.fixtures';
-import { buildPassportSummary } from '../lib/dashboard';
+import { PASSPORT_STAMPS_PER_PAGE, buildPassportSummary } from '../lib/dashboard';
 import { manyPlaces, sessionAt } from '../lib/passportBook.fixtures';
 import { useDashboardData } from '../lib/useDashboardData';
 import PassportScreen from './PassportScreen';
@@ -33,7 +33,7 @@ function BadgesStub(): React.JSX.Element {
 function setData(opts: { enabled?: boolean; sessions?: ReturnType<typeof manyPlaces> } = {}) {
   const enabled = opts.enabled ?? true;
   const sessions = opts.sessions ?? [
-    ...manyPlaces(7, 'Portugal', 'PT'),
+    ...manyPlaces(PASSPORT_STAMPS_PER_PAGE + 1, 'Portugal', 'PT'),
     sessionAt('2026-03-01', 'Cusco', 'Peru', 'PE'),
   ];
   mockUseDashboardData.mockReturnValue({
@@ -87,12 +87,13 @@ describe('PassportScreen', () => {
     setData();
   });
 
-  it('opens on the cover, titled with a header', async () => {
+  it('opens on the cover, with no title above the book', async () => {
     mount();
     await waitFor(() => expect(screen.getByTestId('passport-page-cover')).toBeTruthy(), WAIT_OPTS);
     expect(screen.getByText('PASSPORT')).toBeTruthy();
     expect(screen.getByText('Wanderlift')).toBeTruthy();
-    expect(screen.getByText('Passport').props.accessibilityRole).toBe('header');
+    // The cover says PASSPORT; a second title above the book would repeat it.
+    expect(screen.queryByText('Passport')).toBeNull();
     expect(pageLabel()).toBe('Page 1 of 6');
   });
 
@@ -185,10 +186,10 @@ describe('PassportScreen', () => {
     await waitFor(() => expect(screen.getByTestId('passport-page-cover')).toBeTruthy(), WAIT_OPTS);
   });
 
-  it('shows six stamps with dates per visa page; tapping one opens its detail sheet', async () => {
+  it('shows a full page of stamps, each dated inside;  tapping one opens its detail sheet', async () => {
     mount({ stampLabel: 'City01, PRT' });
     await waitFor(() => expect(screen.getByTestId('passport-page-visa-0')).toBeTruthy(), WAIT_OPTS);
-    expect(screen.getAllByTestId(/^passport-stamp-City/)).toHaveLength(6 * 1);
+    expect(screen.getAllByTestId(/^passport-stamp-City/)).toHaveLength(PASSPORT_STAMPS_PER_PAGE);
     expect(screen.getByText('Jan 1, 2026')).toBeTruthy();
     await fireEvent.press(screen.getByTestId('passport-stamp-City02, PRT'));
     await waitFor(

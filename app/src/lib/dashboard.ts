@@ -240,7 +240,7 @@ export function buildPassportSummary(sessions: DashboardSessionSummary[]): Passp
 }
 
 /** Stamps per visa page in the Passport book. */
-export const PASSPORT_STAMPS_PER_PAGE = 6;
+export const PASSPORT_STAMPS_PER_PAGE = 15;
 
 /** Splits entries into visa pages in order. Zero entries is zero pages; the last page may be short
  *  and simply ends (no empty slots). */

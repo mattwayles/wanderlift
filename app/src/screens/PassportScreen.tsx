@@ -10,11 +10,13 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type {
   AccessibilityActionEvent,
+  StyleProp,
+  ViewStyle,
   LayoutChangeEvent,
   NativeScrollEvent,
   NativeSyntheticEvent,
 } from 'react-native';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { ScrollView, StyleSheet, View, useWindowDimensions } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 import { useFocusEffect } from '@react-navigation/native';
 import type { RootScreenProps } from '../navigation/types';
@@ -35,6 +37,7 @@ import { BadgeEmblem } from '../components/BadgeEmblem';
 import { EmptyState } from '../components/EmptyState';
 import { PassportOptInCard } from '../components/PassportOptInCard';
 import { PageTurnLayers, usePageTurn } from '../components/PageTurnBook';
+import { stampLayout } from '../lib/passportStamps';
 
 type Props = RootScreenProps<'Passport'>;
 
@@ -104,17 +107,20 @@ export interface PassportPageProps {
 function ContentPage({
   testID,
   nav,
+  dense = false,
   children,
 }: {
   testID: string;
   nav?: PageNavInfo;
+  /** Less side padding, for a page that wants the width (the stamps). */
+  dense?: boolean;
   children: React.ReactNode;
 }): React.JSX.Element {
   const styles = useStyles();
   return (
     <View style={styles.page} testID={testID}>
       <Guilloche />
-      <PageScroll>{children}</PageScroll>
+      <PageScroll contentStyle={dense ? styles.pageContentDense : undefined}>{children}</PageScroll>
       {nav ? <PageNav {...nav} /> : null}
     </View>
   );
@@ -201,32 +207,8 @@ export function PassportPage({
       );
     case 'visa':
       return (
-        <ContentPage testID={`passport-page-visa-${page.visaIndex}`} nav={nav}>
-          <Txt variant="eyebrow" color="text3" accessibilityRole="header">
-            Visas
-          </Txt>
-          <View style={styles.stampGrid}>
-            {page.entries.map((e) => (
-              <PressableScale
-                key={e.label}
-                testID={`passport-stamp-${e.label}`}
-                accessibilityRole="button"
-                accessibilityLabel={`${e.label}, ${formatFullLocalDate(e.firstLocalDate)}. Show details`}
-                onPress={() => onOpenStamp(e)}
-                style={styles.stampCell}
-              >
-                <Stamp
-                  testID={`passport-stamp-art-${e.label}`}
-                  title={e.label}
-                  seed={e.label}
-                  size={84}
-                />
-                <Txt variant="caption" color="text2" align="center">
-                  {shortDate(e.firstLocalDate)}
-                </Txt>
-              </PressableScale>
-            ))}
-          </View>
+        <ContentPage testID={`passport-page-visa-${page.visaIndex}`} nav={nav} dense>
+          <VisaStamps entries={page.entries} onOpenStamp={onOpenStamp} />
         </ContentPage>
       );
     case 'endorsements':
@@ -245,11 +227,83 @@ export function PassportPage({
   }
 }
 
+/** Side space the book and a visa page leave around the stamps (see `useStyles`). */
+const BOOK_MARGIN = space.sm;
+const VISA_PAD_LEFT = 8 + space.md;
+const VISA_PAD_RIGHT = space.md;
+
+/**
+ * The page's stamps, put down the way a person would: each a little off its slot, crooked, and
+ * inked differently, with neighbours touching at their rings. Placement is `stampLayout`'s, which
+ * keeps every stamp readable. The date is inside the stamp (as on a real one), not under it, since
+ * the next row overlaps the space below.
+ */
+function VisaStamps({
+  entries,
+  onOpenStamp,
+}: {
+  entries: PassportEntry[];
+  onOpenStamp: (entry: PassportEntry) => void;
+}): React.JSX.Element {
+  const { width } = useWindowDimensions();
+  const gridWidth = width - 2 * BOOK_MARGIN - 2 - VISA_PAD_LEFT - VISA_PAD_RIGHT;
+  const layout = useMemo(
+    () =>
+      stampLayout(
+        entries.map((e) => e.label),
+        gridWidth,
+      ),
+    [entries, gridWidth],
+  );
+  return (
+    <View style={{ height: layout.height }}>
+      {entries.map((e, i) => {
+        const slot = layout.slots[i]!;
+        // The rectangular stamp is wider than it is tall; the box is sized for it and the stamp
+        // centred in it, so the slot's left edge stays the stamp's own.
+        const boxW = Math.round(slot.size * 1.25);
+        return (
+          <PressableScale
+            key={e.label}
+            testID={`passport-stamp-${e.label}`}
+            accessibilityRole="button"
+            accessibilityLabel={`${e.label}, ${formatFullLocalDate(e.firstLocalDate)}. Show details`}
+            onPress={() => onOpenStamp(e)}
+            style={{
+              position: 'absolute',
+              left: slot.left - (boxW - slot.size) / 2,
+              top: slot.top,
+              width: boxW,
+              alignItems: 'center',
+            }}
+          >
+            <Stamp
+              testID={`passport-stamp-art-${e.label}`}
+              title={e.label}
+              subtitle={shortDate(e.firstLocalDate)}
+              seed={e.label}
+              size={slot.size}
+              rotation={slot.rotation}
+              opacity={slot.opacity}
+            />
+          </PressableScale>
+        );
+      })}
+    </View>
+  );
+}
+
 /**
  * The page's scrolling body. A page that overflows says so: a scroll bar that stays on screen (iOS
  * hides its own after a moment) and a "More below" cue until the end is reached.
  */
-function PageScroll({ children }: { children: React.ReactNode }): React.JSX.Element {
+function PageScroll({
+  children,
+  contentStyle,
+}: {
+  children: React.ReactNode;
+  contentStyle?: StyleProp<ViewStyle>;
+}): React.JSX.Element {
   const styles = useStyles();
   const ref = useRef<ScrollView>(null);
   const [viewH, setViewH] = useState(0);
@@ -278,7 +332,7 @@ function PageScroll({ children }: { children: React.ReactNode }): React.JSX.Elem
         ref={ref}
         testID="passport-page-scroll"
         style={styles.flex}
-        contentContainerStyle={styles.pageContent}
+        contentContainerStyle={[styles.pageContent, contentStyle]}
         onContentSizeChange={(_w, h) => setContentH(h)}
         onScroll={onScroll}
         scrollEventThrottle={16}
@@ -515,13 +569,9 @@ export default function PassportScreen({ navigation, route }: Props): React.JSX.
   return (
     <Screen
       testID="passport-screen"
-      contentStyle={[
-        styles.content,
-        styles.bookScreen,
-        { paddingBottom: insets.bottom + space.lg },
-      ]}
+      padded={false}
+      contentStyle={[styles.bookScreen, { paddingBottom: insets.bottom + BOOK_MARGIN }]}
     >
-      {header}
       <PassportBook
         pages={pages}
         index={index}
@@ -579,7 +629,7 @@ const useStyles = makeStyles((theme) =>
   StyleSheet.create({
     content: { paddingTop: space.lg, paddingBottom: space.huge + space.xxl, gap: space.xl },
     /** The book takes whatever height the screen has left under the title. */
-    bookScreen: { paddingBottom: 0, gap: space.lg },
+    bookScreen: { paddingTop: BOOK_MARGIN, paddingHorizontal: BOOK_MARGIN },
     flex: { flex: 1 },
     book: {
       flex: 1,
@@ -618,6 +668,10 @@ const useStyles = makeStyles((theme) =>
       textShadowRadius: 1,
     },
     page: { flex: 1 },
+    pageContentDense: {
+      paddingLeft: VISA_PAD_LEFT,
+      paddingRight: VISA_PAD_RIGHT,
+    },
     pageContent: {
       paddingTop: space.xl,
       paddingBottom: space.lg,

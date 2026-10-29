@@ -1008,6 +1008,12 @@ export default function WorkoutScreen({ navigation, route }: Props): React.JSX.E
           handleFeedbackPromptAnswer(command.difficulty);
         }
         return;
+      case 'skipFeedback':
+        if (phase === 'resting' && feedbackQuestion != null) handleFeedbackPromptAnswer(null);
+        return;
+      case 'neverAgain':
+        if (phase === 'resting' && feedbackQuestion != null) handleNeverAgain();
+        return;
       case 'end':
         // Stopping from the wrist is the same as the last NEXT, or Progress mid-workout: on to
         // Summary, where FINISH (the one completeSession call) stays the user's tap on the phone.
@@ -1085,7 +1091,11 @@ export default function WorkoutScreen({ navigation, route }: Props): React.JSX.E
       : watchSetFor(entry, setIndex, exercise?.name ?? entry.exerciseId, bandForSet),
     feedback:
       phase === 'resting' && feedbackQuestion != null
-        ? { question: feedbackQuestion, current: difficulty }
+        ? {
+            question: feedbackQuestion,
+            current: difficulty,
+            neverAgainDone: neverAgainId === noteExerciseId,
+          }
         : null,
     closing: isFinalRest,
   };

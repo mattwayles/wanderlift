@@ -1,5 +1,5 @@
 ## Track: watch-app — Apple Watch companion (start / track / stop a workout from the wrist)
-Last updated: 2026-10-28
+Last updated: 2026-10-29
 Plan: BACKLOG "Apple Watch companion app". Decisions from the user: heart rate on screen; training
 with the phone out of range is NOT required (a later phase); Quick Session stays phone-only; the
 Dynamic Island going stale while the watch drives a locked phone is accepted.
@@ -18,7 +18,16 @@ Dynamic Island going stale while the watch drives a locked phone is accepted.
   shadows Apple's framework). `watchProtocol.test.ts` keeps the TS and Swift fields in step.
   Verified: prebuild; `Watch` target builds for the watchOS Simulator SDK; the phone pod builds.
 ### In progress
-- (none — track complete pending the device pass)
+Follow-up round 2026-10-29 (user feedback, three increments, commit each):
+1. Rest feedback: `skipFeedback` + `neverAgain` commands (phone handlers already exist:
+   `handleFeedbackPromptAnswer(null)`, `handleNeverAgain`); `WatchFeedback.neverAgainDone`; watch
+   buttons Skip / Never again; button text colours fixed (Palette.onAccent was near-black on
+   dark tints; use white-ish on the dark fills).
+2. Holds: the PHONE runs the hold timer (so its 3-2-1 beeps reach the user's headphones, same as a
+   phone-driven workout); watch mirrors it (`WatchActive.hold`) and sends `startHold` /
+   `adjustHold` (crown, 5s steps, only before start). Replaces the watch-run countdown.
+3. Watch cues: 3-2-1 + end taps scheduled as local notifications (fire with the display off) and
+   in-process haptics only when the app is frontmost, so there is never a double.
 ### Next
 - Device pass (BACKLOG "Apple Watch companion app"). Not verified here: the full app scheme (it
   needs the watchOS 26.5 platform runtime installed to embed the watch app), any of it on

@@ -61,8 +61,7 @@ struct ReadyView: View {
           Text(model.starting ? "Starting…" : (ready.resuming ? "Resume" : "Start"))
             .font(.headline).frame(maxWidth: .infinity)
         }
-        .tint(Palette.teal)
-        .foregroundStyle(Palette.onAccent)
+        .buttonStyle(.primaryTeal)
         .disabled(model.starting)
         if !model.link.reachable {
           Text("iPhone out of range. It starts when it is back.")
@@ -93,7 +92,7 @@ struct DoneView: View {
         }
         Text("Finish on your iPhone to log it.").font(.caption2).multilineTextAlignment(.center)
           .foregroundStyle(Palette.text2)
-        Button("Done") { model.dismissSummary() }.tint(Palette.teal)
+        Button("Done") { model.dismissSummary() }.buttonStyle(.primaryTeal)
       }
     }
   }

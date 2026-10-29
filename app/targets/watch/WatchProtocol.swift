@@ -34,6 +34,7 @@ struct WatchFeedback: Codable, Equatable {
   var question: String
   /// "too_easy", "just_right", "too_hard" or nil.
   var current: String?
+  var neverAgainDone: Bool
 }
 
 struct WatchActive: Codable, Equatable {

@@ -8,7 +8,7 @@ import React from 'react';
 import { act, render, screen, waitFor } from '@testing-library/react-native';
 import { createRng, seedFromString } from '@roamfit/engine';
 import { exerciseLibrary, familyLibrary } from '@roamfit/data';
-import { generate, schema, sessionsRepo, usersRepo } from '@roamfit/store';
+import { exerciseStateRepo, generate, schema, sessionsRepo, usersRepo } from '@roamfit/store';
 import { eq } from 'drizzle-orm';
 import WorkoutScreen from './WorkoutScreen';
 import { StoreProvider, useStore } from '../state/StoreContext';
@@ -202,6 +202,16 @@ it('shows the workout on the watch and applies what the watch asks for', async (
     WAIT_OPTS,
   );
   await waitFor(() => expect(lastState().active?.feedback?.current).toBe('too_hard'), WAIT_OPTS);
+
+  // Skip records nothing and leaves the answer already given alone.
+  await fromWatch({ type: 'skipFeedback', sessionId });
+  expect(lastState().active?.feedback).toMatchObject({ current: 'too_hard', neverAgainDone: false });
+
+  // "Never again" disables the exercise just finished, the same switch as the Field Guide's.
+  expect(exerciseStateRepo.getDisabledExerciseIds(db)).not.toContain(repsEntry.exerciseId);
+  await fromWatch({ type: 'neverAgain', sessionId });
+  expect(exerciseStateRepo.getDisabledExerciseIds(db)).toContain(repsEntry.exerciseId);
+  await waitFor(() => expect(lastState().active?.feedback?.neverAgainDone).toBe(true), WAIT_OPTS);
 
   // Stopping from the wrist goes to Summary; FINISH stays on the phone.
   await fromWatch({ type: 'end', sessionId, healthSaved: true });

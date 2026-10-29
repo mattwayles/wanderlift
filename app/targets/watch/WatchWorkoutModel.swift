@@ -108,6 +108,12 @@ final class WatchWorkoutModel: ObservableObject {
     send("rate") { $0.difficulty = difficulty }
   }
 
+  func skipFeedback() { send("skipFeedback") }
+  func neverAgain() {
+    WKInterfaceDevice.current().play(.click)
+    send("neverAgain")
+  }
+
   /// Stop from the wrist: save the Health workout, tell the phone (which goes to Summary), and show
   /// how it went. FINISH stays on the phone.
   func stop() async {

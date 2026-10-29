@@ -100,8 +100,7 @@ struct RepsSetView: View {
       } label: {
         Text("Done").font(.headline).frame(maxWidth: .infinity)
       }
-      .tint(Palette.teal)
-      .foregroundStyle(Palette.onAccent)
+      .buttonStyle(.primaryTeal)
     }
   }
 }
@@ -135,8 +134,7 @@ struct HoldSetView: View {
         } label: {
           Text(side == 2 ? "Start side 2" : "Start").font(.headline).frame(maxWidth: .infinity)
         }
-        .tint(Palette.teal)
-        .foregroundStyle(Palette.onAccent)
+        .buttonStyle(.primaryTeal)
       }
     }
     .task(id: endsAt) {
@@ -184,14 +182,15 @@ struct RestView: View {
             Button("+15") { model.extendRest(by: 15) }
           }
           .font(.footnote)
-          Button("Skip rest") { model.skipRest() }.tint(Palette.fern).foregroundStyle(Palette.onAccent)
+          .buttonStyle(.quiet)
+          Button("Skip rest") { model.skipRest() }.buttonStyle(.primaryFern)
         }
         if let feedback = active.feedback {
           FeedbackView(feedback: feedback)
         }
         if active.closing {
           Button("Finish") { Task { await model.stop() } }
-            .tint(Palette.teal).foregroundStyle(Palette.onAccent)
+            .buttonStyle(.primaryTeal)
         }
         StatusLine(active: active)
       }
@@ -226,18 +225,31 @@ struct FeedbackView: View {
       Text(feedback.question).font(.caption2).foregroundStyle(Palette.text2)
         .multilineTextAlignment(.center)
       ForEach(options, id: \.0) { value, label, color in
+        let selected = feedback.current == value
         Button {
           model.rate(value)
         } label: {
           HStack {
             Text(label).font(.footnote)
             Spacer()
-            if feedback.current == value { Image(systemName: "checkmark") }
+            if selected { Image(systemName: "checkmark") }
           }
         }
-        .tint(color)
-        .foregroundStyle(feedback.current == value ? Palette.onAccent : Palette.text)
+        .buttonStyle(FilledButtonStyle(
+          fill: selected ? color : Palette.surface,
+          ink: selected ? Palette.onAccent : Palette.text))
       }
+      HStack {
+        Button("Skip") { model.skipFeedback() }
+        if feedback.neverAgainDone {
+          Label("Won't return", systemImage: "checkmark").font(.footnote)
+            .foregroundStyle(Palette.text2).frame(maxWidth: .infinity)
+        } else {
+          Button("Never again") { model.neverAgain() }
+        }
+      }
+      .font(.footnote)
+      .buttonStyle(.quiet)
     }
   }
 }
@@ -256,12 +268,12 @@ struct ControlsView: View {
         Label(active.paused ? "Resume" : "Pause", systemImage: active.paused ? "play.fill" : "pause.fill")
           .frame(maxWidth: .infinity)
       }
-      .tint(Palette.teal)
-      .foregroundStyle(Palette.onAccent)
+      .buttonStyle(.primaryTeal)
       if let set = active.set, active.rest == nil {
-        Button("Skip set") { model.skip(set: set) }
+        Button("Skip set") { model.skip(set: set) }.buttonStyle(.quiet)
       }
       Button("End workout") { confirmStop = true }
+        .buttonStyle(.quiet)
         .confirmationDialog("End this workout?", isPresented: $confirmStop) {
           Button("End workout") { Task { await model.stop() } }
           Button("Keep going", role: .cancel) {}

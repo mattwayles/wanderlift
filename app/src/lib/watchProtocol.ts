@@ -41,6 +41,8 @@ export interface WatchRest {
 export interface WatchFeedback {
   question: string;
   current: WatchDifficulty | null;
+  /** "Never again" was pressed for this exercise, so the watch confirms instead of offering it. */
+  neverAgainDone: boolean;
 }
 
 export interface WatchActive {
@@ -91,6 +93,10 @@ export type WatchCommandBody =
   | { type: 'skipRest'; sessionId: string }
   | { type: 'extendRest'; sessionId: string; deltaSec: number }
   | { type: 'rate'; sessionId: string; difficulty: WatchDifficulty }
+  /** The difficulty question's Skip: records nothing and uncovers the rest timer. */
+  | { type: 'skipFeedback'; sessionId: string }
+  /** The difficulty question's "Never again": disables the exercise just finished. */
+  | { type: 'neverAgain'; sessionId: string }
   /** Stop: the watch has ended its HealthKit workout (`healthSaved`), the phone goes to Summary. */
   | { type: 'end'; sessionId: string; healthSaved: boolean };
 

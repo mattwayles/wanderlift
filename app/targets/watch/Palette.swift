@@ -13,6 +13,25 @@ enum Palette {
   static let onAccent = Color(hex: 0x0B0E13)
 }
 
+/// A button painted as a solid fill with text chosen for it. `.tint` on watchOS draws a dim,
+/// translucent plate, so near-black text on it was close to invisible; this fixes both the plate
+/// and the text. Primary actions are a bright accent with dark ink (>= 8:1); everything else is the
+/// dark surface with light text (>= 11:1).
+struct FilledButtonStyle: ButtonStyle {
+  var fill: Color = Palette.surface
+  var ink: Color = Palette.text
+
+  func makeBody(configuration: Configuration) -> some View {
+    configuration.label
+      .foregroundStyle(ink)
+      .padding(.vertical, 8)
+      .padding(.horizontal, 10)
+      .frame(maxWidth: .infinity)
+      .background(RoundedRectangle(cornerRadius: 10, style: .continuous).fill(fill))
+      .opacity(configuration.isPressed ? 0.7 : 1)
+  }
+}
+
 extension Color {
   init(hex: UInt32) {
     self.init(
@@ -21,4 +40,10 @@ extension Color {
       blue: Double(hex & 0xFF) / 255
     )
   }
+}
+
+extension ButtonStyle where Self == FilledButtonStyle {
+  static var primaryTeal: FilledButtonStyle { .init(fill: Palette.teal, ink: Palette.onAccent) }
+  static var primaryFern: FilledButtonStyle { .init(fill: Palette.fern, ink: Palette.onAccent) }
+  static var quiet: FilledButtonStyle { .init() }
 }

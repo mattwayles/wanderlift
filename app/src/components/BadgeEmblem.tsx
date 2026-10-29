@@ -19,7 +19,7 @@ import Svg, {
   Stop,
 } from 'react-native-svg';
 import type { BadgeCategory, BadgeTier } from '@roamfit/engine';
-import { useTheme, type AccentName } from '../theme';
+import { useTheme, withAlpha, type ColorName, type Theme } from '../theme';
 import { Icon, Txt, iconMap, useReduceMotion, type IconName } from '../ui';
 import { badgeLabel, type ShelfBadge } from '../lib/badges';
 import { useSharedShimmer, useStitchIn, type StitchIn } from './badgeMotion';
@@ -29,13 +29,19 @@ const AnimatedRect = Animated.createAnimatedComponent(Rect);
 /** Any pixel size; the sheet uses 120, the grid 64, the trail rows 26-40. */
 export type BadgeEmblemSize = number;
 
-/** Ring accent per tier. Summit is always the top of a series. */
-export const TIER_ACCENT: Record<BadgeTier, AccentName> = {
-  bronze: 'fern',
-  silver: 'sky',
-  gold: 'gold',
+/** Ring color per tier: the metals for bronze, silver and gold (off the accent palette on
+ *  purpose), the summit accent for the top of a series. */
+export const TIER_COLOR: Record<BadgeTier, ColorName> = {
+  bronze: 'bronze',
+  silver: 'silver',
+  gold: 'medal',
   summit: 'summit',
 };
+
+/** The soft fill behind a tier's glyph, at the same strength the accent tints use. */
+export function tierTint(theme: Theme, tier: BadgeTier): string {
+  return withAlpha(theme.colors[TIER_COLOR[tier]], theme.scheme === 'dark' ? 0.15 : 0.08);
+}
 
 const SHAPE_PATHS: Partial<Record<BadgeCategory, string>> = {
   climbing: 'M50 5 L88 18 V50 C88 74 70 90 50 96 C30 90 12 74 12 50 V18 Z',
@@ -172,7 +178,7 @@ function EmblemBody({
 }): React.JSX.Element {
   const theme = useTheme();
   const { def, earned, mystery } = badge;
-  const accent = theme.colors[TIER_ACCENT[def.tier]];
+  const accent = theme.colors[TIER_COLOR[def.tier]];
   const glyph = isIconName(def.icon) ? def.icon : 'star';
   const iconSize = Math.round(size * 0.42);
   const ring = Math.max(2, size >= 120 ? 3 : 4);
@@ -208,7 +214,7 @@ function EmblemBody({
             <>
               <Outline
                 category={def.category}
-                fill={theme.tints[TIER_ACCENT[def.tier]]}
+                fill={tierTint(theme, def.tier)}
                 stroke={accent}
                 strokeWidth={ring * 1.6}
               />
@@ -265,7 +271,7 @@ function EmblemBody({
               ?
             </Txt>
           ) : (
-            <Icon name={glyph} size={iconSize} color={earned ? TIER_ACCENT[def.tier] : 'text3'} />
+            <Icon name={glyph} size={iconSize} color={earned ? TIER_COLOR[def.tier] : 'text3'} />
           )}
         </Animated.View>
       </Animated.View>

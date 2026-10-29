@@ -36,6 +36,11 @@ export const midnight = {
   summit: '#C77DFF',
   /** Cardio focus ONLY — never an error/negative state. */
   rose: '#FF5C93',
+  /** Badge tier metals. Deliberately off the accent palette: bronze, silver and gold should read
+   *  as the metals they are named for. Summit keeps the `summit` accent. */
+  bronze: '#D08A4E',
+  silver: '#C9D2DE',
+  medal: '#FFD43B',
 } as const;
 
 export type ColorName = keyof typeof midnight;
@@ -83,6 +88,10 @@ export const daybreak: Palette = {
   sky: '#1A5FC2',
   summit: '#7E2BB0',
   rose: '#BF1D63',
+  // Badge metals, deepened to carry as text on paper (>= 4.5:1) and still read as the metal.
+  bronze: '#8A4B14',
+  silver: '#566272',
+  medal: '#876600',
 };
 
 /** The Midnight accent hexes in both themes — decoration with no text on it (confetti, orbs,

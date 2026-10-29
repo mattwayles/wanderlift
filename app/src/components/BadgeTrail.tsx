@@ -12,7 +12,7 @@ import { makeStyles, space, useTheme } from '../theme';
 import { Icon, PressableScale, Txt } from '../ui';
 import { formatFullLocalDate } from '../lib/sessionHistory';
 import { progressText, type SeriesTrail, type ShelfBadge } from '../lib/badges';
-import { BadgeEmblem, TIER_ACCENT } from './BadgeEmblem';
+import { BadgeEmblem, TIER_COLOR } from './BadgeEmblem';
 
 const CURRENT_SIZE = 38;
 const DOT = 10;
@@ -103,7 +103,7 @@ export function BadgeTrail({
                     styles.link,
                     {
                       backgroundColor: trail.nodes[i - 1]!.earned
-                        ? theme.colors[TIER_ACCENT[trail.nodes[i - 1]!.def.tier]]
+                        ? theme.colors[TIER_COLOR[trail.nodes[i - 1]!.def.tier]]
                         : theme.colors.line,
                     },
                   ]}
@@ -177,7 +177,7 @@ export function BadgeSeriesList({
                     styles.rung,
                     {
                       backgroundColor: b.earned
-                        ? theme.colors[TIER_ACCENT[b.def.tier]]
+                        ? theme.colors[TIER_COLOR[b.def.tier]]
                         : theme.colors.line,
                     },
                   ]}
@@ -194,7 +194,7 @@ export function BadgeSeriesList({
               {b.earned ? (
                 <Txt
                   variant="small"
-                  color={TIER_ACCENT[b.def.tier]}
+                  color={TIER_COLOR[b.def.tier]}
                   testID={`trail-tier-${b.def.id}-meta`}
                 >
                   {b.retroactive || !b.localDate

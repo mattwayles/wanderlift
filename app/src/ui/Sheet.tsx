@@ -1,7 +1,8 @@
 /**
  * Bottom sheet on a transparent `Modal`: the backdrop fades, the panel slides up (radius `xl` on
  * top). Replaces every ad-hoc centered dialog. The Modal stays mounted through the exit animation
- * and unmounts once it finishes; Reduce Motion makes both transitions instant.
+ * and unmounts once it finishes; Reduce Motion makes both transitions instant. Dragging the panel
+ * down dismisses it (past a distance or a flick); a shorter drag springs back.
  */
 import React, { useEffect, useRef, useState } from 'react';
 import {
@@ -9,6 +10,7 @@ import {
   Easing,
   KeyboardAvoidingView,
   Modal,
+  PanResponder,
   Platform,
   Pressable,
   StyleSheet,
@@ -45,10 +47,12 @@ export function Sheet({
   const { height } = useWindowDimensions();
   const [mounted, setMounted] = useState(visible);
   const progress = useRef(new Animated.Value(visible ? 1 : 0)).current;
+  const drag = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     if (visible) {
       setMounted(true);
+      drag.setValue(0);
       if (reduceMotion) {
         progress.setValue(1);
         return;
@@ -77,7 +81,32 @@ export function Sheet({
       if (finished) setMounted(false);
     });
     return () => anim.stop();
-  }, [visible, reduceMotion, progress]);
+  }, [visible, reduceMotion, progress, drag]);
+
+  // Drag-to-dismiss. Claims only a mostly-vertical downward drag, so taps and a child ScrollView's
+  // own scrolling (which claims first, deeper in the tree) are untouched.
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
+  const dismissableRef = useRef(dismissable);
+  dismissableRef.current = dismissable;
+  const pan = useRef(
+    PanResponder.create({
+      onMoveShouldSetPanResponder: (_e, g) =>
+        dismissableRef.current && g.dy > 6 && g.dy > Math.abs(g.dx) * 1.5,
+      onPanResponderMove: (_e, g) => drag.setValue(Math.max(0, g.dy)),
+      onPanResponderRelease: (_e, g) => {
+        if (g.dy > 100 || g.vy > 0.8) {
+          // The exit animation carries on from where the drag left the panel.
+          onCloseRef.current();
+        } else {
+          Animated.spring(drag, { toValue: 0, useNativeDriver: true }).start();
+        }
+      },
+      onPanResponderTerminate: () => {
+        Animated.spring(drag, { toValue: 0, useNativeDriver: true }).start();
+      },
+    }),
+  ).current;
 
   if (!mounted) return null;
 
@@ -106,6 +135,7 @@ export function Sheet({
           <Animated.View
             testID={testID}
             accessibilityViewIsModal
+            {...pan.panHandlers}
             style={[
               styles.panel,
               {
@@ -113,10 +143,13 @@ export function Sheet({
                 paddingBottom: Math.max(insets.bottom, space.lg) + space.md,
                 transform: [
                   {
-                    translateY: progress.interpolate({
-                      inputRange: [0, 1],
-                      outputRange: [Math.min(height * 0.5, 420), 0],
-                    }),
+                    translateY: Animated.add(
+                      progress.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [Math.min(height * 0.5, 420), 0],
+                      }),
+                      drag,
+                    ),
                   },
                 ],
               },

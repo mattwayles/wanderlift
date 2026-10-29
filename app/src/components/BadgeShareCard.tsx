@@ -10,7 +10,7 @@ import { makeStyles, radius, space, useTheme } from '../theme';
 import { Gradient, TopoPattern, Txt } from '../ui';
 import { formatFullLocalDate } from '../lib/sessionHistory';
 import type { ShelfBadge } from '../lib/badges';
-import { BadgeEmblem, TIER_ACCENT } from './BadgeEmblem';
+import { BadgeEmblem, TIER_COLOR } from './BadgeEmblem';
 
 /** Square, in points; captured at the screen's pixel ratio. */
 export const SHARE_CARD_SIZE = 320;
@@ -40,7 +40,7 @@ export const BadgeShareCard = forwardRef<View, { badge: ShelfBadge }>(function B
           {badge.def.description}
         </Txt>
         {earnedOn ? (
-          <Txt variant="bodyStrong" align="center" color={TIER_ACCENT[badge.def.tier]}>
+          <Txt variant="bodyStrong" align="center" color={TIER_COLOR[badge.def.tier]}>
             Earned {earnedOn}
           </Txt>
         ) : null}

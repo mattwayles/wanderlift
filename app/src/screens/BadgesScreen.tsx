@@ -34,7 +34,7 @@ import { haptics } from '../lib/haptics';
 import { useDashboardData } from '../lib/useDashboardData';
 import { makeStyles, space } from '../theme';
 import { Button, Chip, Icon, IconButton, Pips, PressableScale, Screen, Sheet, Txt } from '../ui';
-import { BadgeEmblem, TIER_ACCENT } from '../components/BadgeEmblem';
+import { BadgeEmblem, TIER_COLOR } from '../components/BadgeEmblem';
 import { BadgeSeriesList, BadgeTrail } from '../components/BadgeTrail';
 import { AlmostThereCard, ReachRow } from '../components/AlmostThereCard';
 import { BadgesHero } from '../components/BadgesHero';
@@ -339,7 +339,7 @@ export default function BadgesScreen({ navigation }: Props): React.JSX.Element {
                 <Txt
                   variant="bodyStrong"
                   align="center"
-                  color={TIER_ACCENT[open.def.tier]}
+                  color={TIER_COLOR[open.def.tier]}
                   testID="badge-sheet-earned"
                 >
                   {open.retroactive || !open.localDate

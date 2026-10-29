@@ -13,7 +13,7 @@ import { makeStyles, radius, space, useTheme } from '../theme';
 import { Card, Gradient, PressableScale, TopoPattern, Txt } from '../ui';
 import { formatFullLocalDate } from '../lib/sessionHistory';
 import type { SectionTrails, ShelfBadge } from '../lib/badges';
-import { BadgeEmblem, TIER_ACCENT } from './BadgeEmblem';
+import { BadgeEmblem, TIER_COLOR } from './BadgeEmblem';
 
 const TIER_LABEL: Record<BadgeTier, string> = {
   bronze: 'Bronze',
@@ -129,7 +129,7 @@ export function BadgesHero({
       >
         {TIER_ORDER.map((t) => (
           <View key={t} style={styles.tallyItem}>
-            <View style={[styles.tierDot, { backgroundColor: theme.colors[TIER_ACCENT[t]] }]} />
+            <View style={[styles.tierDot, { backgroundColor: theme.colors[TIER_COLOR[t]] }]} />
             <Txt variant="small" color="text2" testID={`badges-tally-${t}`}>
               {`${TIER_LABEL[t]} ${tally[t]}`}
             </Txt>

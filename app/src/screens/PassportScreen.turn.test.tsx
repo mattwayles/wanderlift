@@ -54,6 +54,13 @@ function mount(params?: RootStackParamList['Passport']) {
   );
 }
 
+/** Pages by the label's screen-reader actions: the arrows are reference only (the book swipes). */
+const pageAction = (actionName: 'increment' | 'decrement') =>
+  fireEvent(screen.getByTestId('passport-page-label'), 'accessibilityAction', {
+    nativeEvent: { actionName },
+  });
+const nextPage = () => pageAction('increment');
+const prevPage = () => pageAction('decrement');
 const pageLabel = () => screen.getByTestId('passport-page-label').props.children.join('');
 const turning = () => screen.queryByTestId('passport-turn', { includeHiddenElements: true });
 /**
@@ -144,7 +151,7 @@ describe('PassportScreen page turn', () => {
   it('next then previous animates a turn and lands on the right pages', async () => {
     mount();
     await ready();
-    await fireEvent.press(screen.getByTestId('passport-next'));
+    await nextPage();
     expect(turning()).toBeTruthy();
     expect(pageLabel()).toBe('Page 2 of 6'); // committed at the start
     expect(screen.getByTestId('passport-page-bio')).toBeTruthy(); // the visible page; the cover is the hidden overlay
@@ -152,7 +159,7 @@ describe('PassportScreen page turn', () => {
     expect(screen.getByTestId('passport-page-bio')).toBeTruthy();
     expect(screen.queryByTestId('passport-page-cover')).toBeNull();
 
-    await fireEvent.press(screen.getByTestId('passport-prev'));
+    await prevPage();
     expect(turning()).toBeTruthy();
     expect(screen.getByTestId('passport-page-cover')).toBeTruthy(); // the page turning back in
     await settle();
@@ -164,9 +171,9 @@ describe('PassportScreen page turn', () => {
   it('ignores input while a turn is running', async () => {
     mount();
     await ready();
-    await fireEvent.press(screen.getByTestId('passport-next'));
-    await fireEvent.press(screen.getByTestId('passport-next'));
-    await fireEvent.press(screen.getByTestId('passport-next'));
+    await nextPage();
+    await nextPage();
+    await nextPage();
     await settle();
     expect(pageLabel()).toBe('Page 2 of 6');
   });
@@ -174,9 +181,9 @@ describe('PassportScreen page turn', () => {
   it('a contents jump is one turn straight to the target', async () => {
     mount();
     await ready();
-    await fireEvent.press(screen.getByTestId('passport-next'));
+    await nextPage();
     await settle();
-    await fireEvent.press(screen.getByTestId('passport-next'));
+    await nextPage();
     await settle();
     await fireEvent.press(screen.getByTestId('passport-country-Peru'));
     expect(pageLabel()).toBe('Page 5 of 6');
@@ -196,11 +203,11 @@ describe('PassportScreen page turn', () => {
     (AccessibilityInfo.isReduceMotionEnabled as jest.Mock).mockResolvedValue(true);
     mount();
     await ready();
-    await fireEvent.press(screen.getByTestId('passport-next'));
+    await nextPage();
     expect(turning()).toBeNull();
     expect(screen.getByTestId('passport-page-bio')).toBeTruthy();
     expect(pageLabel()).toBe('Page 2 of 6');
-    await fireEvent.press(screen.getByTestId('passport-prev'));
+    await prevPage();
     expect(screen.getByTestId('passport-page-cover')).toBeTruthy();
   });
 
@@ -208,7 +215,7 @@ describe('PassportScreen page turn', () => {
     (AccessibilityInfo.isScreenReaderEnabled as jest.Mock).mockResolvedValue(true);
     mount();
     await ready();
-    await fireEvent.press(screen.getByTestId('passport-next'));
+    await nextPage();
     expect(turning()).toBeNull();
     expect(pageLabel()).toBe('Page 2 of 6');
   });

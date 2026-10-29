@@ -72,6 +72,13 @@ const settle = () =>
     () => expect(screen.queryByTestId('passport-turn', { includeHiddenElements: true })).toBeNull(),
     WAIT_OPTS,
   );
+/** Pages by the label's screen-reader actions: the arrows are reference only (the book swipes). */
+const pageAction = (actionName: 'increment' | 'decrement') =>
+  fireEvent(screen.getByTestId('passport-page-label'), 'accessibilityAction', {
+    nativeEvent: { actionName },
+  });
+const nextPage = () => pageAction('increment');
+const prevPage = () => pageAction('decrement');
 const pageLabel = () => screen.getByTestId('passport-page-label').props.children.join('');
 
 describe('PassportScreen', () => {
@@ -89,29 +96,61 @@ describe('PassportScreen', () => {
     expect(pageLabel()).toBe('Page 1 of 6');
   });
 
-  it('next and previous page, and are disabled at the ends', async () => {
+  it('pages forward and back, with the reference arrows dimmed at the ends', async () => {
     mount();
     await waitFor(() => expect(screen.getByTestId('passport-page-cover')).toBeTruthy(), WAIT_OPTS);
-    expect(screen.getByTestId('passport-prev').props.accessibilityState?.disabled).toBe(true);
+    expect(
+      screen.getByTestId('passport-prev', { includeHiddenElements: true }).props.accessibilityState
+        ?.disabled,
+    ).toBe(true);
 
-    await fireEvent.press(screen.getByTestId('passport-next'));
+    await nextPage();
     await settle();
     expect(screen.getByTestId('passport-page-bio')).toBeTruthy();
     expect(pageLabel()).toBe('Page 2 of 6');
     expect(screen.getByText('Training since')).toBeTruthy();
     expect(screen.getByText('Thursday, January 1, 2026')).toBeTruthy();
 
-    await fireEvent.press(screen.getByTestId('passport-prev'));
+    await prevPage();
     await settle();
     expect(screen.getByTestId('passport-page-cover')).toBeTruthy();
 
     for (let i = 0; i < 5; i += 1) {
-      await fireEvent.press(screen.getByTestId('passport-next'));
+      await nextPage();
       await settle();
     }
     expect(screen.getByTestId('passport-page-endorsements')).toBeTruthy();
     expect(pageLabel()).toBe('Page 6 of 6');
-    expect(screen.getByTestId('passport-next').props.accessibilityState?.disabled).toBe(true);
+    expect(
+      screen.getByTestId('passport-next', { includeHiddenElements: true }).props.accessibilityState
+        ?.disabled,
+    ).toBe(true);
+  });
+
+  it('a page that overflows shows a scroll bar and a More below cue until the end; the arrows are not buttons', async () => {
+    mount();
+    await waitFor(() => expect(screen.getByTestId('passport-page-cover')).toBeTruthy(), WAIT_OPTS);
+    await nextPage();
+    await settle();
+    // Nothing overflows until the page is measured.
+    expect(screen.queryByTestId('passport-scroll-more')).toBeNull();
+    const scroll = screen.getByTestId('passport-page-scroll');
+    await act(async () => {
+      scroll.parent!.props.onLayout({ nativeEvent: { layout: { height: 300 } } });
+      scroll.props.onContentSizeChange(300, 900);
+    });
+    expect(screen.getByTestId('passport-scroll-track')).toBeTruthy();
+    expect(screen.getByText('More below')).toBeTruthy();
+    await act(async () => {
+      scroll.props.onScroll({ nativeEvent: { contentOffset: { y: 600 } } });
+    });
+    expect(screen.queryByTestId('passport-scroll-more')).toBeNull();
+    // Reference only: no press handler on either arrow.
+    for (const id of ['passport-prev', 'passport-next']) {
+      const arrow = screen.getByTestId(id, { includeHiddenElements: true });
+      expect(arrow.props.onPress).toBeUndefined();
+      expect(arrow.props.onClick).toBeUndefined();
+    }
   });
 
   it('opens at the stamp page named by stampLabel', async () => {
@@ -125,7 +164,7 @@ describe('PassportScreen', () => {
     mount({ stampLabel: 'City01, PRT' });
     await waitFor(() => expect(screen.getByTestId('passport-page-visa-0')).toBeTruthy(), WAIT_OPTS);
     // The user pages away first, so their own paging is what the new label has to override.
-    await fireEvent.press(screen.getByTestId('passport-next'));
+    await nextPage();
     await settle();
     expect(pageLabel()).toBe('Page 5 of 6');
 
@@ -164,9 +203,9 @@ describe('PassportScreen', () => {
   it('a contents row jumps to that country’s first visa page', async () => {
     mount();
     await waitFor(() => expect(screen.getByTestId('passport-page-cover')).toBeTruthy(), WAIT_OPTS);
-    await fireEvent.press(screen.getByTestId('passport-next'));
+    await nextPage();
     await settle();
-    await fireEvent.press(screen.getByTestId('passport-next'));
+    await nextPage();
     await settle();
     expect(screen.getByTestId('passport-page-contents')).toBeTruthy();
     await fireEvent.press(screen.getByTestId('passport-country-Peru'));
@@ -179,7 +218,7 @@ describe('PassportScreen', () => {
     mount();
     await waitFor(() => expect(screen.getByTestId('passport-page-cover')).toBeTruthy(), WAIT_OPTS);
     for (let i = 0; i < 5; i += 1) {
-      await fireEvent.press(screen.getByTestId('passport-next'));
+      await nextPage();
       await settle();
     }
     expect(screen.getByText('Three Stops')).toBeTruthy();

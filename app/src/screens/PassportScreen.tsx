@@ -1,5 +1,5 @@
 /**
- * Track 39b - the Passport book. One page at a time inside a "book" frame: cover, bio, contents
+ * Track 39b - the Passport book. One page at a time inside a "book" frame that fills the screen: cover, bio, contents
  * (two or more countries), visa pages of stamps, and the travel-badge endorsements. 39c adds the page turn:
  * the screen owns `pageIndex`; `PassportBook` runs the page turn (components/PageTurnBook.tsx)
  * and `PassportPage` draws whichever page it is handed.
@@ -7,9 +7,14 @@
  * Never punish (invariant 4): a stamp is a souvenir, an unfilled last page simply ends, and
  * nothing here reads as something missing or overdue. Dates are `local_date`s (invariant 6).
  */
-import React, { useCallback, useMemo, useState } from 'react';
-import type { AccessibilityActionEvent } from 'react-native';
-import { StyleSheet, View } from 'react-native';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import type {
+  AccessibilityActionEvent,
+  LayoutChangeEvent,
+  NativeScrollEvent,
+  NativeSyntheticEvent,
+} from 'react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 import { useFocusEffect } from '@react-navigation/native';
 import type { RootScreenProps } from '../navigation/types';
@@ -24,7 +29,8 @@ import {
   type PassportBookPage,
 } from '../lib/passportBook';
 import { makeStyles, radius, space, useTheme } from '../theme';
-import { IconButton, PressableScale, Screen, Sheet, Stamp, Txt } from '../ui';
+import { Icon, PressableScale, Screen, Sheet, Stamp, Txt } from '../ui';
+import { useInsets } from '../ui/useInsets';
 import { BadgeEmblem } from '../components/BadgeEmblem';
 import { EmptyState } from '../components/EmptyState';
 import { PassportOptInCard } from '../components/PassportOptInCard';
@@ -76,16 +82,48 @@ function Guilloche(): React.JSX.Element {
   );
 }
 
+/** Where the page sits in the book, and how a screen reader moves it (the bar is reference only). */
+export interface PageNavInfo {
+  index: number;
+  count: number;
+  onAdjust: (e: AccessibilityActionEvent) => void;
+}
+
 export interface PassportPageProps {
   page: PassportBookPage;
+  nav?: PageNavInfo;
   onOpenStamp: (entry: PassportEntry) => void;
   onSelectCountry: (country: string) => void;
   onOpenBadges: () => void;
 }
 
+/**
+ * Every page is the same height: the book's. Content that does not fit scrolls inside `PageScroll`
+ * (with a visible scroll bar and a "more below" cue), and the page bar stays pinned at the foot.
+ */
+function ContentPage({
+  testID,
+  nav,
+  children,
+}: {
+  testID: string;
+  nav?: PageNavInfo;
+  children: React.ReactNode;
+}): React.JSX.Element {
+  const styles = useStyles();
+  return (
+    <View style={styles.page} testID={testID}>
+      <Guilloche />
+      <PageScroll>{children}</PageScroll>
+      {nav ? <PageNav {...nav} /> : null}
+    </View>
+  );
+}
+
 /** Draws one page of the book. Stateless: the screen decides which page to hand it. */
 export function PassportPage({
   page,
+  nav,
   onOpenStamp,
   onSelectCountry,
   onOpenBadges,
@@ -94,30 +132,32 @@ export function PassportPage({
   switch (page.kind) {
     case 'cover':
       return (
-        <View style={styles.cover} testID="passport-page-cover">
-          <Txt variant="eyebrow" color="gold" align="center" style={styles.embossSmall}>
-            Wanderlift
-          </Txt>
-          <View style={styles.coverRule} />
-          <Txt
-            variant="display"
-            color="gold"
-            align="center"
-            accessibilityLabel="Passport"
-            style={styles.emboss}
-          >
-            PASSPORT
-          </Txt>
-          <View style={styles.coverRule} />
-          <Txt variant="small" color="text2" align="center">
-            Every place you have trained
-          </Txt>
+        <View style={styles.coverPage} testID="passport-page-cover">
+          <View style={styles.cover}>
+            <Txt variant="eyebrow" color="gold" align="center" style={styles.embossSmall}>
+              Wanderlift
+            </Txt>
+            <View style={styles.coverRule} />
+            <Txt
+              variant="display"
+              color="gold"
+              align="center"
+              accessibilityLabel="Passport"
+              style={styles.emboss}
+            >
+              PASSPORT
+            </Txt>
+            <View style={styles.coverRule} />
+            <Txt variant="small" color="text2" align="center">
+              Every place you have trained
+            </Txt>
+          </View>
+          {nav ? <PageNav {...nav} /> : null}
         </View>
       );
     case 'bio':
       return (
-        <View style={styles.pageBody} testID="passport-page-bio">
-          <Guilloche />
+        <ContentPage testID="passport-page-bio" nav={nav}>
           <Txt variant="eyebrow" color="text3">
             Traveller
           </Txt>
@@ -132,12 +172,11 @@ export function PassportPage({
           {page.latest ? (
             <Bio label="Most recent stamp">{`${page.latest.label} - ${formatFullLocalDate(page.latest.lastLocalDate)}`}</Bio>
           ) : null}
-        </View>
+        </ContentPage>
       );
     case 'contents':
       return (
-        <View style={styles.pageBody} testID="passport-page-contents">
-          <Guilloche />
+        <ContentPage testID="passport-page-contents" nav={nav}>
           <Txt variant="eyebrow" color="text3" accessibilityRole="header">
             Contents
           </Txt>
@@ -158,12 +197,11 @@ export function PassportPage({
               </Txt>
             </PressableScale>
           ))}
-        </View>
+        </ContentPage>
       );
     case 'visa':
       return (
-        <View style={styles.pageBody} testID={`passport-page-visa-${page.visaIndex}`}>
-          <Guilloche />
+        <ContentPage testID={`passport-page-visa-${page.visaIndex}`} nav={nav}>
           <Txt variant="eyebrow" color="text3" accessibilityRole="header">
             Visas
           </Txt>
@@ -189,12 +227,11 @@ export function PassportPage({
               </PressableScale>
             ))}
           </View>
-        </View>
+        </ContentPage>
       );
     case 'endorsements':
       return (
-        <View style={styles.pageBody} testID="passport-page-endorsements">
-          <Guilloche />
+        <ContentPage testID="passport-page-endorsements" nav={nav}>
           <Txt variant="eyebrow" color="text3" accessibilityRole="header">
             Endorsements
           </Txt>
@@ -203,9 +240,118 @@ export function PassportPage({
               <EndorsementRow key={b.def.id} badge={b} onPress={onOpenBadges} />
             ))}
           </View>
-        </View>
+        </ContentPage>
       );
   }
+}
+
+/**
+ * The page's scrolling body. A page that overflows says so: a scroll bar that stays on screen (iOS
+ * hides its own after a moment) and a "More below" cue until the end is reached.
+ */
+function PageScroll({ children }: { children: React.ReactNode }): React.JSX.Element {
+  const styles = useStyles();
+  const ref = useRef<ScrollView>(null);
+  const [viewH, setViewH] = useState(0);
+  const [contentH, setContentH] = useState(0);
+  const [y, setY] = useState(0);
+  const overflow = viewH > 0 && contentH > viewH + 1;
+  const atEnd = y + viewH >= contentH - 4;
+
+  useEffect(() => {
+    if (overflow) ref.current?.flashScrollIndicators();
+  }, [overflow]);
+
+  const onScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) =>
+    setY(e.nativeEvent.contentOffset.y);
+  const thumbH = overflow ? Math.max(32, (viewH / contentH) * viewH) : 0;
+  const thumbTop = overflow
+    ? (Math.min(y, contentH - viewH) / (contentH - viewH)) * (viewH - thumbH)
+    : 0;
+
+  return (
+    <View
+      style={styles.flex}
+      onLayout={(e: LayoutChangeEvent) => setViewH(e.nativeEvent.layout.height)}
+    >
+      <ScrollView
+        ref={ref}
+        testID="passport-page-scroll"
+        style={styles.flex}
+        contentContainerStyle={styles.pageContent}
+        onContentSizeChange={(_w, h) => setContentH(h)}
+        onScroll={onScroll}
+        scrollEventThrottle={16}
+        showsVerticalScrollIndicator={false}
+      >
+        {children}
+      </ScrollView>
+      {overflow ? (
+        <>
+          <View pointerEvents="none" style={styles.scrollTrack} testID="passport-scroll-track">
+            <View style={[styles.scrollThumb, { height: thumbH, top: thumbTop }]} />
+          </View>
+          {!atEnd ? (
+            <View pointerEvents="none" style={styles.moreCue} testID="passport-scroll-more">
+              <Txt variant="caption" color="text2">
+                More below
+              </Txt>
+              <Icon name="chevronDown" size={14} color="text2" />
+            </View>
+          ) : null}
+        </>
+      ) : null}
+    </View>
+  );
+}
+
+/**
+ * "Page N of M" with an arrow either side, at the foot of every page. For reference only: the book
+ * turns by swiping, so the arrows are not buttons and just show which way there is more. A screen
+ * reader still moves the page from the label (an `adjustable`).
+ */
+function PageNav({ index, count, onAdjust }: PageNavInfo): React.JSX.Element {
+  const styles = useStyles();
+  const hideFromReaders = {
+    accessibilityElementsHidden: true,
+    importantForAccessibility: 'no-hide-descendants',
+  } as const;
+  const atStart = index <= 0;
+  const atEnd = index >= count - 1;
+  return (
+    <View style={styles.nav}>
+      <View
+        testID="passport-prev"
+        accessibilityState={{ disabled: atStart }}
+        style={[styles.navArrow, atStart && styles.navArrowOff]}
+        {...hideFromReaders}
+      >
+        <Icon name="back" size={18} color="text2" />
+      </View>
+      <Txt
+        variant="small"
+        color="text2"
+        testID="passport-page-label"
+        accessibilityLiveRegion="polite"
+        accessibilityRole="adjustable"
+        accessibilityActions={[
+          { name: 'increment', label: 'Next page' },
+          { name: 'decrement', label: 'Previous page' },
+        ]}
+        onAccessibilityAction={onAdjust}
+      >
+        Page {index + 1} of {count}
+      </Txt>
+      <View
+        testID="passport-next"
+        accessibilityState={{ disabled: atEnd }}
+        style={[styles.navArrow, atEnd && styles.navArrowOff]}
+        {...hideFromReaders}
+      >
+        <Icon name="chevronRight" size={18} color="text2" />
+      </View>
+    </View>
+  );
 }
 
 function Bio({ label, children }: { label: string; children: string }): React.JSX.Element {
@@ -258,7 +404,7 @@ interface PassportBookProps {
   onOpenBadges: () => void;
 }
 
-/** The book frame, the page turn (swipe included) and the prev/next + "Page N of M" bar. */
+/** The book frame and the page turn. Swiping turns the pages; the page bar lives on each page. */
 function PassportBook({
   pages,
   index,
@@ -278,66 +424,36 @@ function PassportBook({
     else if (e.nativeEvent.actionName === 'decrement') goTo(index - 1);
   };
   return (
-    <>
-      <View
-        style={styles.book}
-        testID="passport-book"
-        onLayout={pageTurn.onLayout}
-        {...pageTurn.panHandlers}
-      >
-        <View style={styles.spine} />
-        <PageTurnLayers
-          index={index}
-          pageTurn={pageTurn}
-          renderPage={(i) => (
-            <PassportPage
-              page={pages[i]!}
-              onOpenStamp={onOpenStamp}
-              onSelectCountry={(country) => {
-                const t = pageForCountry(country);
-                if (t !== null) goTo(t);
-              }}
-              onOpenBadges={onOpenBadges}
-            />
-          )}
-        />
-      </View>
-      <View style={styles.nav}>
-        <IconButton
-          testID="passport-prev"
-          icon="back"
-          accessibilityLabel="Previous page"
-          disabled={index <= 0}
-          onPress={() => goTo(index - 1)}
-        />
-        <Txt
-          variant="small"
-          color="text2"
-          testID="passport-page-label"
-          accessibilityLiveRegion="polite"
-          accessibilityRole="adjustable"
-          accessibilityActions={[
-            { name: 'increment', label: 'Next page' },
-            { name: 'decrement', label: 'Previous page' },
-          ]}
-          onAccessibilityAction={onAdjust}
-        >
-          Page {index + 1} of {pages.length}
-        </Txt>
-        <IconButton
-          testID="passport-next"
-          icon="chevronRight"
-          accessibilityLabel="Next page"
-          disabled={index >= last}
-          onPress={() => goTo(index + 1)}
-        />
-      </View>
-    </>
+    <View
+      style={styles.book}
+      testID="passport-book"
+      onLayout={pageTurn.onLayout}
+      {...pageTurn.panHandlers}
+    >
+      <View style={styles.spine} />
+      <PageTurnLayers
+        index={index}
+        pageTurn={pageTurn}
+        renderPage={(i) => (
+          <PassportPage
+            page={pages[i]!}
+            nav={{ index: i, count: pages.length, onAdjust }}
+            onOpenStamp={onOpenStamp}
+            onSelectCountry={(country) => {
+              const t = pageForCountry(country);
+              if (t !== null) goTo(t);
+            }}
+            onOpenBadges={onOpenBadges}
+          />
+        )}
+      />
+    </View>
   );
 }
 
 export default function PassportScreen({ navigation, route }: Props): React.JSX.Element {
   const styles = useStyles();
+  const insets = useInsets();
   const { data, reload } = useDashboardData();
   // The hook does not load by itself: without this the screen stayed on its empty first render.
   useFocusEffect(
@@ -397,7 +513,14 @@ export default function PassportScreen({ navigation, route }: Props): React.JSX.
   }
 
   return (
-    <Screen scroll testID="passport-screen" contentStyle={styles.content}>
+    <Screen
+      testID="passport-screen"
+      contentStyle={[
+        styles.content,
+        styles.bookScreen,
+        { paddingBottom: insets.bottom + space.lg },
+      ]}
+    >
       {header}
       <PassportBook
         pages={pages}
@@ -452,14 +575,14 @@ function SheetRow({
   );
 }
 
-const PAGE_HEIGHT = 460;
-
 const useStyles = makeStyles((theme) =>
   StyleSheet.create({
     content: { paddingTop: space.lg, paddingBottom: space.huge + space.xxl, gap: space.xl },
+    /** The book takes whatever height the screen has left under the title. */
+    bookScreen: { paddingBottom: 0, gap: space.lg },
     flex: { flex: 1 },
     book: {
-      minHeight: PAGE_HEIGHT,
+      flex: 1,
       backgroundColor: theme.colors.surface,
       borderColor: theme.colors.lineStrong,
       borderWidth: 1,
@@ -475,14 +598,13 @@ const useStyles = makeStyles((theme) =>
       width: 8,
       backgroundColor: theme.colors.surface3,
     },
+    coverPage: { flex: 1, backgroundColor: theme.colors.surface2 },
     cover: {
       flex: 1,
-      minHeight: PAGE_HEIGHT,
       alignItems: 'center',
       justifyContent: 'center',
       gap: space.xl,
       padding: space.xxl,
-      backgroundColor: theme.colors.surface2,
     },
     coverRule: { width: 120, height: 2, backgroundColor: theme.colors.gold, opacity: 0.6 },
     emboss: {
@@ -495,13 +617,43 @@ const useStyles = makeStyles((theme) =>
       textShadowOffset: { width: 1, height: 1 },
       textShadowRadius: 1,
     },
-    pageBody: {
-      flex: 1,
-      minHeight: PAGE_HEIGHT,
-      paddingVertical: space.xl,
+    page: { flex: 1 },
+    pageContent: {
+      paddingTop: space.xl,
+      paddingBottom: space.lg,
       paddingLeft: space.xl + 8,
-      paddingRight: space.xl,
+      paddingRight: space.xl + space.sm,
       gap: space.lg,
+    },
+    scrollTrack: {
+      position: 'absolute',
+      top: space.sm,
+      bottom: space.sm,
+      right: 4,
+      width: 4,
+      borderRadius: 2,
+      backgroundColor: theme.colors.line,
+    },
+    scrollThumb: {
+      position: 'absolute',
+      left: 0,
+      right: 0,
+      borderRadius: 2,
+      backgroundColor: theme.colors.text3,
+    },
+    moreCue: {
+      position: 'absolute',
+      bottom: space.sm,
+      alignSelf: 'center',
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: space.xs,
+      paddingVertical: space.xs,
+      paddingHorizontal: space.md,
+      borderRadius: radius.pill,
+      backgroundColor: theme.colors.surface3,
+      borderWidth: 1,
+      borderColor: theme.colors.lineStrong,
     },
     contentsRow: {
       flexDirection: 'row',
@@ -515,7 +667,18 @@ const useStyles = makeStyles((theme) =>
     stampCell: { width: '50%', alignItems: 'center', gap: space.xs, paddingVertical: space.xs },
     badgeList: { gap: space.lg },
     badgeRow: { flexDirection: 'row', alignItems: 'center', gap: space.md, minHeight: 44 },
-    nav: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+    nav: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      paddingVertical: space.md,
+      paddingLeft: space.xl + 8,
+      paddingRight: space.xl,
+      borderTopWidth: StyleSheet.hairlineWidth,
+      borderTopColor: theme.colors.line,
+    },
+    navArrow: { width: 32, height: 32, alignItems: 'center', justifyContent: 'center' },
+    navArrowOff: { opacity: 0.3 },
     sheetBody: { gap: space.md },
     sheetRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   }),

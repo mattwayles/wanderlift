@@ -1,96 +1,105 @@
 import {
   MAX_TILT_DEG,
   MIN_OPACITY,
-  STAMP_COLUMNS,
-  stampBox,
   stampLayout,
   textBlock,
+  type StampSlot,
 } from './passportStamps';
 import { PASSPORT_STAMPS_PER_PAGE } from './dashboard';
 
-const labels = (n: number) => Array.from({ length: n }, (_, i) => `City${i}, XX`);
-const WIDTHS = [300, 340, 390, 420];
+const N = PASSPORT_STAMPS_PER_PAGE;
+const labels = (n: number, tag = 'City') => Array.from({ length: n }, (_, i) => `${tag}${i}, XX`);
+// Pages from a small phone (iPhone SE) to a large one; the book is the screen less its margins.
+const PAGES: Array<[number, number]> = [
+  [350, 480],
+  [360, 520],
+  [390, 640],
+  [420, 700],
+];
+
+const boxesMeet = (a: StampSlot, b: StampSlot) =>
+  Math.abs(a.cx - b.cx) < (a.w + b.w) / 2 && Math.abs(a.cy - b.cy) < (a.h + b.h) / 2;
 
 describe('stampLayout', () => {
-  it('is deterministic: the same places stamp the same way', () => {
-    const a = stampLayout(labels(12), 360);
-    expect(stampLayout(labels(12), 360)).toEqual(a);
-    // A place keeps its tilt and ink when the others on the page change.
-    const alone = stampLayout(['City3, XX'], 360).slots[0]!;
-    const inRow = a.slots[3]!;
-    expect(alone.rotation).toBe(inRow.rotation);
-    expect(alone.opacity).toBe(inRow.opacity);
+  it('is deterministic, and a stamp added later never moves the ones already on the page', () => {
+    const a = stampLayout(labels(10), 390, 640);
+    expect(stampLayout(labels(10), 390, 640)).toEqual(a);
+    expect(stampLayout(labels(12), 390, 640).slots.slice(0, 10)).toEqual(a.slots);
   });
 
-  it('looks hand-stamped: tilts and inks vary', () => {
-    const { slots } = stampLayout(labels(PASSPORT_STAMPS_PER_PAGE), 360);
-    expect(new Set(slots.map((s) => s.rotation)).size).toBeGreaterThan(8);
-    expect(new Set(slots.map((s) => s.opacity)).size).toBeGreaterThan(8);
+  it('varies shape, size and proportion, not just circles and rectangles', () => {
+    const { slots } = stampLayout(labels(N), 390, 640);
+    expect(new Set(slots.map((s) => s.shape)).size).toBeGreaterThanOrEqual(4);
+    const areas = slots.map((s) => s.w * s.h);
+    expect(Math.max(...areas) / Math.min(...areas)).toBeGreaterThan(1.6);
+    const aspects = slots.map((s) => s.w / s.h);
+    expect(Math.max(...aspects) - Math.min(...aspects)).toBeGreaterThan(0.5);
   });
 
-  it.each(WIDTHS)('keeps every stamp readable at width %i', (width) => {
-    const { slots } = stampLayout(labels(PASSPORT_STAMPS_PER_PAGE), width);
-    for (const s of slots) {
-      expect(Math.abs(s.rotation)).toBeLessThanOrEqual(MAX_TILT_DEG);
-      expect(s.opacity).toBeGreaterThanOrEqual(MIN_OPACITY);
-      expect(s.opacity).toBeLessThanOrEqual(1);
-    }
-  });
-
-  it.each(WIDTHS)('never lets one stamp cover another one’s words, at width %i', (width) => {
-    // Many different pages' worth of places, so the seeded drift is exercised broadly.
-    for (let page = 0; page < 40; page++) {
-      const { slots } = stampLayout(
-        Array.from({ length: PASSPORT_STAMPS_PER_PAGE }, (_, i) => `P${page}-${i}, ZZ`),
-        width,
-      );
+  it.each(PAGES)('keeps every stamp readable on a %i x %i page', (w, h) => {
+    for (let page = 0; page < 30; page++) {
+      const { slots } = stampLayout(labels(N, `P${page}-`), w, h);
+      for (const s of slots) {
+        expect(Math.abs(s.rotation)).toBeLessThanOrEqual(MAX_TILT_DEG);
+        expect(s.opacity).toBeGreaterThanOrEqual(MIN_OPACITY);
+        expect(s.opacity).toBeLessThanOrEqual(1);
+      }
+      // Overlap is allowed at the rims; one stamp covering another's words never is.
       for (let i = 0; i < slots.length; i++) {
         for (let j = i + 1; j < slots.length; j++) {
           const a = textBlock(slots[i]!);
           const b = textBlock(slots[j]!);
-          const apart = a.x1 <= b.x0 || b.x1 <= a.x0 || a.y1 <= b.y0 || b.y1 <= a.y0;
-          expect(apart).toBe(true);
+          expect(a.x1 <= b.x0 || b.x1 <= a.x0 || a.y1 <= b.y0 || b.y1 <= a.y0).toBe(true);
         }
       }
     }
   });
 
-  it('keeps the stamps on the page, give or take the tilt', () => {
-    for (const width of WIDTHS) {
-      const { slots } = stampLayout(labels(PASSPORT_STAMPS_PER_PAGE), width);
+  it.each(PAGES)('keeps the stamps on a %i x %i page', (w, h) => {
+    for (let page = 0; page < 30; page++) {
+      for (const s of stampLayout(labels(N, `P${page}-`), w, h).slots) {
+        expect(s.cx - s.w / 2).toBeGreaterThanOrEqual(-0.5);
+        expect(s.cx + s.w / 2).toBeLessThanOrEqual(w + 0.5);
+        expect(s.cy - s.h / 2).toBeGreaterThanOrEqual(-0.5);
+        expect(s.cy + s.h / 2).toBeLessThanOrEqual(h + 0.5);
+      }
+    }
+  });
+
+  it('covers the whole page, top to bottom and side to side, and is not a grid', () => {
+    for (const [w, h] of PAGES.slice(1)) {
+      let topGap = 0;
+      let bottomGap = 0;
+      let columns = 0;
+      const PAGES_TRIED = 20;
+      for (let page = 0; page < PAGES_TRIED; page++) {
+        const { slots } = stampLayout(labels(N, `Q${page}-`), w, h);
+        topGap += Math.min(...slots.map((s) => s.cy - s.h / 2)) / h;
+        bottomGap += (h - Math.max(...slots.map((s) => s.cy + s.h / 2))) / h;
+        // How many 24pt-wide slices of the page hold a stamp's centre: three columns would be 3.
+        columns += new Set(slots.map((s) => Math.floor(s.cx / 24))).size;
+      }
+      expect(topGap / PAGES_TRIED).toBeLessThan(0.1);
+      expect(bottomGap / PAGES_TRIED).toBeLessThan(0.1);
+      expect(columns / PAGES_TRIED).toBeGreaterThan(7);
+    }
+  });
+
+  it('overlaps only now and then', () => {
+    let overlapping = 0;
+    let total = 0;
+    for (let page = 0; page < 40; page++) {
+      const { slots } = stampLayout(labels(N, `R${page}-`), 390, 640);
       for (const s of slots) {
-        const { w } = stampBox(s);
-        const left = s.left - (w - s.size) / 2;
-        expect(left).toBeGreaterThanOrEqual(-12);
-        expect(left + w).toBeLessThanOrEqual(width + 12);
+        total += 1;
+        if (slots.some((o) => o !== s && boxesMeet(s, o))) overlapping += 1;
       }
     }
+    expect(overlapping / total).toBeLessThan(0.45);
   });
 
-  it('overlaps a little: some stamps touch at their rings', () => {
-    const { slots } = stampLayout(labels(PASSPORT_STAMPS_PER_PAGE), 360);
-    let touching = 0;
-    for (let i = 0; i < slots.length; i++) {
-      for (let j = i + 1; j < slots.length; j++) {
-        const a = slots[i]!;
-        const b = slots[j]!;
-        const ab = stampBox(a);
-        const bb = stampBox(b);
-        const ax = a.left - (ab.w - a.size) / 2;
-        const bx = b.left - (bb.w - b.size) / 2;
-        if (ax < bx + bb.w && bx < ax + ab.w && a.top < b.top + bb.h && b.top < a.top + ab.h) {
-          touching += 1;
-        }
-      }
-    }
-    expect(touching).toBeGreaterThan(0);
-  });
-
-  it('is three across, and as tall as its rows', () => {
-    expect(STAMP_COLUMNS).toBe(3);
-    const one = stampLayout(labels(3), 360).height;
-    const two = stampLayout(labels(4), 360).height;
-    expect(two).toBeGreaterThan(one);
-    expect(stampLayout([], 360).height).toBeGreaterThanOrEqual(0);
+  it('handles no stamps, and a page too small for its stamps', () => {
+    expect(stampLayout([], 390, 640).slots).toEqual([]);
+    expect(stampLayout(labels(N), 120, 120).slots).toHaveLength(N);
   });
 });

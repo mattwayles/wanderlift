@@ -10,8 +10,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type {
   AccessibilityActionEvent,
-  StyleProp,
-  ViewStyle,
   LayoutChangeEvent,
   NativeScrollEvent,
   NativeSyntheticEvent,
@@ -107,20 +105,17 @@ export interface PassportPageProps {
 function ContentPage({
   testID,
   nav,
-  dense = false,
   children,
 }: {
   testID: string;
   nav?: PageNavInfo;
-  /** Less side padding, for a page that wants the width (the stamps). */
-  dense?: boolean;
   children: React.ReactNode;
 }): React.JSX.Element {
   const styles = useStyles();
   return (
     <View style={styles.page} testID={testID}>
       <Guilloche />
-      <PageScroll contentStyle={dense ? styles.pageContentDense : undefined}>{children}</PageScroll>
+      <PageScroll>{children}</PageScroll>
       {nav ? <PageNav {...nav} /> : null}
     </View>
   );
@@ -207,9 +202,11 @@ export function PassportPage({
       );
     case 'visa':
       return (
-        <ContentPage testID={`passport-page-visa-${page.visaIndex}`} nav={nav} dense>
+        <View style={styles.page} testID={`passport-page-visa-${page.visaIndex}`}>
+          <Guilloche />
           <VisaStamps entries={page.entries} onOpenStamp={onOpenStamp} />
-        </ContentPage>
+          {nav ? <PageNav {...nav} /> : null}
+        </View>
       );
     case 'endorsements':
       return (
@@ -227,16 +224,15 @@ export function PassportPage({
   }
 }
 
-/** Side space the book and a visa page leave around the stamps (see `useStyles`). */
+/** Side space the book leaves around its pages (the screen's margin and the book's border). */
 const BOOK_MARGIN = space.sm;
-const VISA_PAD_LEFT = 8 + space.md;
-const VISA_PAD_RIGHT = space.md;
 
 /**
- * The page's stamps, put down the way a person would: each a little off its slot, crooked, and
- * inked differently, with neighbours touching at their rings. Placement is `stampLayout`'s, which
- * keeps every stamp readable. The date is inside the stamp (as on a real one), not under it, since
- * the next row overlaps the space below.
+ * The page's stamps, put down the way a person would: different shapes and sizes, anywhere on the
+ * page, crooked, inked differently, and mostly clear of each other. Placement is `stampLayout`'s,
+ * which fills the page it is given and never lets one stamp cover another's words. The date is
+ * inside the stamp, as on a real one. The page is measured, so the stamps fit whatever height the
+ * phone leaves; there is nothing to scroll.
  */
 function VisaStamps({
   entries,
@@ -245,23 +241,36 @@ function VisaStamps({
   entries: PassportEntry[];
   onOpenStamp: (entry: PassportEntry) => void;
 }): React.JSX.Element {
-  const { width } = useWindowDimensions();
-  const gridWidth = width - 2 * BOOK_MARGIN - 2 - VISA_PAD_LEFT - VISA_PAD_RIGHT;
+  const styles = useStyles();
+  const window = useWindowDimensions();
+  // Until the page reports its size, a close guess, so a first frame (or a test) still has stamps.
+  const [size, setSize] = useState({
+    width: window.width - 2 * BOOK_MARGIN - 2,
+    height: Math.round(window.height * 0.62),
+  });
+  const onLayout = (e: LayoutChangeEvent) => {
+    const { width, height } = e.nativeEvent.layout;
+    if (width > 0 && height > 0) {
+      setSize((prev) =>
+        Math.abs(prev.width - width) < 1 && Math.abs(prev.height - height) < 1
+          ? prev
+          : { width, height },
+      );
+    }
+  };
   const layout = useMemo(
     () =>
       stampLayout(
         entries.map((e) => e.label),
-        gridWidth,
+        size.width,
+        size.height,
       ),
-    [entries, gridWidth],
+    [entries, size.width, size.height],
   );
   return (
-    <View style={{ height: layout.height }}>
+    <View style={styles.flex} onLayout={onLayout} testID="passport-stamp-field">
       {entries.map((e, i) => {
         const slot = layout.slots[i]!;
-        // The rectangular stamp is wider than it is tall; the box is sized for it and the stamp
-        // centred in it, so the slot's left edge stays the stamp's own.
-        const boxW = Math.round(slot.size * 1.25);
         return (
           <PressableScale
             key={e.label}
@@ -271,10 +280,10 @@ function VisaStamps({
             onPress={() => onOpenStamp(e)}
             style={{
               position: 'absolute',
-              left: slot.left - (boxW - slot.size) / 2,
-              top: slot.top,
-              width: boxW,
-              alignItems: 'center',
+              left: slot.cx - slot.w / 2,
+              top: slot.cy - slot.h / 2,
+              width: slot.w,
+              height: slot.h,
             }}
           >
             <Stamp
@@ -282,7 +291,9 @@ function VisaStamps({
               title={e.label}
               subtitle={shortDate(e.firstLocalDate)}
               seed={e.label}
-              size={slot.size}
+              shape={slot.shape}
+              width={slot.w}
+              height={slot.h}
               rotation={slot.rotation}
               opacity={slot.opacity}
             />
@@ -297,13 +308,7 @@ function VisaStamps({
  * The page's scrolling body. A page that overflows says so: a scroll bar that stays on screen (iOS
  * hides its own after a moment) and a "More below" cue until the end is reached.
  */
-function PageScroll({
-  children,
-  contentStyle,
-}: {
-  children: React.ReactNode;
-  contentStyle?: StyleProp<ViewStyle>;
-}): React.JSX.Element {
+function PageScroll({ children }: { children: React.ReactNode }): React.JSX.Element {
   const styles = useStyles();
   const ref = useRef<ScrollView>(null);
   const [viewH, setViewH] = useState(0);
@@ -332,7 +337,7 @@ function PageScroll({
         ref={ref}
         testID="passport-page-scroll"
         style={styles.flex}
-        contentContainerStyle={[styles.pageContent, contentStyle]}
+        contentContainerStyle={styles.pageContent}
         onContentSizeChange={(_w, h) => setContentH(h)}
         onScroll={onScroll}
         scrollEventThrottle={16}
@@ -668,10 +673,6 @@ const useStyles = makeStyles((theme) =>
       textShadowRadius: 1,
     },
     page: { flex: 1 },
-    pageContentDense: {
-      paddingLeft: VISA_PAD_LEFT,
-      paddingRight: VISA_PAD_RIGHT,
-    },
     pageContent: {
       paddingTop: space.xl,
       paddingBottom: space.lg,

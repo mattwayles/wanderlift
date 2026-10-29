@@ -26,9 +26,10 @@ Follow-up round 2026-10-29 (user feedback, three increments, commit each):
 2. [done] Holds: the PHONE runs the hold timer (so its 3-2-1 beeps reach the user's headphones, same as a
    phone-driven workout); watch mirrors it (`WatchActive.hold`) and sends `startHold` /
    `adjustHold` (crown, 5s steps, only before start). Replaces the watch-run countdown.
-3. Watch cues: 3-2-1 + end taps scheduled as local notifications (fire with the display off) and
+3. [done] Watch cues (`targets/watch/WatchCues.swift`): 3-2-1 + end taps scheduled as local notifications (fire with the display off) and
    in-process haptics only when the app is frontmost, so there is never a double.
 ### Next
+- (round 2026-10-29 done; its device pass is in BACKLOG)
 - Device pass (BACKLOG "Apple Watch companion app"). Not verified here: the full app scheme (it
   needs the watchOS 26.5 platform runtime installed to embed the watch app), any of it on
   hardware, and the EAS signing of the new `com.mattwayles.wanderlift.watchkitapp` target with
@@ -53,3 +54,14 @@ Follow-up round 2026-10-29 (user feedback, three increments, commit each):
   `modules/watch-connectivity`; new target `targets/watch`.
 - A watch message while the app is not running relaunches it in the background with no JS: the
   command is on disk (WatchLink) and JS drains it on foreground / `onWake`. Unverified on device.
+- Holds are phone-run (round 2026-10-29): the watch no longer runs its own countdown, because only
+  the phone is wired to the user's headphones and already has the 3-2-1 / halfway / switch cues.
+  `WatchHold` carries phase, side, length and the phase's end instant (frozen `remainingSec` while
+  paused). Crown steps are relative `adjustHold` commands; the phone clamps at 5s.
+- Watch cues are doubled on purpose: a local notification (delivered with the display off) plus an
+  in-app haptic that plays only if `WKApplication.applicationState == .active`; `willPresent`
+  suppresses the notification in that same state, so exactly one sounds. Not verifiable off a
+  device. No new dependencies; one new file (`WatchCues.swift`), notification permission asked on
+  the first countdown.
+- Watch buttons use `FilledButtonStyle` (solid fill + chosen ink), not `.tint`: on watchOS `.tint`
+  paints a dim translucent plate, which is what made the dark text unreadable.

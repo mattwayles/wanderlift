@@ -47,7 +47,25 @@ final class WatchWorkoutModel: ObservableObject {
 
   // MARK: Following the phone
 
+  /// The countdown the wrist should tap along with: the rest, or a hold's count-in, side or
+  /// switch. None while paused (the clock is frozen) or before a hold is started.
+  private func cueTarget(_ active: WatchActive) -> WatchCues.Target? {
+    if active.paused { return nil }
+    if let rest = active.rest {
+      return .init(
+        key: "rest.\(active.set?.setKey ?? "closing")",
+        endsAt: Date(timeIntervalSince1970: rest.endsAtMs / 1000),
+        endTitle: "Rest over")
+    }
+    if let hold = active.hold, hold.phase != "ready", hold.remainingSec == nil, let end = hold.endsAt {
+      let title = hold.phase == "getReady" ? "Go" : (hold.phase == "switch" ? "Switch sides" : "Time")
+      return .init(key: "hold.\(hold.setKey).\(hold.phase).\(hold.side)", endsAt: end, endTitle: title)
+    }
+    return nil
+  }
+
   private func reconcile(_ state: WatchState) {
+    WatchCues.shared.sync(state.active.flatMap(cueTarget))
     if let active = state.active {
       starting = false
       leaveTask?.cancel()

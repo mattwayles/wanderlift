@@ -117,6 +117,15 @@ _List exercises that you'd like to incldue in the library here. Any exercise you
   Not built, by decision: training with the phone out of range (a snapshot plus a Swift state
   machine and queued logs), Quick Session from the watch, Abandon from the watch, complications or
   a Smart Stack widget, and a Live Activity that updates while the watch drives a locked phone.
+  Also owed from the 2026-10-29 round: holds now run on the PHONE (its 3-2-1 beeps reach the
+  headphones; the watch mirrors the clock, the crown sets the length in 5s steps before Start, and
+  Start is a command). Check on a device: beeps in Bluetooth headphones paired to the phone while
+  the watch drives a hold and a rest, in a pocket and with the phone locked; the 3-2-1 taps and the
+  end buzz with the wrist raised, lowered with Always-On dim, and with the display fully off (the
+  cues are local notifications as well as in-app taps; the first hold asks for notification
+  permission on the watch; look for a double buzz or leftover banners). Headphones paired only to
+  the watch get no beeps: the watch has no audio of its own (a watch-side sound needs a
+  route-sharing audio session and was left out).
 - **Onboarding rework (Track 51) — device pass owed.** Walk the whole first run on an SE-size and a
   Pro Max phone, both themes, Reduce Motion, largest text: value screen paging, the four starting
   points (check Journey shows the expected rungs), equipment (Bands defaults to all five owned;

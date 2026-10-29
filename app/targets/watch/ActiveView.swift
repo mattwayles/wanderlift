@@ -204,7 +204,6 @@ struct RestView: View {
           Text(timerInterval: rest.range, countsDown: true)
             .font(.system(size: 44, weight: .bold, design: .rounded).monospacedDigit())
             .foregroundStyle(Palette.fern)
-            .task(id: rest.endsAtMs) { await buzzAtEnd(of: rest) }
         } else {
           Text("Workout complete").font(.headline).foregroundStyle(Palette.fern)
         }
@@ -234,15 +233,6 @@ struct RestView: View {
       }
       .padding(.horizontal, 4)
     }
-  }
-
-  /// A buzz when the rest runs out, so the next set can start without looking.
-  private func buzzAtEnd(of rest: WatchRest) async {
-    let wait = Date(timeIntervalSince1970: rest.endsAtMs / 1000).timeIntervalSinceNow
-    guard wait > 0 else { return }
-    try? await Task.sleep(nanoseconds: UInt64(wait * 1_000_000_000))
-    guard !Task.isCancelled else { return }
-    WKInterfaceDevice.current().play(.notification)
   }
 }
 

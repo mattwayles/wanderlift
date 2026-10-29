@@ -74,8 +74,8 @@ the record of what was completed and why.
   compact pill (icon + clock fits, a 1:00:00+ clock not clipped), the minimal view beside another
   app's activity, long-press expanded, and the Lock Screen banner on a non-Island phone. Check the
   rest countdown and bar after +15s / Skip, the frozen number while paused, the activity ending on
-  finish and on abandon, and a force-quit mid-workout cleaned up on the next launch. Then an EAS
-  build: the new `.workoutactivity` extension needs its own provisioning profile. Not built: the
+  finish and on abandon, and a force-quit mid-workout cleaned up on the next launch. (The EAS
+  production build signs the `.workoutactivity` extension fine: build 14, 2026-10-28.) Not built: the
   idle auto-pause only runs while the app is awake, so a workout left with the phone locked keeps
   ticking on the Island until the app reopens and back-dates the pause; and buttons in the Island
   (Skip rest, Set done) would need `LiveActivityIntent` writing to SQLite from native code.

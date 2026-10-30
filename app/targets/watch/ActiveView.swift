@@ -7,6 +7,14 @@ struct ActiveView: View {
   let active: WatchActive
 
   var body: some View {
+    // The clock and heart rate sit above every page, so they stay put as the pages swipe.
+    VStack(spacing: 2) {
+      StatusLine(active: active)
+      pages
+    }
+  }
+
+  private var pages: some View {
     TabView {
       Group {
         if active.rest != nil || (active.closing && active.set == nil) {
@@ -27,7 +35,7 @@ struct ActiveView: View {
   }
 }
 
-/// The workout clock and heart rate, under whatever else is showing.
+/// The workout clock and heart rate, at the top of every page.
 struct StatusLine: View {
   @EnvironmentObject var model: WatchWorkoutModel
   let active: WatchActive
@@ -37,7 +45,7 @@ struct StatusLine: View {
       clock
       if let bpm = model.health.heartRate {
         Label("\(Int(bpm.rounded()))", systemImage: "heart.fill")
-          .labelStyle(.titleAndIcon).foregroundStyle(Palette.teal)
+          .labelStyle(.titleAndIcon).foregroundStyle(Palette.heart)
       }
     }
     .font(.footnote.monospacedDigit())
@@ -68,7 +76,6 @@ struct SetView: View {
       } else {
         RepsSetView(set: set).id(set.setKey)
       }
-      StatusLine(active: active)
     }
     .padding(.horizontal, 4)
   }
@@ -216,7 +223,6 @@ struct RestView: View {
         } else {
           restBody
         }
-        StatusLine(active: active)
       }
       .padding(.horizontal, 4)
     }

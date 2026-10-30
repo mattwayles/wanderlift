@@ -80,3 +80,8 @@ only parse-checked here, the pods are not installed locally).
   ±15s, Skip rest and Finish. A question the phone already shows as rated is not asked again. Typechecked
   against the watchOS Simulator SDK (the full target build fails on the unrelated ActivityKit module);
   on-wrist check owed.
+
+### Status line pinned to the top (2026-10-30)
+- [x] `StatusLine` (clock + heart rate) now sits above the page `TabView` in `ActiveView`, so it stays on
+  every page (set, rest, controls, now playing). Heart rate is `Palette.heart` red, one color at any
+  value (a reading, not a judgment). Typechecked only; on-wrist check owed.

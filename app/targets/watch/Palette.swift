@@ -9,6 +9,8 @@ enum Palette {
   static let text2 = Color(hex: 0xB4BCC8)
   static let teal = Color(hex: 0x4FB8C4)
   static let fern = Color(hex: 0x68CF59)
+  /// The heart rate readout. A reading, not a judgment: it is the same red at any value.
+  static let heart = Color(hex: 0xFF4D4D)
   static let summit = Color(hex: 0xC77DFF)
   static let onAccent = Color(hex: 0x0B0E13)
 }

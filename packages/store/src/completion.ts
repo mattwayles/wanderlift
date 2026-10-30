@@ -122,6 +122,12 @@ function dominantBand(bands: (BandId | null)[]): BandId | null {
   return best;
 }
 
+/** How many bands heavier `band` is than `than` (negative = lighter); 0 when either is unknown. */
+function bandSteps(band: BandId | null, than: BandId | null): number {
+  if (!band || !than) return 0;
+  return BAND_ORDER.indexOf(band) - BAND_ORDER.indexOf(than);
+}
+
 function summarizeEntry(entry: SessionEntryRecord): WorkingSetSummary {
   const prescribed = entry.repTarget ?? entry.durationSec ?? null;
   const completed = entry.setLogs.filter((s) => s.status === 'completed');
@@ -141,7 +147,21 @@ function summarizeEntry(entry: SessionEntryRecord): WorkingSetSummary {
       bestActual = actual;
       bestBand = s.bandActual ?? entry.band;
     }
-    if (actual < prescribed) {
+    // Reps mean something only at the band they were done on. `bandActual` is the user's word that
+    // they switched; the switch itself is adopted by the ladder (`reconcileMicroToObservedBand`),
+    // so here it only decides whether the number is a hit or a miss at the prescribed load.
+    const bandShift = bandSteps(s.bandActual ?? entry.band, entry.band);
+    const met = actual >= prescribed;
+    if (bandShift > 0) {
+      // Heavier than prescribed: reaching the target is a hit; falling short is not a miss — the
+      // user took on more than they were asked, and held back from nothing.
+      if (!met) allAtOrAboveTarget = false;
+    } else if (bandShift < 0) {
+      // Lighter than prescribed: the target was not met at the prescribed load, so it cannot earn
+      // an advance. Falling short on the lighter band is still a miss; making it is neutral.
+      allAtOrAboveTarget = false;
+      if (!met) anyBelowTarget = true;
+    } else if (!met) {
       anyBelowTarget = true;
       allAtOrAboveTarget = false;
     }

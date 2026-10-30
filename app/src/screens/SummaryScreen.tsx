@@ -1097,7 +1097,7 @@ export default function SummaryScreen({ navigation, route }: Props): React.JSX.E
       >
         <View style={styles.sheetBody}>
           <Txt variant="small" color="text2">
-            {editingFeedbackEntry ? targetQuestion(editingFeedbackEntry) : 'How was the target?'}
+            {editingFeedbackEntry ? targetQuestion(editingFeedbackEntry, undefined, bandTensions) : 'How was the target?'}
           </Txt>
           <FeedbackControls
             difficulty={editingFeedbackDifficulty}

@@ -2,7 +2,7 @@
  * Track 34 — an accessory (main work with no progression family) climbs its own micro-progression
  * ladder: completion moves it, `exercise_state` stores it, and the next prescription reads it.
  */
-import { defaultMicroForExercise, prescribeAccessory } from '@roamfit/engine';
+import { BAND_ORDER, defaultMicroForExercise, prescribeAccessory } from '@roamfit/engine';
 import type { BandId } from '@roamfit/engine';
 import { createBandedTestDb } from './testHarness';
 import { generate } from './generation';
@@ -163,6 +163,37 @@ describe('accessory micro-progression, through the store', () => {
       const a = programAccessory(db, raw, '2026-03-03', id);
       performOnly(db, a.sessionId, a.entry, '2026-03-03', { short: 1 });
       expect(getAllExerciseStates(db)[id].accessoryMicro!.repTarget).toBeLessThan(before.repTarget);
+    } finally {
+      close();
+    }
+  });
+
+  it('the target made on a lighter band than prescribed is not a hit: no advance, and no miss', () => {
+    const { db, raw, close } = createBandedTestDb();
+    try {
+      const first = runSession(db, '2026-03-01', { band: 'B3' });
+      const id = first.exerciseId;
+      // Prescribed B3, done on B2: the 12 reps say where they are, not that the prescription was
+      // met, so there is no step up from here (it would be the band they just stepped away from).
+      const a = programAccessory(db, raw, '2026-03-03', id, 'B3');
+      performOnly(db, a.sessionId, a.entry, '2026-03-03', { band: 'B2' });
+      const state = getAllExerciseStates(db)[id];
+      expect(state.workingBand).toBe('B2');
+      expect(state.accessoryMicro!.repTarget).toBe(12);
+      expect(state.accessoryMisses).toBe(0);
+    } finally {
+      close();
+    }
+  });
+
+  it('falling short on a heavier band than prescribed is not a miss', () => {
+    const { db, close } = createBandedTestDb();
+    try {
+      // The fixture prescribes B1; every set on B2, a rep short.
+      const accessory = runSession(db, '2026-03-01', { band: 'B2', miss: true });
+      const state = getAllExerciseStates(db)[accessory.exerciseId];
+      expect(state.workingBand).toBe('B2');
+      expect(state.accessoryMisses).toBe(0);
     } finally {
       close();
     }

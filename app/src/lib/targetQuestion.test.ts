@@ -1,4 +1,5 @@
 import { targetLabel, targetQuestion } from './targetQuestion';
+import type { BandTensions } from './bandDisplay';
 
 const reps = { sets: 3, repTarget: 10, durationSec: null, unilateral: false };
 
@@ -22,5 +23,26 @@ describe('targetQuestion', () => {
     const none = { sets: 3, repTarget: null, durationSec: null, unilateral: false };
     expect(targetLabel(none)).toBeNull();
     expect(targetQuestion(none, 'Plank')).toBe('How was the target for Plank?');
+  });
+
+  it('names the band the target was prescribed on, for the user’s own band', () => {
+    const tensions = {
+      B1: { label: 'Yellow', color: '#FFD43B' },
+      B2: { label: 'Red', color: '#E03131' },
+      B5: { label: 'Black', color: '#222222' },
+    } as unknown as BandTensions;
+    expect(targetQuestion({ ...reps, band: 'B2' }, 'Banded Row', tensions)).toBe(
+      'How was the target for Banded Row: 3 × 10 reps on the Red band?',
+    );
+    expect(targetQuestion({ ...reps, band: 'B5+B2' }, undefined, tensions)).toBe(
+      'How was the target: 3 × 10 reps on the Black + Red bands?',
+    );
+    // Bodyweight (no band), or no tensions to name it by: the question is as it was.
+    expect(targetQuestion({ ...reps, band: null }, 'Squat', tensions)).toBe(
+      'How was the target for Squat: 3 × 10 reps?',
+    );
+    expect(targetQuestion({ ...reps, band: 'B2' }, 'Banded Row')).toBe(
+      'How was the target for Banded Row: 3 × 10 reps?',
+    );
   });
 });

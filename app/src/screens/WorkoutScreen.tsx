@@ -369,7 +369,7 @@ export default function WorkoutScreen({ navigation, route }: Props): React.JSX.E
     'this exercise';
   // Asked about the target, not the sets as logged: see `lib/targetQuestion.ts`.
   const feedbackQuestion = restingEntry
-    ? targetQuestion(restingEntry, feedbackExerciseName)
+    ? targetQuestion(restingEntry, feedbackExerciseName, bandTensions)
     : `How was the target for ${feedbackExerciseName}?`;
   const current =
     rewoundEntry && rewoundTo && rewoundTo.setIndex < rewoundEntry.sets

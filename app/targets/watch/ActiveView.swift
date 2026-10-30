@@ -209,6 +209,20 @@ struct RestView: View {
   var body: some View {
     ScrollView {
       VStack(spacing: 6) {
+        if let feedback = active.feedback, feedback.current == nil,
+           model.answeredFeedback != feedback.question {
+          // The question comes first and alone: the countdown waits until it is answered or skipped.
+          FeedbackView(feedback: feedback)
+        } else {
+          restBody
+        }
+        StatusLine(active: active)
+      }
+      .padding(.horizontal, 4)
+    }
+  }
+
+  @ViewBuilder private var restBody: some View {
         if let rest = active.rest {
           Text(timerInterval: rest.range, countsDown: true)
             .font(.system(size: 44, weight: .bold, design: .rounded).monospacedDigit())
@@ -231,17 +245,10 @@ struct RestView: View {
           .buttonStyle(.quiet)
           Button("Skip rest") { model.skipRest() }.buttonStyle(.primaryFern)
         }
-        if let feedback = active.feedback {
-          FeedbackView(feedback: feedback)
-        }
         if active.closing {
           Button("Finish") { Task { await model.stop() } }
             .buttonStyle(.primaryTeal)
         }
-        StatusLine(active: active)
-      }
-      .padding(.horizontal, 4)
-    }
   }
 }
 

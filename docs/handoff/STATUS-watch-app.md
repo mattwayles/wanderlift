@@ -73,3 +73,10 @@ only parse-checked here, the pods are not installed locally).
   paints a dim translucent plate, which is what made the dark text unreadable.
 - Now Playing: the workout's third page is SwiftUI `NowPlayingView` (system, no SDK, no sign-in). It
   controls whatever is the active Now Playing app, Spotify included, like Apple's Workout app.
+
+### Feedback before the rest timer (2026-10-30)
+- [x] The rest page shows the "How was the target" question alone until it is answered, skipped or
+  Never-again'd (`WatchWorkoutModel.answeredFeedback`, keyed by question text); only then the countdown,
+  ±15s, Skip rest and Finish. A question the phone already shows as rated is not asked again. Typechecked
+  against the watchOS Simulator SDK (the full target build fails on the unrelated ActivityKit module);
+  on-wrist check owed.

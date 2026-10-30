@@ -17,6 +17,9 @@ final class WatchWorkoutModel: ObservableObject {
   @Published var summary: HealthWorkout.Summary?
   /// Start was tapped and the phone has not answered yet.
   @Published var starting = false
+  /// The feedback question this wrist has answered, skipped or dismissed. The rest screen waits on
+  /// the question until then; a question the phone shows as already rated needs no answer here.
+  @Published var answeredFeedback: String?
 
   /// The session this watch has stopped; its Health workout is saved and must not restart if the
   /// phone goes back to it.
@@ -146,13 +149,20 @@ final class WatchWorkoutModel: ObservableObject {
   func rate(_ difficulty: String) {
     WKInterfaceDevice.current().play(.click)
     send("rate") { $0.difficulty = difficulty }
+    answeredFeedback = pendingQuestion
   }
 
-  func skipFeedback() { send("skipFeedback") }
+  func skipFeedback() {
+    send("skipFeedback")
+    answeredFeedback = pendingQuestion
+  }
   func neverAgain() {
     WKInterfaceDevice.current().play(.click)
     send("neverAgain")
+    answeredFeedback = pendingQuestion
   }
+
+  private var pendingQuestion: String? { state.active?.feedback?.question }
 
   /// Stop from the wrist: save the Health workout, tell the phone (which goes to Summary), and show
   /// how it went. FINISH stays on the phone.

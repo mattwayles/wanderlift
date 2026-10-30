@@ -69,6 +69,45 @@ describe('§10.3 swap at approval', () => {
     }
   });
 
+  it('tapping an exercise opens its detail page', async () => {
+    let db!: ReturnType<typeof useStore>['db'];
+    render(
+      <StoreProvider>
+        <Setup onReady={(d) => (db = d)} />
+      </StoreProvider>,
+    );
+    await waitFor(() => expect(db).toBeDefined(), WAIT_OPTS);
+    const sessionId = await createPendingSession(db);
+    const entry = sessionsRepo
+      .getSession(db, sessionId)!
+      .entries.find((e) => e.section === 'main')!;
+    const navigation = mockNavigation();
+
+    render(
+      <StoreProvider>
+        <NavigationContainer>
+          <ApprovalScreen
+            navigation={navigation as never}
+            route={{ key: 'k', name: 'Approval', params: { sessionId } } as never}
+          />
+        </NavigationContainer>
+      </StoreProvider>,
+    );
+
+    await waitFor(
+      () => expect(screen.getByTestId(`open-${entry.exerciseId}`)).toBeTruthy(),
+      WAIT_OPTS,
+    );
+    fireEvent.press(screen.getByTestId(`open-${entry.exerciseId}`));
+    expect(navigation.navigate).toHaveBeenCalledWith('ExerciseDetail', {
+      exerciseId: entry.exerciseId,
+    });
+    // Looking at an exercise changes nothing about the plan.
+    expect(
+      sessionsRepo.getSession(db, sessionId)!.entries.find((e) => e.id === entry.id)!.exerciseId,
+    ).toBe(entry.exerciseId);
+  });
+
   it('swapping replaces the exercise in the plan without regenerating', async () => {
     let db!: ReturnType<typeof useStore>['db'];
     render(

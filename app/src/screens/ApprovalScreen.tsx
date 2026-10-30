@@ -630,6 +630,9 @@ export default function ApprovalScreen({ navigation, route }: Props): React.JSX.
                       onSetDuration={(v) => handleSetDuration(entry, v)}
                       onSetRest={(v) => handleSetRest(entry, v)}
                       onChangeBand={(band) => handleChangeBand(entry, band)}
+                      onOpenDetails={() =>
+                        navigation.navigate('ExerciseDetail', { exerciseId: entry.exerciseId })
+                      }
                       onSwap={() => handleSwap(entry)}
                       onRemove={() => handleRemove(entry)}
                     />
@@ -845,6 +848,7 @@ function EntryCard({
   onSetDuration,
   onSetRest,
   onChangeBand,
+  onOpenDetails,
   onSwap,
   onRemove,
 }: {
@@ -868,6 +872,8 @@ function EntryCard({
   onSetDuration: (value: number) => void;
   onSetRest: (value: number) => void;
   onChangeBand: (band: BandId) => void;
+  /** Opens the exercise's detail page (how to, anchor, muscles). */
+  onOpenDetails: () => void;
   onSwap: () => void;
   onRemove: () => void;
 }): React.JSX.Element {
@@ -909,16 +915,26 @@ function EntryCard({
         >
           <Icon name="drag" size={26} color="text3" />
         </View>
-        <View style={styles.cardTitleBlock}>
-          <Txt variant="h3" numberOfLines={2}>
-            {exerciseName}
-          </Txt>
+        <PressableScale
+          testID={`open-${entry.exerciseId}`}
+          haptic="selection"
+          accessibilityRole="button"
+          accessibilityLabel={`${exerciseName}. See exercise details`}
+          onPress={onOpenDetails}
+          style={styles.cardTitleBlock}
+        >
+          <View style={styles.titleRow}>
+            <Txt variant="h3" numberOfLines={2} style={styles.titleText}>
+              {exerciseName}
+            </Txt>
+            <Icon name="chevronRight" size={16} color="text3" />
+          </View>
           {repBasisText != null && !isTimed && (
             <Txt variant="caption" color="text3" testID={`rep-basis-${entry.exerciseId}`}>
               Reps are {repBasisText}
             </Txt>
           )}
-        </View>
+        </PressableScale>
 
         {/* Both actions are icons on the title's own row, so they cost no vertical space at
             all. The accessible names carry the meaning the glyphs cannot. Swap wears the fern
@@ -1194,6 +1210,8 @@ const useStyles = makeStyles((t) =>
       marginLeft: -6,
     },
     cardTitleBlock: { flex: 1, paddingTop: space.sm },
+    titleRow: { flexDirection: 'row', alignItems: 'center', gap: space.xs },
+    titleText: { flexShrink: 1 },
     // `field` used to be `flex: 1`, stretching all four columns to fill the row — fine for a label,
     // wasteful for a box that only ever holds 1-3 digits. Fixed-width instead, left-aligned with
     // `gap`, so each box is only as wide as the value it holds actually needs — which is what freed

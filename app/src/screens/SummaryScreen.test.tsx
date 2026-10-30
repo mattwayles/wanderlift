@@ -411,6 +411,14 @@ describe('§10.9/§6.4 Summary completion, driven through SummaryScreen', () => 
       sessionId,
       jumpTo: { entryId: first.id, setIndex: 0 },
     });
+
+    // The exercise's name opens its detail page, and leaves the workout where it is.
+    navigation.replace.mockClear();
+    await fireEvent.press(screen.getByTestId(`summary-open-${first.exerciseId}`));
+    expect(navigation.navigate).toHaveBeenCalledWith('ExerciseDetail', {
+      exerciseId: first.exerciseId,
+    });
+    expect(navigation.replace).not.toHaveBeenCalled();
   });
 
   it('shows every set for an exercise not yet reached, as a dashed square, and lets you jump ahead to any of them', async () => {

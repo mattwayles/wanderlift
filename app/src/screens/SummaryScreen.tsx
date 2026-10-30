@@ -1052,6 +1052,9 @@ export default function SummaryScreen({ navigation, route }: Props): React.JSX.E
                 last={i === activeEntries.length - 1}
                 onJump={(setIndex) => jumpToSet(entry.id, setIndex)}
                 onEditFeedback={() => openFeedbackEditor(entry.id)}
+                onOpenDetails={() =>
+                  navigation.navigate('ExerciseDetail', { exerciseId: entry.exerciseId })
+                }
               />
             ))}
           </Card>
@@ -1144,12 +1147,15 @@ function EntryRow({
   last,
   onJump,
   onEditFeedback,
+  onOpenDetails,
 }: {
   entry: sessionsRepo.SessionEntryRecord;
   name: string;
   last: boolean;
   onJump: (setIndex: number) => void;
   onEditFeedback: () => void;
+  /** Opens the exercise's detail page. */
+  onOpenDetails: () => void;
 }): React.JSX.Element {
   const theme = useTheme();
   const styles = useStyles();
@@ -1161,9 +1167,19 @@ function EntryRow({
     >
       <View style={[styles.rail, { backgroundColor: railColor }]} />
       <View style={styles.entryName}>
-        <Txt variant="h3" numberOfLines={2}>
-          {name}
-        </Txt>
+        <PressableScale
+          testID={`summary-open-${entry.exerciseId}`}
+          haptic="selection"
+          accessibilityRole="button"
+          accessibilityLabel={`${name}. See exercise details`}
+          onPress={onOpenDetails}
+          style={styles.entryTitleRow}
+        >
+          <Txt variant="h3" numberOfLines={2} style={styles.entryTitleText}>
+            {name}
+          </Txt>
+          <Icon name="chevronRight" size={16} color="text3" />
+        </PressableScale>
         {entry.setLogs.some((l) => l.status === 'completed') &&
           (entry.difficultyFeedback ? (
             <Chip
@@ -1283,6 +1299,8 @@ const useStyles = makeStyles((t) =>
       borderBottomRightRadius: 2,
     },
     entryName: { flex: 1, minWidth: 96, gap: space.xs, paddingTop: 4 },
+    entryTitleRow: { flexDirection: 'row', alignItems: 'center', gap: space.xs },
+    entryTitleText: { flexShrink: 1 },
     squares: { flexShrink: 0, maxWidth: '62%', flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
     setColumn: { alignItems: 'center', width: SQUARE },
     square: {

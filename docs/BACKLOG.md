@@ -115,8 +115,8 @@ _List exercises that you'd like to incldue in the library here. Any exercise you
   Home on the phone mid-workout (the watch waits 20s, then saves and stops), and a tap made while
   the phone is out of range (queued, delivered later; the set key drops it if the phone moved on).
   Not built, by decision: training with the phone out of range (a snapshot plus a Swift state
-  machine and queued logs), Quick Session from the watch, Abandon from the watch, complications or
-  a Smart Stack widget, and a Live Activity that updates while the watch drives a locked phone.
+  machine and queued logs), Quick Session from the watch, Abandon from the watch, a complication that shows
+  state (the launcher-only one is built; see STATUS-watch-app.md), and a Live Activity that updates while the watch drives a locked phone.
   Also owed from the 2026-10-29 round: holds now run on the PHONE (its 3-2-1 beeps reach the
   headphones; the watch mirrors the clock, the crown sets the length in 5s steps before Start, and
   Start is a command). Check on a device: beeps in Bluetooth headphones paired to the phone while

@@ -85,3 +85,14 @@ only parse-checked here, the pods are not installed locally).
 - [x] `StatusLine` (clock + heart rate) now sits above the page `TabView` in `ActiveView`, so it stays on
   every page (set, rest, controls, now playing). Heart rate is `Palette.heart` red, one color at any
   value (a reading, not a judgment). Typechecked only; on-wrist check owed.
+
+### Watch-face complication, launcher only (2026-10-30)
+- [x] `app/targets/watch-complication/` (`type: 'watch-widget'`, @bacons/apple-targets, no new dependency):
+  a WidgetKit extension with a static, never-expiring timeline in the four accessory families
+  (circular, corner, rectangular, inline). Tapping it opens the watch app. It shows nothing of the
+  workout, so no App Group data and no `reloadAllTimelines`. Bundle id `…watchkitapp.complication`;
+  needs a signed build with `-allowProvisioningUpdates` to get its profile. `prebuild` links it
+  (target `WatchComplication`), and the target builds for the watchOS Simulator SDK.
+- Owed on the wrist: Edit the watch face, pick Wanderlift in a slot, tap it. Not simulator-checkable.
+- Next, if wanted: show state ("Workout ready" / running clock) via an App Group written by the
+  watch app + `WidgetCenter.reloadAllTimelines()`, or a Smart Stack relevance entry.

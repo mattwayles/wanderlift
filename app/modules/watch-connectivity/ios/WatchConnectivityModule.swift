@@ -6,14 +6,18 @@ public class WatchConnectivityModule: Module {
     Name("WatchConnectivity")
 
     /// Sent to a listening JS when a command has been queued; JS answers with `drainCommands`.
-    Events("onWake")
+    Events("onWake", "onHeartRate")
 
     OnStartObserving {
       WatchLink.shared.onWake = { [weak self] in self?.sendEvent("onWake", [:]) }
+      WatchLink.shared.onHeartRate = { [weak self] bpm, at in
+        self?.sendEvent("onHeartRate", ["bpm": bpm, "atMs": at])
+      }
     }
 
     OnStopObserving {
       WatchLink.shared.onWake = nil
+      WatchLink.shared.onHeartRate = nil
     }
 
     OnCreate {

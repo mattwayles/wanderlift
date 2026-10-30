@@ -41,6 +41,15 @@ final class WatchWorkoutModel: ObservableObject {
       .receive(on: DispatchQueue.main)
       .sink { [weak self] _ in self?.objectWillChange.send() }
       .store(in: &cancellables)
+    // Each heart rate reading goes to the phone's Workout screen, at most one every two seconds.
+    health.$heartRate
+      .compactMap { $0 }
+      .throttle(for: .seconds(2), scheduler: DispatchQueue.main, latest: true)
+      .sink { [weak self] bpm in
+        guard let self, self.state.active != nil else { return }
+        self.link.sendHeartRate(bpm)
+      }
+      .store(in: &cancellables)
   }
 
   var state: WatchState { link.state }

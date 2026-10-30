@@ -17,6 +17,10 @@ export interface WatchConnectivityNative {
   setFlag(key: string): void;
   flags(): string[];
   addListener(event: 'onWake', listener: () => void): { remove(): void };
+  addListener(
+    event: 'onHeartRate',
+    listener: (reading: { bpm: number; atMs: number }) => void,
+  ): { remove(): void };
 }
 
 // Under Jest this file is replaced by ./__mocks__/WatchConnectivityModule.ts (jest.setup.js). Optional,

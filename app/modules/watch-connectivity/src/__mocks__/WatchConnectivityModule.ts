@@ -12,12 +12,21 @@ interface FakeState {
   queue: string[];
   flags: string[];
   listeners: Set<Listener>;
+  heartListeners: Set<(reading: { bpm: number; atMs: number }) => void>;
 }
 
 let state: FakeState = fresh();
 
 function fresh(): FakeState {
-  return { installed: true, reachable: true, sent: [], queue: [], flags: [], listeners: new Set() };
+  return {
+    installed: true,
+    reachable: true,
+    sent: [],
+    queue: [],
+    flags: [],
+    listeners: new Set(),
+    heartListeners: new Set(),
+  };
 }
 
 export default {
@@ -48,9 +57,15 @@ export default {
     return state.flags;
   },
 
-  addListener(_event: 'onWake', listener: Listener): { remove(): void } {
-    state.listeners.add(listener);
-    return { remove: () => state.listeners.delete(listener) };
+  addListener(event: 'onWake' | 'onHeartRate', listener: (arg: never) => void): { remove(): void } {
+    if (event === 'onHeartRate') {
+      const l = listener as (reading: { bpm: number; atMs: number }) => void;
+      state.heartListeners.add(l);
+      return { remove: () => state.heartListeners.delete(l) };
+    }
+    const l = listener as Listener;
+    state.listeners.add(l);
+    return { remove: () => state.listeners.delete(l) };
   },
 
   // ---- test helpers (not part of the native contract) ----
@@ -69,6 +84,10 @@ export default {
   /** Queued without waking anyone: a command that arrived while JS was not running. */
   __receiveSilently(json: string): void {
     state.queue.push(json);
+  },
+  /** A live heart rate reading from the watch. */
+  __heartRate(bpm: number, atMs: number = Date.now()): void {
+    for (const l of [...state.heartListeners]) l({ bpm, atMs });
   },
   /** Every state sent to the watch, oldest first. */
   __sent(): string[] {

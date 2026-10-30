@@ -1,5 +1,5 @@
 ## Track: watch-app — Apple Watch companion (start / track / stop a workout from the wrist)
-Last updated: 2026-10-29
+Last updated: 2026-10-30
 Plan: BACKLOG "Apple Watch companion app". Decisions from the user: heart rate on screen; training
 with the phone out of range is NOT required (a later phase); Quick Session stays phone-only; the
 Dynamic Island going stale while the watch drives a locked phone is accepted.
@@ -28,6 +28,12 @@ Follow-up round 2026-10-29 (user feedback, three increments, commit each):
    `adjustHold` (crown, 5s steps, only before start). Replaces the watch-run countdown.
 3. [done] Watch cues (`targets/watch/WatchCues.swift`): 3-2-1 + end taps scheduled as local notifications (fire with the display off) and
    in-process haptics only when the app is frontmost, so there is never a double.
+### Done (2026-10-30): heart rate on the phone's Workout screen
+Watch sends each new HR as a LIVE-ONLY message (`heartRate`, `hrAt`; dropped when out of range, never
+queued, never on disk) -> native `onHeartRate` event -> `useWatchHeartRate()` (stale after 20s) ->
+a badge in the top-right of the set's header row (`ExerciseHeader`). Not stored anywhere; the phone
+still never reads Health. Needs a dev-client rebuild (native module gained the `onHeartRate` event;
+only parse-checked here, the pods are not installed locally).
 ### Next
 - (round 2026-10-29 done; its device pass is in BACKLOG)
 - Device pass (BACKLOG "Apple Watch companion app"). Not verified here: the full app scheme (it

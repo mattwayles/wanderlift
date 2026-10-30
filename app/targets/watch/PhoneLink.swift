@@ -25,6 +25,15 @@ final class PhoneLink: NSObject, ObservableObject, WCSessionDelegate {
     session.activate()
   }
 
+  /// A heart rate reading for the phone's Workout screen. Live only: sent when the phone is in range
+  /// and otherwise dropped, never queued (a queued reading would arrive minutes late and be wrong).
+  func sendHeartRate(_ bpm: Double) {
+    guard let session, session.isReachable else { return }
+    session.sendMessage(
+      ["heartRate": bpm, "hrAt": Date().timeIntervalSince1970 * 1000], replyHandler: nil,
+      errorHandler: nil)
+  }
+
   func send(_ command: WatchCommand) {
     guard let session, let data = try? JSONEncoder().encode(command),
       let json = String(data: data, encoding: .utf8)

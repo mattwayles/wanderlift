@@ -36,6 +36,15 @@ export function onWake(listener: () => void): () => void {
   return () => sub?.remove();
 }
 
+/** Calls `listener` with each live heart rate reading the watch sends (never queued or stored: a
+ *  reading with no one listening is dropped). Returns the unsubscribe. */
+export function onHeartRate(
+  listener: (reading: { bpm: number; atMs: number }) => void,
+): () => void {
+  const sub = WatchConnectivityNative?.addListener('onHeartRate', listener);
+  return () => sub?.remove();
+}
+
 /** Remembers a string across launches; the newest 50 are kept. */
 export function setFlag(key: string): void {
   WatchConnectivityNative?.setFlag(key);

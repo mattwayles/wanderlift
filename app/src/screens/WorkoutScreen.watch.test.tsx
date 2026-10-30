@@ -25,6 +25,7 @@ const mock = WatchMock as unknown as {
   __reset(): void;
   __receiveSilently(json: string): void;
   __sent(): string[];
+  __heartRate(bpm: number): void;
 };
 
 const lastState = (): WatchState => JSON.parse(mock.__sent().at(-1)!) as WatchState;
@@ -141,6 +142,11 @@ it('shows the workout on the watch and applies what the watch asks for', async (
       target: repsEntry.repTarget,
     },
   });
+
+  // The watch's heart rate shows in the set's header, and only once there is a reading.
+  expect(screen.queryByLabelText(/^Heart rate /)).toBeNull();
+  await act(async () => mock.__heartRate(128));
+  expect(screen.getByLabelText('Heart rate 128 beats per minute')).toBeTruthy();
 
   // A command for a set the phone is not on is ignored.
   await fromWatch({ type: 'completeSet', sessionId, setKey: `${repsEntry.id}:1`, reps: 5 });

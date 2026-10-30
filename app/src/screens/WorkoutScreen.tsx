@@ -99,6 +99,8 @@ import {
 } from '../lib/sessionProgress';
 import type { Section, SessionPosition } from '../lib/sessionProgress';
 import { useCountdown } from '../lib/useCountdown';
+import { useWatchHeartRate } from '../lib/useWatchHeartRate';
+import { HeartRateBadge } from '../components/HeartRateBadge';
 import type { CountdownController } from '../lib/wallClockTimer';
 import AnchorBadge from '../components/AnchorBadge';
 import PinnedNote from '../components/PinnedNote';
@@ -1572,6 +1574,7 @@ function ExerciseHeader({
   onPickBand: (band: BandId) => void;
 }): React.JSX.Element {
   const styles = useStyles();
+  const heartRate = useWatchHeartRate();
   // The set view is remounted per set and VoiceOver focus is lost with the old one, so say where we
   // are. Mount-only on purpose: a re-render must not repeat it.
   useEffect(() => {
@@ -1585,7 +1588,17 @@ function ExerciseHeader({
   );
   return (
     <>
-      {levelText != null && <Chip label={levelText} tone="summit" testID="level-chip" />}
+      {/* The level chip left, the watch's heart rate right: one row, present only if either is. */}
+      {(levelText != null || heartRate !== null) && (
+        <View style={styles.topRow}>
+          {levelText != null ? (
+            <Chip label={levelText} tone="summit" testID="level-chip" />
+          ) : (
+            <View />
+          )}
+          <HeartRateBadge bpm={heartRate} />
+        </View>
+      )}
       <Txt
         variant="display"
         testID="exercise-name"
@@ -2953,6 +2966,7 @@ const useStyles = makeStyles((t) =>
     // -- exercise hero (shared by the reps and timed views)
     heroPaused: { opacity: 0.55 },
     heroBody: { gap: space.md },
+    topRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
     setRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
     chipRow: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: space.sm },
     actionRow: { flexDirection: 'row', justifyContent: 'space-around', marginTop: space.xs },

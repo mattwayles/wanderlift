@@ -19,6 +19,9 @@ final class WatchLink: NSObject, WCSessionDelegate {
 
   /// Called when a command lands, so a listening JS can drain. Set by the Expo module.
   var onWake: (() -> Void)?
+  /// Called with each live heart rate reading from the watch. Never queued or stored: a reading
+  /// that arrives with no one listening is simply dropped.
+  var onHeartRate: ((Double, Double) -> Void)?
 
   private var session: WCSession? { WCSession.isSupported() ? WCSession.default : nil }
 
@@ -64,6 +67,11 @@ final class WatchLink: NSObject, WCSessionDelegate {
   }
 
   private func receive(_ payload: [String: Any]) {
+    if let bpm = payload["heartRate"] as? Double {
+      let at = payload["hrAt"] as? Double ?? Date().timeIntervalSince1970 * 1000
+      DispatchQueue.main.async { self.onHeartRate?(bpm, at) }
+      return
+    }
     guard let json = payload["command"] as? String,
       let data = json.data(using: .utf8),
       let object = try? JSONSerialization.jsonObject(with: data) as? [String: Any],

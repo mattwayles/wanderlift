@@ -95,6 +95,11 @@ struct RepsSetView: View {
         .focusable()
         .digitalCrownRotation($reps, from: 0, through: 99, by: 1, sensitivity: .medium)
       Text("target \(set.target)").font(.caption2).foregroundStyle(Palette.text2)
+      if let basis = set.repBasis {
+        // What a rep counts is part of the answer: 12 per side is 24 reps, "total" is not.
+        Text(basis).font(.caption.weight(.semibold)).foregroundStyle(Palette.text)
+          .lineLimit(1).minimumScaleFactor(0.8)
+      }
       Button {
         model.complete(set: set, reps: Int(reps))
       } label: {

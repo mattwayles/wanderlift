@@ -30,6 +30,8 @@ export interface WatchSet {
   unilateral: boolean;
   /** "B3" or null for bodyweight. */
   band: string | null;
+  /** What a rep counts, when it needs saying: "per side" or "total, both sides"; else null. */
+  repBasis: string | null;
 }
 
 export interface WatchRest {

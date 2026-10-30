@@ -75,6 +75,18 @@ describe('watchSetFor', () => {
     );
     expect(hold).toMatchObject({ setKey: 'e2:1', kind: 'hold', target: 30, unilateral: true });
   });
+
+  it('carries what a rep counts, for reps only', () => {
+    const entry = { id: 'e3', sets: 3, repTarget: 10, durationSec: null, unilateral: true };
+    expect(watchSetFor(entry, 0, 'Lunge', null, 'per side').repBasis).toBe('per side');
+    expect(watchSetFor(entry, 0, 'Lunge', null, 'total, both sides').repBasis).toBe(
+      'total, both sides',
+    );
+    expect(watchSetFor(entry, 0, 'Squat', null).repBasis).toBeNull();
+    // A hold counts seconds, so there is nothing to say about a side's reps.
+    const hold = { ...entry, id: 'e4', repTarget: null, durationSec: 30 };
+    expect(watchSetFor(hold, 0, 'Plank', null, 'per side').repBasis).toBeNull();
+  });
 });
 
 describe('composeWatchState', () => {

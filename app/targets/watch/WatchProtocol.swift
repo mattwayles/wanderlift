@@ -15,6 +15,8 @@ struct WatchSet: Codable, Equatable {
   var target: Int
   var unilateral: Bool
   var band: String?
+  /// "per side" or "total, both sides" when what a rep counts needs saying.
+  var repBasis: String?
 
   var isHold: Bool { kind == "hold" }
 }

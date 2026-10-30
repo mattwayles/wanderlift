@@ -1105,7 +1105,13 @@ export default function WorkoutScreen({ navigation, route }: Props): React.JSX.E
     progress: watchDeck.progress,
     set: isFinalRest
       ? null
-      : watchSetFor(entry, setIndex, exercise?.name ?? entry.exerciseId, bandForSet),
+      : watchSetFor(
+          entry,
+          setIndex,
+          exercise?.name ?? entry.exerciseId,
+          bandForSet,
+          repBasis(exercise),
+        ),
     feedback:
       phase === 'resting' && feedbackQuestion != null
         ? {

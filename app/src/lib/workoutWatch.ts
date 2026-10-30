@@ -191,6 +191,7 @@ export function watchSetFor(
   setIndex: number,
   exerciseName: string,
   band: string | null,
+  repBasisText: string | null = null,
 ): WatchSet {
   const reps = entry.repTarget != null;
   return {
@@ -202,5 +203,6 @@ export function watchSetFor(
     target: reps ? (entry.repTarget as number) : (entry.durationSec ?? 0),
     unilateral: entry.unilateral,
     band,
+    repBasis: reps ? repBasisText : null,
   };
 }

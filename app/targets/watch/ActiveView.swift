@@ -1,8 +1,8 @@
 import SwiftUI
 import WatchKit
 
-/// The running workout. Two pages: the set (or the rest), and the controls. The crown sets reps on
-/// the set page.
+/// The running workout. Three pages: the set (or the rest), the controls, and now playing. The crown
+/// sets reps on the set page.
 struct ActiveView: View {
   let active: WatchActive
 
@@ -18,6 +18,10 @@ struct ActiveView: View {
         }
       }
       ControlsView(active: active)
+      // The system's own Now Playing page, the one Apple's Workout app has: play/pause, skip,
+      // volume and the output picker for whatever is playing (Spotify, Apple Music, a podcast), on
+      // the phone or the watch. It is a platform view, so there is no SDK and no sign-in here.
+      NowPlayingView()
     }
     .tabViewStyle(.page)
   }

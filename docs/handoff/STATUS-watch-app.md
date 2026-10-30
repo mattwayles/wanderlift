@@ -65,3 +65,5 @@ Follow-up round 2026-10-29 (user feedback, three increments, commit each):
   the first countdown.
 - Watch buttons use `FilledButtonStyle` (solid fill + chosen ink), not `.tint`: on watchOS `.tint`
   paints a dim translucent plate, which is what made the dark text unreadable.
+- Now Playing: the workout's third page is SwiftUI `NowPlayingView` (system, no SDK, no sign-in). It
+  controls whatever is the active Now Playing app, Spotify included, like Apple's Workout app.
